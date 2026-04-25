@@ -820,6 +820,45 @@
   @media (max-width: 420px) {
     .tts-btn { right: 124px; padding: 8px 10px; font-size: 9px; }
     .gps-btn { padding: 8px 10px; font-size: 9px; }
+    .ambient-btn { right: 68px; }
+  }
+
+  /* ========== AMBIENT SOUND BUTTON ========== */
+  .ambient-btn {
+    position: fixed;
+    top: 14px;
+    right: 76px;
+    background: rgba(240, 228, 204, 0.92);
+    color: var(--pompeian-deep);
+    border: 1px solid var(--gilt-soft);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(6px);
+    box-shadow: 0 4px 14px rgba(0,0,0,0.4);
+    z-index: 100;
+    transition: all 0.2s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .ambient-btn:hover, .ambient-btn:active {
+    background: var(--paper);
+    transform: scale(1.05);
+  }
+  .ambient-btn.active {
+    background: var(--pompeian-deep);
+    color: var(--paper);
+    border-color: var(--pompeian-deep);
+    box-shadow: 0 4px 20px rgba(139, 38, 22, 0.4);
+  }
+  .ambient-btn svg { width: 18px; height: 18px; }
+
+  @media (max-width: 420px) {
+    .ambient-btn { width: 36px; height: 36px; right: 68px; }
+    .ambient-btn svg { width: 16px; height: 16px; }
   }
 </style>
 </head>
@@ -828,6 +867,14 @@
 <button class="gps-btn" id="gpsBtn">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-7 8-13a8 8 0 10-16 0c0 6 8 13 8 13z"/><circle cx="12" cy="9" r="2.5"/></svg>
   <span id="gpsLabel">FIND ME</span>
+</button>
+
+<button class="ambient-btn" id="ambientBtn" aria-label="Ambient sounds" title="Mediterranean Ambience">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <path d="M9 18V5l12-2v13"/>
+    <circle cx="6" cy="18" r="3"/>
+    <circle cx="18" cy="16" r="3"/>
+  </svg>
 </button>
 
 <button class="tts-btn" id="ttsBtn" aria-label="Read page aloud">
@@ -2394,6 +2441,194 @@ ttsBtn.addEventListener('click', () => {
   if (!ttsAvailable) return;
   if (speaking) stopSpeech();
   else startSpeech();
+});
+
+// =============== AMBIENT SOUND SYSTEM ===============
+let audioCtx = null;
+let ambientNodes = {};
+let ambientPlaying = false;
+const ambientBtn = document.getElementById('ambientBtn');
+
+function initAudioCtx() {
+  if (audioCtx) return;
+  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+}
+
+// Create cicada sound using amplitude-modulated noise
+function createCicadas() {
+  // Multiple cicada layers for realism
+  const cicadas = [];
+
+  for (let i = 0; i < 3; i++) {
+    const osc = audioCtx.createOscillator();
+    osc.type = 'sawtooth';
+    osc.frequency.value = 4000 + Math.random() * 2000;
+
+    const tremolo = audioCtx.createOscillator();
+    tremolo.frequency.value = 30 + Math.random() * 20;
+
+    const tremoloGain = audioCtx.createGain();
+    tremoloGain.gain.value = 0.5;
+
+    const mainGain = audioCtx.createGain();
+    mainGain.gain.value = 0;
+
+    const filter = audioCtx.createBiquadFilter();
+    filter.type = 'bandpass';
+    filter.frequency.value = 5000 + Math.random() * 1000;
+    filter.Q.value = 2;
+
+    tremolo.connect(tremoloGain);
+    tremoloGain.connect(mainGain.gain);
+    osc.connect(filter);
+    filter.connect(mainGain);
+    mainGain.connect(audioCtx.destination);
+
+    osc.start();
+    tremolo.start();
+
+    cicadas.push({ osc, tremolo, mainGain, filter });
+  }
+
+  return cicadas;
+}
+
+// Create gentle wind
+function createWind() {
+  const bufferSize = 2 * audioCtx.sampleRate;
+  const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+  const data = buffer.getChannelData(0);
+
+  for (let i = 0; i < bufferSize; i++) {
+    data[i] = Math.random() * 2 - 1;
+  }
+
+  const noise = audioCtx.createBufferSource();
+  noise.buffer = buffer;
+  noise.loop = true;
+
+  const filter = audioCtx.createBiquadFilter();
+  filter.type = 'lowpass';
+  filter.frequency.value = 800;
+  filter.Q.value = 0.7;
+
+  const lfo = audioCtx.createOscillator();
+  const lfoGain = audioCtx.createGain();
+  lfo.frequency.value = 0.1;
+  lfoGain.gain.value = 300;
+  lfo.connect(lfoGain);
+  lfoGain.connect(filter.frequency);
+
+  const gainNode = audioCtx.createGain();
+  gainNode.gain.value = 0;
+
+  noise.connect(filter);
+  filter.connect(gainNode);
+  gainNode.connect(audioCtx.destination);
+
+  noise.start();
+  lfo.start();
+
+  return { noise, filter, gainNode, lfo };
+}
+
+// Occasional distant bell
+function scheduleBell() {
+  if (!ambientPlaying) return;
+
+  const osc = audioCtx.createOscillator();
+  osc.type = 'sine';
+  osc.frequency.value = 800 + Math.random() * 200;
+
+  const gain = audioCtx.createGain();
+  gain.gain.value = 0;
+
+  // Bell envelope
+  const now = audioCtx.currentTime;
+  gain.gain.setValueAtTime(0, now);
+  gain.gain.linearRampToValueAtTime(0.03, now + 0.01);
+  gain.gain.exponentialRampToValueAtTime(0.001, now + 3);
+
+  // Add harmonics
+  const osc2 = audioCtx.createOscillator();
+  osc2.type = 'sine';
+  osc2.frequency.value = osc.frequency.value * 2.4;
+
+  const gain2 = audioCtx.createGain();
+  gain2.gain.value = 0;
+  gain2.gain.setValueAtTime(0, now);
+  gain2.gain.linearRampToValueAtTime(0.015, now + 0.01);
+  gain2.gain.exponentialRampToValueAtTime(0.001, now + 2);
+
+  osc.connect(gain);
+  osc2.connect(gain2);
+  gain.connect(audioCtx.destination);
+  gain2.connect(audioCtx.destination);
+
+  osc.start(now);
+  osc2.start(now);
+  osc.stop(now + 3.5);
+  osc2.stop(now + 2.5);
+
+  // Schedule next bell (random interval 15-45 seconds)
+  setTimeout(scheduleBell, 15000 + Math.random() * 30000);
+}
+
+function startAmbient() {
+  initAudioCtx();
+  if (audioCtx.state === 'suspended') {
+    audioCtx.resume();
+  }
+
+  ambientNodes.cicadas = createCicadas();
+  ambientNodes.wind = createWind();
+
+  // Fade in
+  const volume = 0.25;
+  ambientNodes.cicadas.forEach((c, i) => {
+    c.mainGain.gain.setTargetAtTime(0.008 * volume, audioCtx.currentTime + i * 0.5, 0.5);
+  });
+  ambientNodes.wind.gainNode.gain.setTargetAtTime(0.12 * volume, audioCtx.currentTime, 0.5);
+
+  ambientPlaying = true;
+
+  // Start bells after a delay
+  setTimeout(scheduleBell, 5000 + Math.random() * 10000);
+}
+
+function stopAmbient() {
+  if (!ambientNodes.wind) return;
+
+  const fadeTime = 0.8;
+  ambientNodes.cicadas.forEach(c => {
+    c.mainGain.gain.setTargetAtTime(0, audioCtx.currentTime, fadeTime);
+  });
+  ambientNodes.wind.gainNode.gain.setTargetAtTime(0, audioCtx.currentTime, fadeTime);
+
+  ambientPlaying = false;
+
+  setTimeout(() => {
+    if (ambientNodes.wind) {
+      ambientNodes.cicadas.forEach(c => {
+        c.osc.stop();
+        c.tremolo.stop();
+      });
+      ambientNodes.wind.noise.stop();
+      ambientNodes.wind.lfo.stop();
+      ambientNodes = {};
+    }
+  }, 1500);
+}
+
+ambientBtn.addEventListener('click', () => {
+  initAudioCtx();
+  if (ambientPlaying) {
+    stopAmbient();
+    ambientBtn.classList.remove('active');
+  } else {
+    startAmbient();
+    ambientBtn.classList.add('active');
+  }
 });
 
 // =============== INIT ===============

@@ -511,9 +511,219 @@
   @keyframes fadeInHint {
     to { opacity: 0.6; }
   }
+
+  /* ========== AUDIO CONTROLS ========== */
+  .audio-panel {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 100;
+    display: flex;
+    gap: 8px;
+  }
+
+  .audio-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 1px solid rgba(212, 69, 26, 0.3);
+    background: rgba(42, 34, 32, 0.9);
+    backdrop-filter: blur(10px);
+    color: var(--ember);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    font-size: 1.2rem;
+  }
+
+  .audio-btn:hover {
+    border-color: var(--lava);
+    background: rgba(212, 69, 26, 0.2);
+    transform: scale(1.05);
+  }
+
+  .audio-btn.active {
+    background: var(--lava);
+    border-color: var(--lava);
+    color: white;
+    box-shadow: 0 0 20px rgba(212, 69, 26, 0.4);
+  }
+
+  .audio-btn svg {
+    width: 20px;
+    height: 20px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2;
+  }
+
+  .volume-control {
+    position: absolute;
+    top: 54px;
+    right: 0;
+    background: rgba(42, 34, 32, 0.95);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(212, 69, 26, 0.3);
+    border-radius: 12px;
+    padding: 16px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+    min-width: 160px;
+  }
+
+  .volume-control.visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  .volume-label {
+    font-family: 'Cinzel', serif;
+    font-size: 0.65rem;
+    color: var(--ember);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  .volume-slider {
+    width: 100%;
+    height: 4px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: rgba(255, 154, 92, 0.2);
+    border-radius: 2px;
+    outline: none;
+    margin-bottom: 12px;
+  }
+
+  .volume-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 14px;
+    height: 14px;
+    background: var(--lava);
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 0 8px rgba(212, 69, 26, 0.5);
+  }
+
+  .volume-slider::-moz-range-thumb {
+    width: 14px;
+    height: 14px;
+    background: var(--lava);
+    border-radius: 50%;
+    cursor: pointer;
+    border: none;
+  }
+
+  /* TTS Reading indicator */
+  .reading-indicator {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(42, 34, 32, 0.95);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--lava);
+    border-radius: 30px;
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    z-index: 100;
+  }
+
+  .reading-indicator.visible {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .reading-indicator .waves {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    height: 20px;
+  }
+
+  .reading-indicator .wave {
+    width: 3px;
+    height: 100%;
+    background: var(--lava);
+    border-radius: 2px;
+    animation: wave 0.8s ease-in-out infinite;
+  }
+
+  .reading-indicator .wave:nth-child(2) { animation-delay: 0.1s; }
+  .reading-indicator .wave:nth-child(3) { animation-delay: 0.2s; }
+  .reading-indicator .wave:nth-child(4) { animation-delay: 0.3s; }
+
+  @keyframes wave {
+    0%, 100% { transform: scaleY(0.4); }
+    50% { transform: scaleY(1); }
+  }
+
+  .reading-indicator span {
+    font-family: 'Cinzel', serif;
+    font-size: 0.75rem;
+    color: var(--ember);
+    letter-spacing: 0.1em;
+  }
+
+  .reading-indicator .stop-btn {
+    background: none;
+    border: none;
+    color: var(--ember);
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .reading-indicator .stop-btn:hover {
+    color: var(--lava);
+  }
 </style>
 </head>
 <body>
+
+<!-- Audio Controls -->
+<div class="audio-panel">
+  <button class="audio-btn" id="ambientBtn" title="Ambient Sounds">
+    <svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+  </button>
+  <button class="audio-btn" id="ttsBtn" title="Read Page Aloud">
+    <svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+  </button>
+  <div class="volume-control" id="volumeControl">
+    <label class="volume-label">Ambient Volume</label>
+    <input type="range" class="volume-slider" id="ambientVolume" min="0" max="100" value="30">
+    <label class="volume-label">Voice Volume</label>
+    <input type="range" class="volume-slider" id="ttsVolume" min="0" max="100" value="80">
+  </div>
+</div>
+
+<!-- Reading Indicator -->
+<div class="reading-indicator" id="readingIndicator">
+  <div class="waves">
+    <div class="wave"></div>
+    <div class="wave"></div>
+    <div class="wave"></div>
+    <div class="wave"></div>
+  </div>
+  <span>Reading...</span>
+  <button class="stop-btn" onclick="stopTTS()">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>
+  </button>
+</div>
 
 <div class="book">
   <div class="pages">
@@ -1104,6 +1314,326 @@
     if (e.key === 'ArrowRight' || e.key === ' ') nextPage();
     if (e.key === 'ArrowLeft') prevPage();
   });
+
+  // ========== AMBIENT SOUND SYSTEM ==========
+  let audioContext = null;
+  let ambientNodes = {};
+  let ambientPlaying = false;
+
+  function initAudio() {
+    if (audioContext) return;
+    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+  }
+
+  function createWindNoise() {
+    const bufferSize = 2 * audioContext.sampleRate;
+    const buffer = audioContext.createBuffer(1, bufferSize, audioContext.sampleRate);
+    const data = buffer.getChannelData(0);
+
+    for (let i = 0; i < bufferSize; i++) {
+      data[i] = Math.random() * 2 - 1;
+    }
+
+    const noise = audioContext.createBufferSource();
+    noise.buffer = buffer;
+    noise.loop = true;
+
+    // Bandpass filter for wind-like sound
+    const filter = audioContext.createBiquadFilter();
+    filter.type = 'bandpass';
+    filter.frequency.value = 400;
+    filter.Q.value = 0.5;
+
+    // LFO for wind modulation
+    const lfo = audioContext.createOscillator();
+    const lfoGain = audioContext.createGain();
+    lfo.frequency.value = 0.15;
+    lfoGain.gain.value = 200;
+    lfo.connect(lfoGain);
+    lfoGain.connect(filter.frequency);
+
+    const gainNode = audioContext.createGain();
+    gainNode.gain.value = 0;
+
+    noise.connect(filter);
+    filter.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+
+    noise.start();
+    lfo.start();
+
+    return { noise, filter, gainNode, lfo };
+  }
+
+  function createVolcanicRumble() {
+    const oscillator = audioContext.createOscillator();
+    oscillator.type = 'sine';
+    oscillator.frequency.value = 35;
+
+    // Sub-bass oscillator
+    const subOsc = audioContext.createOscillator();
+    subOsc.type = 'sine';
+    subOsc.frequency.value = 20;
+
+    // LFO for rumble variation
+    const lfo = audioContext.createOscillator();
+    const lfoGain = audioContext.createGain();
+    lfo.frequency.value = 0.08;
+    lfoGain.gain.value = 10;
+    lfo.connect(lfoGain);
+    lfoGain.connect(oscillator.frequency);
+
+    const gainNode = audioContext.createGain();
+    gainNode.gain.value = 0;
+
+    const subGain = audioContext.createGain();
+    subGain.gain.value = 0;
+
+    oscillator.connect(gainNode);
+    subOsc.connect(subGain);
+    gainNode.connect(audioContext.destination);
+    subGain.connect(audioContext.destination);
+
+    oscillator.start();
+    subOsc.start();
+    lfo.start();
+
+    return { oscillator, subOsc, gainNode, subGain, lfo };
+  }
+
+  function createEmberCrackle() {
+    const bufferSize = audioContext.sampleRate * 0.05;
+    const buffer = audioContext.createBuffer(1, bufferSize, audioContext.sampleRate);
+    const data = buffer.getChannelData(0);
+
+    for (let i = 0; i < bufferSize; i++) {
+      data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.3));
+    }
+
+    const gainNode = audioContext.createGain();
+    gainNode.gain.value = 0;
+    gainNode.connect(audioContext.destination);
+
+    // Random crackle scheduler
+    function scheduleCrackle() {
+      if (!ambientPlaying) return;
+
+      const source = audioContext.createBufferSource();
+      source.buffer = buffer;
+
+      const filter = audioContext.createBiquadFilter();
+      filter.type = 'highpass';
+      filter.frequency.value = 2000 + Math.random() * 3000;
+
+      const crackleeGain = audioContext.createGain();
+      crackleeGain.gain.value = (0.1 + Math.random() * 0.2) * (ambientNodes.masterGain || 0.3);
+
+      source.connect(filter);
+      filter.connect(crackleeGain);
+      crackleeGain.connect(audioContext.destination);
+      source.start();
+
+      setTimeout(scheduleCrackle, 100 + Math.random() * 500);
+    }
+
+    return { gainNode, scheduleCrackle };
+  }
+
+  function startAmbient() {
+    initAudio();
+    if (audioContext.state === 'suspended') {
+      audioContext.resume();
+    }
+
+    ambientNodes.wind = createWindNoise();
+    ambientNodes.rumble = createVolcanicRumble();
+    ambientNodes.crackle = createEmberCrackle();
+    ambientNodes.masterGain = 0.3;
+
+    // Fade in
+    const volume = document.getElementById('ambientVolume').value / 100;
+    ambientNodes.wind.gainNode.gain.setTargetAtTime(0.15 * volume, audioContext.currentTime, 0.5);
+    ambientNodes.rumble.gainNode.gain.setTargetAtTime(0.2 * volume, audioContext.currentTime, 0.5);
+    ambientNodes.rumble.subGain.gain.setTargetAtTime(0.15 * volume, audioContext.currentTime, 0.5);
+
+    ambientPlaying = true;
+    ambientNodes.crackle.scheduleCrackle();
+  }
+
+  function stopAmbient() {
+    if (!ambientNodes.wind) return;
+
+    const fadeTime = 0.5;
+    ambientNodes.wind.gainNode.gain.setTargetAtTime(0, audioContext.currentTime, fadeTime);
+    ambientNodes.rumble.gainNode.gain.setTargetAtTime(0, audioContext.currentTime, fadeTime);
+    ambientNodes.rumble.subGain.gain.setTargetAtTime(0, audioContext.currentTime, fadeTime);
+
+    ambientPlaying = false;
+
+    setTimeout(() => {
+      if (ambientNodes.wind) {
+        ambientNodes.wind.noise.stop();
+        ambientNodes.wind.lfo.stop();
+        ambientNodes.rumble.oscillator.stop();
+        ambientNodes.rumble.subOsc.stop();
+        ambientNodes.rumble.lfo.stop();
+        ambientNodes = {};
+      }
+    }, 1000);
+  }
+
+  function updateAmbientVolume(value) {
+    if (!ambientPlaying) return;
+    const volume = value / 100;
+    ambientNodes.masterGain = volume;
+    ambientNodes.wind.gainNode.gain.setTargetAtTime(0.15 * volume, audioContext.currentTime, 0.1);
+    ambientNodes.rumble.gainNode.gain.setTargetAtTime(0.2 * volume, audioContext.currentTime, 0.1);
+    ambientNodes.rumble.subGain.gain.setTargetAtTime(0.15 * volume, audioContext.currentTime, 0.1);
+  }
+
+  // ========== TEXT-TO-SPEECH SYSTEM ==========
+  let currentUtterance = null;
+  let isSpeaking = false;
+
+  function getPageText() {
+    const activePage = document.querySelector('.page.active .page-inner');
+    if (!activePage) return '';
+
+    // Clone to avoid modifying original
+    const clone = activePage.cloneNode(true);
+
+    // Remove navigation elements
+    clone.querySelectorAll('.back-link, .nav-hint').forEach(el => el.remove());
+
+    // Get clean text
+    let text = clone.innerText;
+
+    // Clean up extra whitespace
+    text = text.replace(/\s+/g, ' ').trim();
+
+    return text;
+  }
+
+  function startTTS() {
+    if (!('speechSynthesis' in window)) {
+      alert('Text-to-speech is not supported in your browser.');
+      return;
+    }
+
+    stopTTS();
+
+    const text = getPageText();
+    if (!text) return;
+
+    currentUtterance = new SpeechSynthesisUtterance(text);
+    currentUtterance.rate = 0.9;
+    currentUtterance.pitch = 1;
+    currentUtterance.volume = document.getElementById('ttsVolume').value / 100;
+
+    // Try to find a good English voice
+    const voices = speechSynthesis.getVoices();
+    const preferredVoice = voices.find(v => v.lang.startsWith('en') && v.name.includes('Google')) ||
+                          voices.find(v => v.lang.startsWith('en') && v.name.includes('Natural')) ||
+                          voices.find(v => v.lang.startsWith('en'));
+    if (preferredVoice) {
+      currentUtterance.voice = preferredVoice;
+    }
+
+    currentUtterance.onstart = () => {
+      isSpeaking = true;
+      document.getElementById('readingIndicator').classList.add('visible');
+      document.getElementById('ttsBtn').classList.add('active');
+    };
+
+    currentUtterance.onend = () => {
+      isSpeaking = false;
+      document.getElementById('readingIndicator').classList.remove('visible');
+      document.getElementById('ttsBtn').classList.remove('active');
+    };
+
+    currentUtterance.onerror = () => {
+      isSpeaking = false;
+      document.getElementById('readingIndicator').classList.remove('visible');
+      document.getElementById('ttsBtn').classList.remove('active');
+    };
+
+    speechSynthesis.speak(currentUtterance);
+  }
+
+  function stopTTS() {
+    if (speechSynthesis.speaking) {
+      speechSynthesis.cancel();
+    }
+    isSpeaking = false;
+    document.getElementById('readingIndicator').classList.remove('visible');
+    document.getElementById('ttsBtn').classList.remove('active');
+  }
+
+  // Load voices
+  if ('speechSynthesis' in window) {
+    speechSynthesis.getVoices();
+    speechSynthesis.onvoiceschanged = () => speechSynthesis.getVoices();
+  }
+
+  // ========== EVENT LISTENERS ==========
+  const ambientBtn = document.getElementById('ambientBtn');
+  const ttsBtn = document.getElementById('ttsBtn');
+  const volumeControl = document.getElementById('volumeControl');
+
+  ambientBtn.addEventListener('click', () => {
+    initAudio();
+    if (ambientPlaying) {
+      stopAmbient();
+      ambientBtn.classList.remove('active');
+    } else {
+      startAmbient();
+      ambientBtn.classList.add('active');
+    }
+  });
+
+  ttsBtn.addEventListener('click', () => {
+    if (isSpeaking) {
+      stopTTS();
+    } else {
+      startTTS();
+    }
+  });
+
+  // Long press for volume control
+  let pressTimer;
+  [ambientBtn, ttsBtn].forEach(btn => {
+    btn.addEventListener('mousedown', () => {
+      pressTimer = setTimeout(() => {
+        volumeControl.classList.toggle('visible');
+      }, 500);
+    });
+    btn.addEventListener('mouseup', () => clearTimeout(pressTimer));
+    btn.addEventListener('mouseleave', () => clearTimeout(pressTimer));
+  });
+
+  // Click outside to close volume
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.audio-panel')) {
+      volumeControl.classList.remove('visible');
+    }
+  });
+
+  document.getElementById('ambientVolume').addEventListener('input', (e) => {
+    updateAmbientVolume(e.target.value);
+  });
+
+  document.getElementById('ttsVolume').addEventListener('input', (e) => {
+    if (currentUtterance) {
+      currentUtterance.volume = e.target.value / 100;
+    }
+  });
+
+  // Stop TTS when changing pages
+  const originalShowPage = showPage;
+  showPage = function(n, direction) {
+    stopTTS();
+    originalShowPage(n, direction);
+  };
 </script>
 
 </body>
