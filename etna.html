@@ -3,28 +3,52 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Mount Etna · A Journey to Fire and Ice</title>
+<title>Mount Etna · Field Journal of a Vulcanologist</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Italianno&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Italianno&family=Caveat:wght@400;500;600;700&family=Special+Elite&display=swap" rel="stylesheet">
 <style>
   :root {
-    --paper: #f2ede5;
-    --paper-shadow: #d9d0c2;
-    --paper-edge: #b8ab96;
-    --ink: #1a1816;
-    --ink-soft: #4a4540;
-    --ink-faint: #7a7368;
-    --volcanic: #3d3635;
-    --volcanic-deep: #252120;
-    --lava: #d4451a;
-    --lava-glow: #ff6b3d;
-    --ember: #ff9a5c;
-    --ash: #6b6560;
-    --snow: #f5f8fa;
-    --sky: #4a7c9b;
-    --shadow: rgba(26, 24, 22, 0.18);
-    --shadow-deep: rgba(26, 24, 22, 0.35);
+    /* aged paper palette */
+    --paper:        #efe5cd;
+    --paper-warm:   #ece0c2;
+    --paper-cool:   #e9dec3;
+    --paper-edge:   #c8b78f;
+    --paper-deep:   #b9a780;
+    --paper-stain:  #d8c89c;
+
+    /* ink palette */
+    --ink:          #2a1f15;
+    --ink-soft:     #4d3a26;
+    --ink-faint:    #7a6240;
+    --ink-ghost:    #a89372;
+
+    /* hand-pen ink (slight blue-black) */
+    --pen:          #1d2a3a;
+    --pen-soft:     #2e425e;
+
+    /* volcanic accents (cinnabar / vermillion) */
+    --vermillion:    #a82e1a;
+    --vermillion-deep:#7a1f0f;
+    --rust:          #c45e34;
+    --ember:         #d8804a;
+
+    /* botanical accent (lichen / sage) */
+    --sage:         #7a8b6e;
+    --sage-deep:    #4f5e44;
+
+    /* gilt */
+    --gilt:         #b8893a;
+    --gilt-soft:    #d6b46a;
+
+    /* wax seal */
+    --wax:          #8a1f15;
+    --wax-deep:     #5a120a;
+    --wax-shine:    #c44430;
+
+    /* shadow */
+    --shadow:       rgba(60, 40, 20, 0.18);
+    --shadow-deep:  rgba(40, 25, 12, 0.45);
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -40,7 +64,7 @@
     font-family: 'EB Garamond', Georgia, serif;
     color: var(--ink);
     background:
-      radial-gradient(ellipse at center, #3d3530 0%, #252220 70%, #1a1816 100%);
+      radial-gradient(ellipse at 50% 30%, #4a2f1c 0%, #2a1810 60%, #150b06 100%);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -48,6 +72,7 @@
     user-select: none;
     -webkit-user-select: none;
     -webkit-tap-highlight-color: transparent;
+    position: relative;
   }
 
   /* ========== BOOK ========== */
@@ -71,12 +96,12 @@
     position: absolute;
     inset: 0;
     background: var(--paper);
-    border-radius: 4px 14px 14px 4px;
+    border-radius: 3px 12px 12px 3px;
     box-shadow:
-      0 4px 20px var(--shadow),
+      0 4px 22px var(--shadow),
       0 18px 50px var(--shadow-deep),
-      inset 0 0 60px rgba(150, 130, 100, 0.15),
-      inset 8px 0 16px rgba(90, 75, 60, 0.1);
+      inset 0 0 80px rgba(160, 110, 60, 0.18),
+      inset 10px 0 18px rgba(110, 75, 38, 0.16);
     overflow: hidden;
     opacity: 0;
     pointer-events: none;
@@ -103,593 +128,1152 @@
     z-index: 1;
   }
 
-  .page-inner {
-    height: 100%;
-    overflow-y: auto;
-    overflow-x: hidden;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-    padding: 40px 28px 90px;
-  }
-  .page-inner::-webkit-scrollbar { display: none; }
-
-  /* Volcanic texture overlay */
+  /* paper grain */
   .page::before {
     content: '';
     position: absolute;
     inset: 0;
-    background:
-      url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+    background-image:
+      radial-gradient(circle at 22% 28%, rgba(140, 90, 40, 0.06) 0%, transparent 36%),
+      radial-gradient(circle at 78% 72%, rgba(120, 80, 40, 0.07) 0%, transparent 42%),
+      radial-gradient(circle at 50% 88%, rgba(180, 120, 60, 0.05) 0%, transparent 36%),
+      url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='320' height='320'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' seed='4'/><feColorMatrix values='0 0 0 0 0.32 0 0 0 0 0.21 0 0 0 0 0.1 0 0 0 0.09 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
     pointer-events: none;
-    z-index: 0;
+    mix-blend-mode: multiply;
+    z-index: 1;
   }
 
-  .page-inner > * { position: relative; z-index: 1; }
+  /* foxing & spine shadow */
+  .page::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60px 30px at 8% 12%, rgba(140, 90, 40, 0.18) 0%, transparent 70%),
+      radial-gradient(ellipse 40px 20px at 92% 88%, rgba(140, 90, 40, 0.14) 0%, transparent 70%),
+      radial-gradient(ellipse 30px 18px at 80% 18%, rgba(160, 90, 40, 0.1) 0%, transparent 70%),
+      linear-gradient(90deg, rgba(80, 50, 25, 0.18) 0%, transparent 4%, transparent 96%, rgba(80, 50, 25, 0.12) 100%);
+    pointer-events: none;
+    mix-blend-mode: multiply;
+    z-index: 1;
+  }
+
+  .page-inner {
+    position: relative;
+    height: 100%;
+    width: 100%;
+    padding: 28px 24px 56px 38px;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    overflow-x: hidden;
+    z-index: 3;
+    scrollbar-width: thin;
+    scrollbar-color: var(--ink-faint) transparent;
+  }
+  .page-inner::-webkit-scrollbar { width: 3px; }
+  .page-inner::-webkit-scrollbar-thumb { background: var(--ink-faint); border-radius: 2px; }
+
+  /* ruled left margin (notebook column) */
+  .ruled-margin {
+    position: absolute;
+    top: 0; bottom: 0;
+    left: 30px;
+    width: 1px;
+    background: linear-gradient(to bottom,
+      transparent 0%,
+      rgba(168, 46, 26, 0.25) 6%,
+      rgba(168, 46, 26, 0.35) 50%,
+      rgba(168, 46, 26, 0.25) 94%,
+      transparent 100%);
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  /* horizontal ruling lines (subtle, like notebook) */
+  .ruled-page {
+    position: absolute;
+    inset: 0;
+    background-image: repeating-linear-gradient(
+      to bottom,
+      transparent 0px,
+      transparent 25px,
+      rgba(80, 60, 35, 0.05) 26px,
+      rgba(80, 60, 35, 0.05) 26.5px,
+      transparent 26.5px,
+      transparent 27px
+    );
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* page header strip */
+  .page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 8px;
+    margin-bottom: 6px;
+    border-bottom: 1px solid var(--ink-ghost);
+    font-family: 'Special Elite', monospace;
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+  }
+  .page-header .pn-stamp {
+    color: var(--vermillion);
+    border: 1px solid var(--vermillion);
+    padding: 1px 6px;
+    border-radius: 2px;
+    font-weight: 700;
+    transform: rotate(-2deg);
+    background: rgba(168, 46, 26, 0.05);
+  }
+
+  /* footer */
+  .page-footer {
+    margin-top: auto;
+    padding-top: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-family: 'Special Elite', monospace;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+  }
+  .page-footer .flourish {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--ink-ghost) 30%, var(--ink-ghost) 70%, transparent);
+    margin: 0 12px;
+  }
+  .footer-num {
+    color: var(--vermillion);
+    font-weight: 700;
+  }
+
+  /* ========== HANDWRITTEN MARGINALIA ========== */
+  .margin-note {
+    position: absolute;
+    left: -3px;
+    width: 78px;
+    font-family: 'Caveat', cursive;
+    font-size: 14px;
+    color: var(--pen);
+    line-height: 1.15;
+    transform: rotate(-3deg);
+    z-index: 4;
+    pointer-events: none;
+    opacity: 0.78;
+  }
+  .margin-note.right {
+    left: auto;
+    right: -2px;
+    transform: rotate(2deg);
+    text-align: right;
+  }
+  .margin-note::before {
+    content: '↳';
+    color: var(--vermillion);
+    margin-right: 3px;
+  }
+  .margin-note.right::before { content: '↰'; margin-right: 0; margin-left: 3px; }
+  .margin-note.no-arrow::before { content: ''; margin: 0; }
+
+  /* ========== TYPEWRITTEN TAGS ========== */
+  .tag {
+    display: inline-block;
+    font-family: 'Special Elite', monospace;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    border: 1px solid var(--ink-faint);
+    padding: 3px 8px;
+    border-radius: 2px;
+    background: rgba(245, 232, 200, 0.5);
+    transform: rotate(-1deg);
+  }
+  .tag.red {
+    color: var(--vermillion);
+    border-color: var(--vermillion);
+    background: rgba(168, 46, 26, 0.06);
+  }
+  .tag.sage {
+    color: var(--sage-deep);
+    border-color: var(--sage);
+    background: rgba(122, 139, 110, 0.08);
+  }
+
+  /* specimen tag (twine-tied) */
+  .specimen-tag {
+    position: relative;
+    display: inline-block;
+    background: var(--paper-warm);
+    border: 1px solid var(--ink-faint);
+    border-radius: 4px;
+    padding: 8px 12px 8px 16px;
+    margin: 8px 0;
+    font-family: 'Special Elite', monospace;
+    font-size: 11px;
+    color: var(--ink);
+    box-shadow: 1px 2px 4px rgba(60, 40, 20, 0.18);
+    transform: rotate(-0.6deg);
+  }
+  .specimen-tag::before {
+    content: '';
+    position: absolute;
+    left: -2px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--paper-deep);
+    box-shadow: inset 1px 1px 1px rgba(0,0,0,0.3);
+  }
+  .specimen-tag::after {
+    content: '';
+    position: absolute;
+    left: -28px;
+    top: 50%;
+    width: 26px;
+    height: 1px;
+    background: var(--ink-faint);
+    transform: rotate(-12deg);
+    transform-origin: right center;
+  }
 
   /* ========== TYPOGRAPHY ========== */
-  .ornament {
+  .eyebrow {
+    font-family: 'Special Elite', monospace;
+    font-size: 10px;
+    letter-spacing: 0.45em;
+    color: var(--vermillion);
+    text-transform: uppercase;
     text-align: center;
-    font-size: 1.4rem;
-    color: var(--lava);
-    margin: 8px 0 16px;
-    letter-spacing: 0.4em;
-    opacity: 0.7;
+    margin-bottom: 4px;
   }
 
-  .page-title {
+  .display-title {
     font-family: 'Cinzel', serif;
-    font-size: 1.6rem;
-    font-weight: 600;
+    font-weight: 700;
+    font-size: 30px;
+    line-height: 0.98;
+    letter-spacing: 0.05em;
     text-align: center;
-    color: var(--volcanic-deep);
-    letter-spacing: 0.08em;
-    margin-bottom: 6px;
-    text-shadow: 0 1px 0 rgba(255,255,255,0.5);
+    color: var(--ink);
+    text-shadow: 0 1px 0 rgba(255, 245, 220, 0.6);
   }
 
-  .page-subtitle {
+  .script-sub {
     font-family: 'Italianno', cursive;
-    font-size: 1.8rem;
+    font-size: 32px;
+    line-height: 1;
     text-align: center;
-    color: var(--lava);
-    margin-bottom: 24px;
+    color: var(--vermillion-deep);
+    margin-top: -2px;
   }
 
-  .section-title {
-    font-family: 'Cinzel', serif;
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: var(--volcanic-deep);
-    letter-spacing: 0.06em;
-    margin: 32px 0 16px;
-    padding-bottom: 8px;
-    border-bottom: 1px solid var(--paper-edge);
-  }
-
-  .section-title:first-of-type { margin-top: 0; }
-
-  p {
-    font-size: 1.05rem;
-    line-height: 1.75;
-    text-align: justify;
-    hyphens: auto;
-    margin-bottom: 16px;
-    color: var(--ink-soft);
+  .meta-line {
+    font-family: 'Special Elite', monospace;
+    font-size: 9px;
+    letter-spacing: 0.25em;
+    color: var(--ink-faint);
+    text-align: center;
+    text-transform: uppercase;
+    margin: 6px 0 4px;
   }
 
   .lead {
-    font-size: 1.15rem;
+    font-family: 'EB Garamond', serif;
     font-style: italic;
+    font-size: 14.5px;
+    line-height: 1.55;
     text-align: center;
+    color: var(--ink-soft);
+    margin: 8px 4px 12px;
+  }
+
+  .body {
+    font-family: 'EB Garamond', serif;
+    font-size: 15px;
+    line-height: 1.6;
     color: var(--ink);
-    margin-bottom: 24px;
-    line-height: 1.8;
+    text-align: justify;
+    hyphens: auto;
+  }
+  .body p { margin-bottom: 10px; }
+  .body p:last-child { margin-bottom: 0; }
+  .body em { color: var(--vermillion-deep); font-style: italic; }
+  .body strong { color: var(--ink); font-weight: 600; }
+  .body .pen-underline {
+    text-decoration: underline;
+    text-decoration-color: var(--vermillion);
+    text-decoration-thickness: 1px;
+    text-decoration-skip-ink: none;
+    text-underline-offset: 2px;
   }
 
-  .highlight {
-    color: var(--lava);
-    font-weight: 500;
+  /* drop cap */
+  .drop-cap::first-letter {
+    font-family: 'Cinzel', serif;
+    font-size: 52px;
+    font-weight: 700;
+    float: left;
+    line-height: 0.85;
+    padding: 4px 8px 0 0;
+    color: var(--vermillion-deep);
+    text-shadow: 0 1px 0 rgba(255, 245, 220, 0.5);
   }
 
-  .volcano-name {
+  /* ========== SECTION HEADER ========== */
+  .section-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 14px 0 8px;
+  }
+  .section-head .num {
     font-family: 'Cinzel', serif;
     font-weight: 600;
-    color: var(--volcanic-deep);
-    letter-spacing: 0.02em;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--vermillion);
+    border: 1px solid var(--vermillion);
+    padding: 2px 6px;
+    border-radius: 50%;
+    width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
   }
-
-  /* ========== INFO BOX ========== */
-  .info-box {
-    background: linear-gradient(135deg, rgba(212, 69, 26, 0.08) 0%, rgba(255, 154, 92, 0.06) 100%);
-    border-left: 3px solid var(--lava);
-    padding: 16px 18px;
-    margin: 20px 0;
-    border-radius: 0 8px 8px 0;
-  }
-
-  .info-box-title {
+  .section-head .label {
     font-family: 'Cinzel', serif;
-    font-size: 0.85rem;
     font-weight: 600;
-    color: var(--lava);
-    letter-spacing: 0.08em;
+    font-size: 12px;
+    letter-spacing: 0.32em;
+    color: var(--ink);
+    text-transform: uppercase;
+    flex: 1;
+    border-bottom: 1px solid var(--ink-ghost);
+    padding-bottom: 4px;
+  }
+
+  /* ========== ILLUSTRATION FRAMES ========== */
+  .sketch-frame {
+    position: relative;
+    margin: 14px 6px 18px;
+    padding: 14px 12px 30px;
+    background: rgba(252, 246, 226, 0.55);
+    border: 1px solid var(--ink-ghost);
+    box-shadow:
+      0 2px 6px rgba(60, 40, 20, 0.12),
+      inset 0 0 30px rgba(160, 110, 60, 0.08);
+  }
+  .sketch-frame::before, .sketch-frame::after {
+    content: '';
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    border: 1.5px solid var(--vermillion);
+  }
+  .sketch-frame::before {
+    top: -1px; left: -1px;
+    border-right: none; border-bottom: none;
+  }
+  .sketch-frame::after {
+    bottom: -1px; right: -1px;
+    border-left: none; border-top: none;
+  }
+  .sketch-frame svg {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  .sketch-caption {
+    position: absolute;
+    bottom: 6px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-family: 'Caveat', cursive;
+    font-size: 14px;
+    color: var(--pen);
+  }
+  .sketch-caption .fig {
+    font-family: 'Special Elite', monospace;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    color: var(--vermillion);
+    text-transform: uppercase;
+    margin-right: 6px;
+  }
+
+  /* ========== INFO PANEL ========== */
+  .info-panel {
+    background:
+      linear-gradient(135deg, rgba(168, 46, 26, 0.05) 0%, rgba(216, 128, 74, 0.04) 100%),
+      var(--paper-warm);
+    border: 1px solid var(--ink-ghost);
+    border-left: 3px solid var(--vermillion);
+    padding: 12px 14px 12px 14px;
+    margin: 14px 0;
+    border-radius: 0 4px 4px 0;
+    position: relative;
+  }
+  .info-panel::before {
+    content: '';
+    position: absolute;
+    top: -6px;
+    left: 12px;
+    right: 12px;
+    height: 6px;
+    background:
+      repeating-linear-gradient(45deg,
+        transparent 0,
+        transparent 3px,
+        rgba(168, 46, 26, 0.12) 3px,
+        rgba(168, 46, 26, 0.12) 5px);
+  }
+  .info-panel-title {
+    font-family: 'Special Elite', monospace;
+    font-size: 9px;
+    color: var(--vermillion);
+    letter-spacing: 0.3em;
     text-transform: uppercase;
     margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
   }
-
-  .info-box p {
-    font-size: 0.95rem;
-    margin-bottom: 8px;
-    text-align: left;
+  .info-panel-title::before {
+    content: '◈';
+    color: var(--gilt);
+    font-size: 12px;
   }
+  .info-panel p {
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: var(--ink);
+    margin-bottom: 6px;
+  }
+  .info-panel p:last-child { margin-bottom: 0; }
+  .info-panel strong { color: var(--vermillion-deep); }
 
-  .info-box p:last-child { margin-bottom: 0; }
+  /* ========== FEATURE LIST ========== */
+  .feat-list {
+    list-style: none;
+    margin: 12px 0;
+  }
+  .feat-list li {
+    position: relative;
+    padding: 5px 0 5px 22px;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--ink);
+    border-bottom: 1px dotted rgba(168, 46, 26, 0.2);
+  }
+  .feat-list li:last-child { border-bottom: none; }
+  .feat-list li::before {
+    content: '✦';
+    position: absolute;
+    left: 2px;
+    top: 5px;
+    color: var(--vermillion);
+    font-size: 11px;
+  }
+  .feat-list li strong {
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    color: var(--ink);
+    letter-spacing: 0.04em;
+  }
 
   /* ========== TIMELINE ========== */
   .timeline {
     position: relative;
-    padding-left: 24px;
-    margin: 24px 0;
+    padding: 4px 0 4px 30px;
+    margin: 14px 0;
   }
-
   .timeline::before {
     content: '';
     position: absolute;
-    left: 6px;
+    left: 7px;
     top: 8px;
     bottom: 8px;
-    width: 2px;
-    background: linear-gradient(to bottom, var(--lava), var(--ember), var(--ash));
-    border-radius: 1px;
+    width: 1.5px;
+    background:
+      repeating-linear-gradient(to bottom,
+        var(--vermillion) 0, var(--vermillion) 4px,
+        transparent 4px, transparent 7px);
   }
-
-  .timeline-item {
+  .t-item {
     position: relative;
-    margin-bottom: 20px;
+    margin-bottom: 12px;
+    padding-bottom: 4px;
   }
-
-  .timeline-item:last-child { margin-bottom: 0; }
-
-  .timeline-item::before {
+  .t-item:last-child { margin-bottom: 0; }
+  .t-item::before {
     content: '';
     position: absolute;
-    left: -20px;
-    top: 8px;
-    width: 10px;
-    height: 10px;
-    background: var(--lava);
+    left: -27px;
+    top: 5px;
+    width: 8px;
+    height: 8px;
+    background: var(--vermillion);
+    border: 1px solid var(--paper);
     border-radius: 50%;
-    box-shadow: 0 0 8px rgba(212, 69, 26, 0.4);
+    box-shadow: 0 0 0 1.5px var(--vermillion);
   }
-
-  .timeline-time {
+  .t-year {
+    font-family: 'Special Elite', monospace;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    color: var(--vermillion);
+    margin-bottom: 2px;
+  }
+  .t-event {
     font-family: 'Cinzel', serif;
-    font-size: 0.8rem;
+    font-size: 12px;
     font-weight: 600;
-    color: var(--lava);
-    letter-spacing: 0.05em;
-    margin-bottom: 4px;
+    color: var(--ink);
+    letter-spacing: 0.04em;
+    margin-bottom: 3px;
   }
-
-  .timeline-title {
-    font-family: 'Cinzel', serif;
-    font-size: 1rem;
-    font-weight: 600;
-    color: var(--volcanic-deep);
-    margin-bottom: 6px;
-  }
-
-  .timeline-desc {
-    font-size: 0.95rem;
-    line-height: 1.65;
+  .t-desc {
+    font-family: 'EB Garamond', serif;
+    font-size: 13px;
+    line-height: 1.5;
     color: var(--ink-soft);
     text-align: left;
   }
+  .t-desc em { color: var(--vermillion-deep); }
 
-  /* ========== LIST STYLES ========== */
-  .feature-list {
-    list-style: none;
-    margin: 16px 0;
+  /* ========== STAT GRID ========== */
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin: 14px 0;
   }
-
-  .feature-list li {
+  .stat-cell {
+    background: rgba(252, 246, 226, 0.6);
+    border: 1px solid var(--ink-ghost);
+    padding: 8px 10px;
+    text-align: center;
     position: relative;
-    padding-left: 24px;
-    margin-bottom: 12px;
-    font-size: 1rem;
-    line-height: 1.6;
-    color: var(--ink-soft);
   }
-
-  .feature-list li::before {
-    content: '▲';
+  .stat-cell::before {
+    content: '';
     position: absolute;
-    left: 0;
-    top: 2px;
-    color: var(--lava);
-    font-size: 0.7rem;
+    inset: 2px;
+    border: 1px dotted var(--ink-ghost);
+    pointer-events: none;
+  }
+  .stat-val {
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    font-size: 16px;
+    color: var(--vermillion-deep);
+    letter-spacing: 0.04em;
+  }
+  .stat-lbl {
+    font-family: 'Special Elite', monospace;
+    font-size: 8px;
+    color: var(--ink-faint);
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    margin-top: 3px;
   }
 
   /* ========== QUOTE ========== */
   .quote {
     text-align: center;
-    padding: 24px 16px;
-    margin: 28px 0;
-    border-top: 1px solid var(--paper-edge);
-    border-bottom: 1px solid var(--paper-edge);
-    background: linear-gradient(to bottom, transparent, rgba(212, 69, 26, 0.03), transparent);
+    padding: 14px 18px;
+    margin: 16px 6px;
+    border-top: 1px solid var(--ink-ghost);
+    border-bottom: 1px solid var(--ink-ghost);
+    position: relative;
   }
-
+  .quote::before {
+    content: '“';
+    position: absolute;
+    top: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Cinzel', serif;
+    font-size: 32px;
+    color: var(--vermillion);
+    background: var(--paper);
+    padding: 0 8px;
+    line-height: 1;
+  }
   .quote-text {
     font-family: 'Italianno', cursive;
-    font-size: 2rem;
-    color: var(--volcanic-deep);
-    line-height: 1.3;
-    margin-bottom: 8px;
+    font-size: 22px;
+    color: var(--ink);
+    line-height: 1.25;
+    margin: 6px 0 4px;
   }
-
   .quote-author {
-    font-size: 0.85rem;
+    font-family: 'Special Elite', monospace;
+    font-size: 8px;
     color: var(--ink-faint);
-    letter-spacing: 0.1em;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
   }
 
   /* ========== LOCATION CARD ========== */
-  .location-card {
-    background: var(--paper-shadow);
-    border-radius: 12px;
-    padding: 20px;
-    margin: 20px 0;
-    border: 1px solid var(--paper-edge);
+  .loc-card {
+    background: rgba(252, 246, 226, 0.55);
+    border: 1px solid var(--ink-ghost);
+    padding: 12px 14px;
+    margin: 12px 0;
+    position: relative;
   }
-
-  .location-card-header {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 12px;
-  }
-
-  .location-icon {
-    width: 36px;
-    height: 36px;
-    background: linear-gradient(135deg, var(--lava) 0%, var(--ember) 100%);
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 1.2rem;
-  }
-
-  .location-name {
-    font-family: 'Cinzel', serif;
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: var(--volcanic-deep);
-  }
-
-  .location-desc {
-    font-size: 0.95rem;
-    line-height: 1.65;
-    color: var(--ink-soft);
-    text-align: left;
-  }
-
-  .location-tip {
-    margin-top: 12px;
-    padding-top: 12px;
-    border-top: 1px dashed var(--paper-edge);
-    font-size: 0.9rem;
-    font-style: italic;
-    color: var(--ink-faint);
-  }
-
-  /* ========== STATS ========== */
-  .stats-row {
-    display: flex;
-    justify-content: space-around;
-    padding: 20px 0;
-    margin: 20px 0;
-    background: linear-gradient(90deg, transparent, rgba(61, 54, 53, 0.06), transparent);
-    border-radius: 8px;
-  }
-
-  .stat {
-    text-align: center;
-  }
-
-  .stat-value {
-    font-family: 'Cinzel', serif;
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: var(--lava);
-    line-height: 1;
-  }
-
-  .stat-label {
-    font-size: 0.75rem;
-    color: var(--ink-faint);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    margin-top: 4px;
-  }
-
-  /* ========== NAVIGATION ========== */
-  .nav-hint {
+  .loc-card::after {
+    content: '';
     position: absolute;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
+    top: -1px;
+    left: -1px;
+    right: -1px;
+    height: 2px;
+    background: var(--vermillion);
+  }
+  .loc-head {
     display: flex;
     align-items: center;
-    gap: 16px;
-    font-size: 0.75rem;
-    color: var(--ink-faint);
-    letter-spacing: 0.1em;
-    z-index: 10;
+    gap: 10px;
+    margin-bottom: 8px;
   }
-
-  .nav-arrow {
+  .loc-icon {
     width: 28px;
     height: 28px;
-    border: 1px solid var(--paper-edge);
+    border: 1.5px solid var(--vermillion);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    cursor: pointer;
-    transition: all 0.2s ease;
+    color: var(--vermillion);
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    font-size: 12px;
     background: var(--paper);
+    flex-shrink: 0;
+  }
+  .loc-name {
+    font-family: 'Cinzel', serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink);
+    letter-spacing: 0.05em;
+    line-height: 1.1;
+  }
+  .loc-it {
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    font-size: 12px;
+    color: var(--ink-faint);
+    margin-top: 1px;
+  }
+  .loc-desc {
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: var(--ink);
+    text-align: left;
+  }
+  .loc-desc em { color: var(--vermillion-deep); }
+  .loc-tip {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px dotted var(--ink-ghost);
+    font-family: 'Caveat', cursive;
+    font-size: 14px;
+    color: var(--pen);
+    line-height: 1.25;
+  }
+  .loc-tip::before {
+    content: '✎ ';
+    color: var(--vermillion);
   }
 
-  .nav-arrow:hover {
-    border-color: var(--lava);
-    color: var(--lava);
+  /* ========== COVER ========== */
+  .cover-page {
+    background:
+      radial-gradient(ellipse at 50% 30%, #e2d2a8 0%, #c8b078 60%, #9a7c45 100%);
+  }
+  .cover-page::before {
+    background-image:
+      url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='320' height='320'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' seed='6'/><feColorMatrix values='0 0 0 0 0.32 0 0 0 0 0.21 0 0 0 0 0.1 0 0 0 0.16 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
   }
 
-  .nav-arrow:active {
-    transform: scale(0.95);
+  .cover-inner {
+    position: relative;
+    height: 100%;
+    width: 100%;
+    padding: 24px 22px 50px;
+    display: flex;
+    flex-direction: column;
+    z-index: 3;
   }
 
-  .nav-arrow.disabled {
-    opacity: 0.3;
+  .cover-frame {
+    position: relative;
+    flex: 1;
+    border: 2px double var(--ink);
+    padding: 24px 18px 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .cover-frame::before, .cover-frame::after {
+    content: '';
+    position: absolute;
+    width: 26px;
+    height: 26px;
+  }
+  .cover-frame::before {
+    top: 4px; left: 4px;
+    border-left: 1px solid var(--ink);
+    border-top: 1px solid var(--ink);
+  }
+  .cover-frame::after {
+    bottom: 4px; right: 4px;
+    border-right: 1px solid var(--ink);
+    border-bottom: 1px solid var(--ink);
+  }
+
+  .cover-top {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+  .cover-pre {
+    font-family: 'Special Elite', monospace;
+    font-size: 9px;
+    letter-spacing: 0.5em;
+    color: var(--ink-soft);
+    text-transform: uppercase;
+  }
+  .cover-coords {
+    font-family: 'Special Elite', monospace;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    color: var(--ink-faint);
+    margin-top: 2px;
+  }
+  .cover-title {
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    font-size: 46px;
+    line-height: 0.96;
+    letter-spacing: 0.05em;
+    color: var(--vermillion-deep);
+    text-align: center;
+    margin: 8px 0 4px;
+    text-shadow: 0 1px 0 rgba(255, 245, 220, 0.5);
+  }
+  .cover-and {
+    font-family: 'Italianno', cursive;
+    font-size: 26px;
+    color: var(--ink-soft);
+    line-height: 0.9;
+    margin: 2px 0;
+  }
+  .cover-second {
+    font-family: 'Cinzel', serif;
+    font-weight: 600;
+    font-size: 22px;
+    letter-spacing: 0.18em;
+    color: var(--ink);
+  }
+  .cover-sub {
+    font-family: 'Italianno', cursive;
+    font-size: 28px;
+    color: var(--vermillion-deep);
+    line-height: 1;
+    margin-top: 6px;
+  }
+
+  .cover-illustration {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    margin: 8px 0;
+  }
+  .cover-illustration svg {
+    width: 100%;
+    max-width: 280px;
+    height: auto;
+  }
+
+  .cover-bottom {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+  .cover-author {
+    font-family: 'Caveat', cursive;
+    font-size: 18px;
+    color: var(--pen);
+    transform: rotate(-2deg);
+  }
+  .cover-place {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 0.4em;
+    color: var(--ink);
+    margin-top: 6px;
+  }
+  .cover-year {
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    font-size: 12px;
+    color: var(--ink-soft);
+  }
+
+  /* wax seal */
+  .wax-seal {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    width: 56px;
+    height: 56px;
+    background: radial-gradient(circle at 35% 30%, var(--wax-shine) 0%, var(--wax) 40%, var(--wax-deep) 100%);
+    border-radius: 50%;
+    box-shadow:
+      inset -2px -3px 6px rgba(0,0,0,0.4),
+      inset 2px 2px 4px rgba(255,180,160,0.3),
+      0 3px 6px rgba(60, 20, 10, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    font-size: 20px;
+    color: var(--wax-deep);
+    text-shadow: 0 1px 0 rgba(255, 180, 160, 0.4);
+    transform: rotate(-8deg);
+    z-index: 5;
+  }
+  .wax-seal::before {
+    content: '';
+    position: absolute;
+    inset: 4px;
+    border: 1px solid rgba(90, 18, 10, 0.45);
+    border-radius: 50%;
+  }
+  .wax-seal::after {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: 50%;
+    background:
+      radial-gradient(circle at 30% 30%, rgba(255, 180, 160, 0.5), transparent 30%);
     pointer-events: none;
   }
 
-  .page-indicator {
+  /* ribbon bookmark */
+  .ribbon {
+    position: absolute;
+    top: -4px;
+    right: 32px;
+    width: 14px;
+    height: 80px;
+    background: linear-gradient(to bottom, var(--vermillion) 0%, var(--vermillion-deep) 100%);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    z-index: 4;
+    pointer-events: none;
+  }
+  .ribbon::after {
+    content: '';
+    position: absolute;
+    bottom: -7px;
+    left: 0;
+    width: 0;
+    height: 0;
+    border-left: 7px solid var(--vermillion);
+    border-right: 7px solid var(--vermillion-deep);
+    border-bottom: 7px solid transparent;
+  }
+
+  /* swipe hint */
+  .swipe-hint {
+    position: absolute;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Caveat', cursive;
+    font-size: 15px;
+    color: var(--pen);
+    opacity: 0;
+    animation: fadeBlink 5s ease-in-out 1.5s forwards;
+    z-index: 4;
+  }
+  @keyframes fadeBlink {
+    0%, 100% { opacity: 0; }
+    20%, 80% { opacity: 0.75; }
+  }
+
+  /* ========== INDEX (TOC) ========== */
+  .toc-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin: 6px 0 12px;
+  }
+  .toc-item {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    padding: 8px 4px;
+    cursor: pointer;
+    border-radius: 3px;
+    transition: background 0.2s;
+  }
+  .toc-item:hover, .toc-item:active {
+    background: rgba(168, 46, 26, 0.06);
+  }
+  .toc-num {
     font-family: 'Cinzel', serif;
-    font-size: 0.7rem;
-    letter-spacing: 0.15em;
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--vermillion);
+    min-width: 30px;
+    letter-spacing: 0.06em;
+  }
+  .toc-name {
+    font-family: 'EB Garamond', serif;
+    font-size: 16px;
+    color: var(--ink);
+    font-weight: 500;
+  }
+  .toc-name em {
+    font-style: italic;
+    color: var(--ink-faint);
+    font-size: 13px;
+  }
+  .toc-dots {
+    flex: 1;
+    border-bottom: 1.5px dotted var(--ink-faint);
+    margin: 0 6px 5px;
+    opacity: 0.55;
+  }
+  .toc-page {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    color: var(--ink-soft);
   }
 
   /* ========== BACK LINK ========== */
   .back-link {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    font-size: 0.85rem;
+    gap: 6px;
+    font-family: 'Special Elite', monospace;
+    font-size: 9px;
+    letter-spacing: 0.25em;
     color: var(--ink-faint);
     text-decoration: none;
-    margin-bottom: 20px;
-    transition: color 0.2s ease;
+    text-transform: uppercase;
+    padding: 4px 8px;
+    border: 1px solid var(--ink-ghost);
+    border-radius: 2px;
+    transition: all 0.2s;
+    align-self: flex-start;
   }
-
   .back-link:hover {
-    color: var(--lava);
+    color: var(--vermillion);
+    border-color: var(--vermillion);
   }
+  .back-link svg { width: 11px; height: 11px; }
 
-  .back-link svg {
-    width: 16px;
-    height: 16px;
-  }
-
-  /* ========== VOLCANIC GLOW EFFECT ========== */
-  @keyframes emberGlow {
-    0%, 100% { opacity: 0.6; }
-    50% { opacity: 1; }
-  }
-
-  .ember-glow {
-    animation: emberGlow 3s ease-in-out infinite;
-  }
-
-  /* ========== SWIPE HINT ========== */
-  .swipe-hint {
-    position: absolute;
-    bottom: 60px;
+  /* ========== CONTROLS ========== */
+  .controls {
+    position: fixed;
+    bottom: 14px;
     left: 50%;
     transform: translateX(-50%);
-    font-size: 0.7rem;
-    color: var(--ink-faint);
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    opacity: 0;
-    animation: fadeInHint 0.5s ease-out 2s forwards;
-  }
-
-  @keyframes fadeInHint {
-    to { opacity: 0.6; }
-  }
-
-  /* ========== AUDIO CONTROLS ========== */
-  .audio-panel {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    z-index: 100;
     display: flex;
-    gap: 8px;
+    align-items: center;
+    gap: 12px;
+    z-index: 100;
   }
-
-  .audio-btn {
-    width: 44px;
-    height: 44px;
+  .nav-btn {
+    width: 42px;
+    height: 42px;
     border-radius: 50%;
-    border: 1px solid rgba(212, 69, 26, 0.3);
-    background: rgba(42, 34, 32, 0.9);
-    backdrop-filter: blur(10px);
-    color: var(--ember);
+    background: rgba(239, 229, 205, 0.94);
+    border: 1px solid var(--ink-ghost);
+    color: var(--vermillion-deep);
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.3s ease;
-    font-size: 1.2rem;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    box-shadow: 0 4px 14px rgba(0,0,0,0.4);
+    transition: all 0.2s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .nav-btn:hover, .nav-btn:active {
+    background: var(--paper);
+    transform: translateY(-2px);
+    border-color: var(--vermillion);
+  }
+  .nav-btn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+    transform: none;
+  }
+  .nav-btn svg { width: 18px; height: 18px; }
+
+  .page-indicator {
+    font-family: 'Special Elite', monospace;
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    color: var(--paper);
+    background: rgba(42, 24, 12, 0.85);
+    padding: 8px 14px;
+    border-radius: 18px;
+    min-width: 64px;
+    text-align: center;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
   }
 
-  .audio-btn:hover {
-    border-color: var(--lava);
-    background: rgba(212, 69, 26, 0.2);
+  /* ========== AUDIO BUTTONS ========== */
+  .audio-panel {
+    position: fixed;
+    top: 14px;
+    right: 14px;
+    z-index: 100;
+    display: flex;
+    gap: 8px;
+  }
+  .audio-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: rgba(239, 229, 205, 0.94);
+    border: 1px solid var(--ink-ghost);
+    color: var(--vermillion-deep);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    box-shadow: 0 4px 14px rgba(0,0,0,0.4);
+    transition: all 0.2s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .audio-btn:hover, .audio-btn:active {
+    background: var(--paper);
     transform: scale(1.05);
+    border-color: var(--vermillion);
   }
-
   .audio-btn.active {
-    background: var(--lava);
-    border-color: var(--lava);
-    color: white;
-    box-shadow: 0 0 20px rgba(212, 69, 26, 0.4);
+    background: var(--vermillion-deep);
+    color: var(--paper);
+    border-color: var(--vermillion-deep);
+    box-shadow: 0 4px 16px rgba(168, 46, 26, 0.5);
   }
-
   .audio-btn svg {
-    width: 20px;
-    height: 20px;
+    width: 16px;
+    height: 16px;
     stroke: currentColor;
     fill: none;
     stroke-width: 2;
   }
 
-  .volume-control {
-    position: absolute;
-    top: 54px;
-    right: 0;
-    background: rgba(42, 34, 32, 0.95);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(212, 69, 26, 0.3);
-    border-radius: 12px;
-    padding: 16px;
-    opacity: 0;
-    visibility: hidden;
-    transform: translateY(-10px);
-    transition: all 0.3s ease;
-    min-width: 160px;
-  }
-
-  .volume-control.visible {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
-  }
-
-  .volume-label {
-    font-family: 'Cinzel', serif;
-    font-size: 0.65rem;
-    color: var(--ember);
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    margin-bottom: 8px;
-    display: block;
-  }
-
-  .volume-slider {
-    width: 100%;
-    height: 4px;
-    -webkit-appearance: none;
-    appearance: none;
-    background: rgba(255, 154, 92, 0.2);
-    border-radius: 2px;
-    outline: none;
-    margin-bottom: 12px;
-  }
-
-  .volume-slider::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 14px;
-    height: 14px;
-    background: var(--lava);
-    border-radius: 50%;
-    cursor: pointer;
-    box-shadow: 0 0 8px rgba(212, 69, 26, 0.5);
-  }
-
-  .volume-slider::-moz-range-thumb {
-    width: 14px;
-    height: 14px;
-    background: var(--lava);
-    border-radius: 50%;
-    cursor: pointer;
-    border: none;
-  }
-
-  /* TTS Reading indicator */
+  /* reading indicator */
   .reading-indicator {
     position: fixed;
-    bottom: 20px;
+    bottom: 70px;
     left: 50%;
     transform: translateX(-50%);
-    background: rgba(42, 34, 32, 0.95);
-    backdrop-filter: blur(10px);
-    border: 1px solid var(--lava);
-    border-radius: 30px;
-    padding: 12px 24px;
+    background: rgba(42, 24, 12, 0.92);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid var(--vermillion);
+    border-radius: 22px;
+    padding: 8px 18px;
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
     opacity: 0;
     visibility: hidden;
     transition: all 0.3s ease;
-    z-index: 100;
+    z-index: 99;
   }
-
-  .reading-indicator.visible {
-    opacity: 1;
-    visibility: visible;
-  }
-
-  .reading-indicator .waves {
-    display: flex;
-    align-items: center;
-    gap: 3px;
-    height: 20px;
-  }
-
-  .reading-indicator .wave {
-    width: 3px;
+  .reading-indicator.visible { opacity: 1; visibility: visible; }
+  .waves { display: flex; align-items: center; gap: 2px; height: 14px; }
+  .wave {
+    width: 2px;
     height: 100%;
-    background: var(--lava);
-    border-radius: 2px;
-    animation: wave 0.8s ease-in-out infinite;
+    background: var(--ember);
+    border-radius: 1px;
+    animation: wave 0.85s ease-in-out infinite;
   }
-
-  .reading-indicator .wave:nth-child(2) { animation-delay: 0.1s; }
-  .reading-indicator .wave:nth-child(3) { animation-delay: 0.2s; }
-  .reading-indicator .wave:nth-child(4) { animation-delay: 0.3s; }
-
+  .wave:nth-child(2) { animation-delay: 0.1s; }
+  .wave:nth-child(3) { animation-delay: 0.2s; }
+  .wave:nth-child(4) { animation-delay: 0.3s; }
   @keyframes wave {
     0%, 100% { transform: scaleY(0.4); }
-    50% { transform: scaleY(1); }
+    50%      { transform: scaleY(1); }
   }
-
   .reading-indicator span {
-    font-family: 'Cinzel', serif;
-    font-size: 0.75rem;
-    color: var(--ember);
-    letter-spacing: 0.1em;
+    font-family: 'Special Elite', monospace;
+    font-size: 9px;
+    color: var(--paper);
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
   }
-
   .reading-indicator .stop-btn {
     background: none;
     border: none;
     color: var(--ember);
     cursor: pointer;
-    padding: 4px;
+    padding: 2px;
     display: flex;
     align-items: center;
-    justify-content: center;
   }
 
-  .reading-indicator .stop-btn:hover {
-    color: var(--lava);
+  @keyframes glow {
+    0%, 100% { opacity: 0.5; }
+    50%      { opacity: 1; }
+  }
+  .glow-anim { animation: glow 3s ease-in-out infinite; transform-origin: center; }
+
+  @keyframes smokePuff {
+    0%   { opacity: 0.55; transform: translateY(0); }
+    50%  { opacity: 0.35; transform: translateY(-3px); }
+    100% { opacity: 0.55; transform: translateY(0); }
+  }
+  .smoke-anim { animation: smokePuff 6s ease-in-out infinite; transform-origin: bottom center; }
+
+  @media (max-height: 700px) {
+    .cover-title { font-size: 36px; }
+    .cover-second { font-size: 18px; }
+    .display-title { font-size: 24px; }
+    .body { font-size: 13.5px; }
+    .page-inner { padding: 22px 20px 50px 34px; }
+    .ruled-margin { left: 26px; }
+  }
+  @media (min-width: 768px) {
+    .book { max-width: 540px; max-height: 880px; }
   }
 </style>
 </head>
@@ -697,943 +1281,1196 @@
 
 <!-- Audio Controls -->
 <div class="audio-panel">
-  <button class="audio-btn" id="ambientBtn" title="Ambient Sounds">
+  <button class="audio-btn" id="ambientBtn" title="Volcanic ambience">
     <svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
   </button>
-  <button class="audio-btn" id="ttsBtn" title="Read Page Aloud">
+  <button class="audio-btn" id="ttsBtn" title="Read page aloud">
     <svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
   </button>
-  <div class="volume-control" id="volumeControl">
-    <label class="volume-label">Ambient Volume</label>
-    <input type="range" class="volume-slider" id="ambientVolume" min="0" max="100" value="30">
-    <label class="volume-label">Voice Volume</label>
-    <input type="range" class="volume-slider" id="ttsVolume" min="0" max="100" value="80">
-  </div>
 </div>
 
-<!-- Reading Indicator -->
+<!-- Reading indicator -->
 <div class="reading-indicator" id="readingIndicator">
   <div class="waves">
-    <div class="wave"></div>
-    <div class="wave"></div>
-    <div class="wave"></div>
-    <div class="wave"></div>
+    <div class="wave"></div><div class="wave"></div><div class="wave"></div><div class="wave"></div>
   </div>
-  <span>Reading...</span>
+  <span>Reading</span>
   <button class="stop-btn" onclick="stopTTS()">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>
   </button>
 </div>
 
 <div class="book">
-  <div class="pages">
+  <div class="pages" id="pages">
 
-    <!-- PAGE 1: Title & Introduction -->
-    <div class="page active" data-page="1">
+    <!-- ========== COVER ========== -->
+    <div class="page cover-page active" data-page="0">
+      <div class="ribbon"></div>
+      <div class="wax-seal">V</div>
+      <div class="cover-inner">
+        <div class="cover-frame">
+          <div class="cover-top">
+            <div class="cover-pre">FIELD JOURNAL OF A VULCANOLOGIST</div>
+            <div class="cover-coords">37° 45′ N · 14° 59′ E</div>
+            <h1 class="cover-title">MOUNT<br>ETNA</h1>
+            <div class="cover-and">&amp;</div>
+            <div class="cover-second">TAORMINA</div>
+            <div class="cover-sub">a Sicilian companion</div>
+          </div>
+
+          <div class="cover-illustration">
+            <!-- Etna profile + Taormina cliff sketch -->
+            <svg viewBox="0 0 280 180" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="vgrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#3a2817"/>
+                  <stop offset="100%" stop-color="#6b4d35"/>
+                </linearGradient>
+                <radialGradient id="craterC" cx="50%" cy="50%" r="50%">
+                  <stop offset="0%" stop-color="#d8804a" stop-opacity="0.95"/>
+                  <stop offset="60%" stop-color="#a82e1a" stop-opacity="0.5"/>
+                  <stop offset="100%" stop-color="#a82e1a" stop-opacity="0"/>
+                </radialGradient>
+                <radialGradient id="smokeG" cx="50%" cy="80%" r="60%">
+                  <stop offset="0%" stop-color="#3a2817" stop-opacity="0.5"/>
+                  <stop offset="100%" stop-color="#3a2817" stop-opacity="0"/>
+                </radialGradient>
+              </defs>
+
+              <!-- smoke -->
+              <g class="smoke-anim">
+                <ellipse cx="158" cy="40" rx="44" ry="22" fill="url(#smokeG)"/>
+                <ellipse cx="148" cy="28" rx="28" ry="14" fill="url(#smokeG)" opacity="0.7"/>
+              </g>
+
+              <!-- distant clouds -->
+              <g opacity="0.4" stroke="#3a2817" stroke-width="0.4" fill="none">
+                <path d="M 30 50 Q 50 46 70 50"/>
+                <path d="M 220 35 Q 240 31 260 35"/>
+              </g>
+
+              <!-- Taormina cliff (left) -->
+              <g>
+                <path d="M 0 175 L 0 130 Q 14 122 26 124 L 38 132 L 52 130 L 56 138 L 50 145 L 46 165 L 0 175 Z"
+                  fill="url(#vgrad)" stroke="#1a1108" stroke-width="0.4"/>
+                <!-- theatre arc -->
+                <g stroke="#3a2817" stroke-width="0.5" fill="none" opacity="0.85">
+                  <path d="M 14 130 A 14 7 0 0 1 42 130"/>
+                  <path d="M 17 128 A 11 6 0 0 1 39 128"/>
+                  <path d="M 20 126 A 8 5 0 0 1 36 126"/>
+                </g>
+                <!-- stage columns -->
+                <g fill="#1a1108">
+                  <rect x="22" y="120" width="2" height="6"/>
+                  <rect x="27" y="118" width="2" height="8"/>
+                  <rect x="32" y="120" width="2" height="6"/>
+                </g>
+                <text x="28" y="138" text-anchor="middle" font-family="Special Elite" font-size="6" fill="#a82e1a">TAORMINA</text>
+              </g>
+
+              <!-- Etna (right) -->
+              <g>
+                <!-- foothills behind -->
+                <path d="M 80 168 L 110 152 L 130 158 L 145 148 L 165 150 L 280 138 L 280 175 L 80 175 Z" fill="#3a2817" opacity="0.45"/>
+                <!-- main body -->
+                <path d="M 80 175 L 130 95 L 145 78 L 175 78 L 195 95 L 270 175 Z" fill="url(#vgrad)" stroke="#1a1108" stroke-width="0.5"/>
+                <!-- snow cap -->
+                <path d="M 130 95 L 145 78 L 175 78 L 195 95 L 188 102 L 175 96 L 165 102 L 155 96 L 145 102 L 138 98 Z"
+                  fill="#f5ecd5" opacity="0.92"/>
+                <!-- crater -->
+                <ellipse cx="160" cy="80" rx="14" ry="3" fill="#1a0d05"/>
+                <ellipse cx="160" cy="79" rx="11" ry="2" fill="#d8804a"/>
+                <circle cx="160" cy="80" r="22" fill="url(#craterC)" class="glow-anim"/>
+
+                <!-- ridge sketch lines -->
+                <g stroke="#1a1108" stroke-width="0.4" fill="none" opacity="0.55">
+                  <path d="M 100 170 Q 130 130 152 100"/>
+                  <path d="M 130 175 Q 150 140 158 100"/>
+                  <path d="M 220 170 Q 200 130 178 100"/>
+                  <path d="M 250 170 Q 220 130 192 100"/>
+                </g>
+
+                <!-- lava rivulet -->
+                <path d="M 158 82 Q 152 105 145 130 Q 140 150 132 170"
+                  fill="none" stroke="#a82e1a" stroke-width="1.4" stroke-linecap="round" opacity="0.85"/>
+                <path d="M 162 82 Q 168 110 174 138 Q 178 158 184 175"
+                  fill="none" stroke="#c45e34" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+
+                <!-- annotation -->
+                <text x="160" y="68" text-anchor="middle" font-family="Special Elite" font-size="6" fill="#a82e1a">3,357 M</text>
+                <line x1="160" y1="74" x2="160" y2="69" stroke="#a82e1a" stroke-width="0.5"/>
+              </g>
+
+              <!-- ground -->
+              <line x1="0" y1="175" x2="280" y2="175" stroke="#3a2817" stroke-width="0.5"/>
+              <!-- sea hint -->
+              <g opacity="0.55">
+                <path d="M 0 178 L 280 178" stroke="#6a8ba8" stroke-width="0.5" stroke-dasharray="3,2"/>
+                <path d="M 0 182 L 280 182" stroke="#6a8ba8" stroke-width="0.4" stroke-dasharray="5,3"/>
+              </g>
+            </svg>
+          </div>
+
+          <div class="cover-bottom">
+            <div class="cover-author">— with field sketches &amp; pressed asphodel —</div>
+            <div class="cover-place">SICILIA · ITALIA</div>
+            <div class="cover-year">vol. iv · anno mmxxvi</div>
+          </div>
+        </div>
+      </div>
+      <div class="swipe-hint">— turn the page —</div>
+    </div>
+
+    <!-- ========== INDEX / FIELD MAP ========== -->
+    <div class="page" data-page="1">
+      <div class="ruled-margin"></div>
+      <div class="ruled-page"></div>
       <div class="page-inner">
+        <div class="page-header">
+          <span>Field Vol. IV</span>
+          <span>Index</span>
+          <span class="pn-stamp">i</span>
+        </div>
+
         <a href="index.html" class="back-link">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M19 12H5M12 19l-7-7 7-7"/>
-          </svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
           All Guides
         </a>
 
-        <div class="ornament">&#9650; &#9650; &#9650;</div>
-        <h1 class="page-title">MOUNT ETNA</h1>
-        <p class="page-subtitle">A Journey to Fire and Ice</p>
+        <div class="eyebrow">Contents of the Volume</div>
+        <h2 class="display-title">INDEX</h2>
+        <div class="script-sub">a route through Sicily</div>
 
-        <p class="lead">
-          Europe's tallest active volcano rises from the Sicilian earth,
-          a realm where fire meets snow and ancient myths still breathe in every eruption.
-        </p>
-
-        <div class="stats-row">
-          <div class="stat">
-            <div class="stat-value">3,357m</div>
-            <div class="stat-label">Elevation</div>
-          </div>
-          <div class="stat">
-            <div class="stat-value">500k+</div>
-            <div class="stat-label">Years Old</div>
-          </div>
-          <div class="stat">
-            <div class="stat-value">UNESCO</div>
-            <div class="stat-label">Heritage</div>
-          </div>
+        <div class="toc-list" id="tocList">
+          <!-- populated by JS -->
         </div>
 
-        <p>
-          The Greeks called her <span class="volcano-name">Aitna</span>, believing the giant Typhon lay trapped
-          beneath her slopes, his fiery breath causing eruptions. The Romans named her <span class="highlight">Aetna</span>
-          and watched her fires from their colony at Catania below.
+        <!-- Field map of Sicily showing the two locations -->
+        <div class="sketch-frame">
+          <svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <pattern id="sea" patternUnits="userSpaceOnUse" width="6" height="6">
+                <path d="M0 3 Q 1.5 1, 3 3 T 6 3" fill="none" stroke="#6a8ba8" stroke-width="0.4" opacity="0.55"/>
+              </pattern>
+            </defs>
+            <!-- sea -->
+            <rect width="320" height="200" fill="url(#sea)" opacity="0.7"/>
+
+            <!-- Sicily silhouette (very rough triangle) -->
+            <path d="M 30 90 Q 60 70 110 64 Q 170 58 220 70 Q 270 80 285 110 Q 290 130 270 150 Q 240 168 200 170 Q 160 170 130 165 Q 90 158 60 145 Q 35 130 30 110 Z"
+              fill="#e9dec3" stroke="#3a2817" stroke-width="0.7"/>
+
+            <!-- topographic shading -->
+            <g stroke="#3a2817" stroke-width="0.3" fill="none" opacity="0.35">
+              <path d="M 80 100 Q 130 88 200 92 Q 240 96 260 110"/>
+              <path d="M 90 115 Q 140 105 200 108 Q 235 112 255 122"/>
+              <path d="M 100 130 Q 150 120 200 125 Q 230 130 248 138"/>
+            </g>
+
+            <!-- Etna marker -->
+            <g transform="translate(225, 110)">
+              <circle r="12" fill="rgba(168,46,26,0.18)" class="glow-anim"/>
+              <circle r="6" fill="#a82e1a" stroke="#f5ecd5" stroke-width="1.2"/>
+              <text y="2" text-anchor="middle" font-family="Cinzel" font-size="6" font-weight="700" fill="#f5ecd5">E</text>
+              <text y="-15" text-anchor="middle" font-family="Special Elite" font-size="7" fill="#a82e1a">ETNA</text>
+              <text y="22" text-anchor="middle" font-family="Special Elite" font-size="6" fill="#3a2817">3,357 m</text>
+            </g>
+
+            <!-- Taormina marker -->
+            <g transform="translate(258, 90)">
+              <circle r="5" fill="#7a8b6e" stroke="#f5ecd5" stroke-width="1"/>
+              <text y="1.5" text-anchor="middle" font-family="Cinzel" font-size="5" font-weight="700" fill="#f5ecd5">T</text>
+              <text y="-9" text-anchor="middle" font-family="Special Elite" font-size="6" fill="#4f5e44">TAORMINA</text>
+            </g>
+
+            <!-- Catania marker (small, secondary) -->
+            <circle cx="240" cy="130" r="2.5" fill="#3a2817"/>
+            <text x="245" y="133" font-family="EB Garamond" font-style="italic" font-size="7" fill="#3a2817">Catania</text>
+
+            <!-- dotted route -->
+            <path d="M 240 130 L 225 110 L 258 90"
+              fill="none" stroke="#a82e1a" stroke-width="0.7" stroke-dasharray="2,2" opacity="0.7"/>
+
+            <!-- compass rose -->
+            <g transform="translate(40, 40)" opacity="0.85">
+              <circle r="13" fill="none" stroke="#3a2817" stroke-width="0.5"/>
+              <circle r="9" fill="none" stroke="#3a2817" stroke-width="0.4"/>
+              <polygon points="0,-12 -1.8,0 0,12 1.8,0" fill="#a82e1a"/>
+              <polygon points="-12,0 0,-1.8 12,0 0,1.8" fill="#3a2817" opacity="0.7"/>
+              <text y="-15" text-anchor="middle" font-family="Cinzel" font-size="6" fill="#3a2817">N</text>
+            </g>
+
+            <!-- scale -->
+            <g transform="translate(220, 188)" opacity="0.85">
+              <line x1="0" y1="0" x2="50" y2="0" stroke="#3a2817" stroke-width="0.8"/>
+              <line x1="0" y1="-3" x2="0" y2="3" stroke="#3a2817" stroke-width="0.8"/>
+              <line x1="50" y1="-3" x2="50" y2="3" stroke="#3a2817" stroke-width="0.8"/>
+              <text x="25" y="-5" text-anchor="middle" font-family="Special Elite" font-size="6" fill="#3a2817">30 KM</text>
+            </g>
+
+            <!-- sea label -->
+            <text x="20" y="170" font-family="Italianno" font-size="18" fill="#4a6585" opacity="0.7">il Mare Ionio</text>
+
+            <!-- title cartouche -->
+            <g transform="translate(160, 22)" opacity="0.9">
+              <text text-anchor="middle" font-family="Cinzel" font-size="9" letter-spacing="2" fill="#3a2817">SICILIA · ORIENTALE</text>
+              <line x1="-46" y1="4" x2="-12" y2="4" stroke="#b8893a" stroke-width="0.5"/>
+              <line x1="12" y1="4" x2="46" y2="4" stroke="#b8893a" stroke-width="0.5"/>
+            </g>
+          </svg>
+          <div class="sketch-caption"><span class="fig">Fig. 1</span> the eastern coast of Sicily</div>
+        </div>
+
+        <p class="margin-note no-arrow" style="top: 240px; left: 4px; width: 24px; transform: rotate(-90deg) translateX(-100%); transform-origin: top left; font-size: 11px; letter-spacing: 0.2em;">VOL · IV</p>
+
+        <div class="page-footer">
+          <span>•</span>
+          <div class="flourish"></div>
+          <span class="footer-num">i</span>
+          <div class="flourish"></div>
+          <span>•</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== ETNA I — THE MOUNTAIN ========== -->
+    <div class="page" data-page="2">
+      <div class="ruled-margin"></div>
+      <div class="ruled-page"></div>
+      <div class="page-inner">
+        <div class="page-header">
+          <span>Vol. IV · Etna</span>
+          <span>The Mountain</span>
+          <span class="pn-stamp">1</span>
+        </div>
+
+        <div class="eyebrow">Chapter the First</div>
+        <h2 class="display-title">A LIVING EARTH</h2>
+        <div class="script-sub">la Muntagna</div>
+        <div class="meta-line">altitude: 3,357 m · age: 500,000 yrs · status: active</div>
+
+        <p class="lead">
+          Europe's tallest active volcano rises from the Sicilian earth — a realm where
+          fire meets snow, and where the Greeks heard giants groan beneath the rock.
         </p>
 
-        <p>
-          Today, <span class="volcano-name">Mongibello</span> ("Beautiful Mountain" in Sicilian Arabic) continues
-          her ancient dialogue with the sky, her snow-capped peak smoking gently above vineyards and citrus groves,
-          a reminder that we walk upon a living earth.
+        <p class="body drop-cap">
+          The Greeks called her <em>Aitna</em>, believing the giant <span class="pen-underline">Typhon</span> lay trapped beneath her slopes — his fiery breath causing eruptions, his shoulders heaving with earthquakes. The Romans named her <em>Aetna</em> and watched her fires from their colony at Catania below. To the Sicilian Arabs she was <em>Mongibello</em> — Beautiful Mountain — and the name still endures. Today she smokes gently above vineyards and citrus groves, still in dialogue with the sky.
         </p>
+
+        <p class="margin-note" style="top: 322px;">Mongibello = "mountain of mountains"</p>
+
+        <div class="section-head">
+          <span class="num">i</span>
+          <span class="label">Vital Statistics</span>
+        </div>
+
+        <div class="stat-grid">
+          <div class="stat-cell">
+            <div class="stat-val">3,357 m</div>
+            <div class="stat-lbl">Elevation</div>
+          </div>
+          <div class="stat-cell">
+            <div class="stat-val">~1,200 km²</div>
+            <div class="stat-lbl">Surface</div>
+          </div>
+          <div class="stat-cell">
+            <div class="stat-val">4</div>
+            <div class="stat-lbl">Summit Craters</div>
+          </div>
+          <div class="stat-cell">
+            <div class="stat-val">UNESCO</div>
+            <div class="stat-lbl">since 2013</div>
+          </div>
+        </div>
 
         <div class="quote">
           <p class="quote-text">"The mountain speaks in fire and ash, and those who listen learn humility."</p>
-          <p class="quote-author">- Sicilian Proverb</p>
+          <p class="quote-author">— sicilian proverb</p>
         </div>
 
-        <div class="info-box">
-          <div class="info-box-title">Planning Your Visit</div>
-          <p><strong>Best Season:</strong> May-October for summit access. Winter offers skiing on volcanic slopes.</p>
-          <p><strong>Duration:</strong> Full day recommended. Half-day possible for cable car only.</p>
-          <p><strong>What to Bring:</strong> Layers (temperature drops 15-20°C at summit), sturdy shoes, sunglasses, wind protection.</p>
-        </div>
-      </div>
-      <div class="nav-hint">
-        <div class="nav-arrow disabled">&#8249;</div>
-        <span class="page-indicator">1 / 8</span>
-        <div class="nav-arrow" onclick="nextPage()">&#8250;</div>
-      </div>
-      <div class="swipe-hint">Swipe to explore</div>
-    </div>
-
-    <!-- PAGE 2: The Cable Car Experience -->
-    <div class="page" data-page="2">
-      <div class="page-inner">
-        <div class="ornament">&#128673;</div>
-        <h2 class="page-title">THE CABLE CAR</h2>
-        <p class="page-subtitle">Funivia dell'Etna</p>
-
-        <p class="lead">
-          Rising from 1,900 meters at Rifugio Sapienza to 2,500 meters,
-          the Funivia dell'Etna offers a breathtaking 15-minute ascent over lunar landscapes.
-        </p>
-
-        <div class="section-title">The Journey Upward</div>
-
-        <p>
-          The <span class="highlight">Rifugio Sapienza</span> marks the starting point of your volcanic ascent.
-          At nearly 2,000 meters, you already feel the thin mountain air and notice the temperature drop.
-          Lava fields stretch in all directions&mdash;some centuries old, others from eruptions within living memory.
-        </p>
-
-        <p>
-          As the cable car rises, the landscape transforms. Black volcanic rock, patches of hardy vegetation,
-          and the occasional steam vent paint a picture of geological drama. On clear days, the views
-          extend to the Calabrian coast and the Aeolian Islands floating on the distant sea.
-        </p>
-
-        <div class="info-box">
-          <div class="info-box-title">Cable Car Details</div>
-          <p><strong>Operating Hours:</strong> 9:00 - 16:30 (varies seasonally)</p>
-          <p><strong>Duration:</strong> ~15 minutes each way</p>
-          <p><strong>Cost:</strong> ~€35 round trip (cable car only)</p>
-          <p><strong>Combined Ticket:</strong> ~€70 includes 4x4 transfer and guide to craters</p>
+        <div class="section-head">
+          <span class="num">ii</span>
+          <span class="label">Why She Matters</span>
         </div>
 
-        <div class="section-title">At the Upper Station</div>
+        <div class="body">
+          <p>Etna is one of the most studied volcanoes on earth — and one of the few in continuous, observable activity. Her eruptions are <em>effusive</em> rather than violently explosive, producing slow lava flows that allow scientists, and visitors, to watch the planet remake itself in real time.</p>
+          <p>She is older than the Doric temples and younger than the rocks she stands on. Her summit grows and falls a few metres every decade.</p>
+        </div>
 
-        <p>
-          At <span class="highlight">2,500 meters</span>, you emerge into an otherworldly terrain.
-          From here, you have two choices: explore the area independently or continue by
-          specialized 4x4 buses and then on foot to the summit craters at 2,900+ meters.
-        </p>
-
-        <ul class="feature-list">
-          <li>Crater rim walks with authorized guides</li>
-          <li>Views into active fumaroles and steam vents</li>
-          <li>Touch warm volcanic rock just meters from active vents</li>
-          <li>Witness the constantly changing volcanic activity</li>
-        </ul>
-      </div>
-      <div class="nav-hint">
-        <div class="nav-arrow" onclick="prevPage()">&#8249;</div>
-        <span class="page-indicator">2 / 8</span>
-        <div class="nav-arrow" onclick="nextPage()">&#8250;</div>
+        <div class="page-footer">
+          <span>etna · cap. i</span>
+          <div class="flourish"></div>
+          <span class="footer-num">— 1 —</span>
+          <div class="flourish"></div>
+          <span>i</span>
+        </div>
       </div>
     </div>
 
-    <!-- PAGE 3: Summit Experience -->
+    <!-- ========== ETNA II — GEOLOGY & ERUPTIONS ========== -->
     <div class="page" data-page="3">
+      <div class="ruled-margin"></div>
+      <div class="ruled-page"></div>
       <div class="page-inner">
-        <div class="ornament">&#127755;</div>
-        <h2 class="page-title">THE SUMMIT</h2>
-        <p class="page-subtitle">Crateri Sommitali</p>
-
-        <p class="lead">
-          Standing at the edge of an active crater, watching smoke rise from the earth's depths,
-          you understand why ancient peoples saw gods in these mountains.
-        </p>
-
-        <div class="section-title">Summit Craters</div>
-
-        <p>
-          Etna's summit area hosts four main craters: the <span class="highlight">Northeast Crater</span>
-          (the youngest and most active), the <span class="highlight">Voragine</span> and <span class="highlight">Bocca Nuova</span>
-          (within the central crater), and the <span class="highlight">Southeast Crater</span>, which has been
-          particularly active in recent years.
-        </p>
-
-        <div class="location-card">
-          <div class="location-card-header">
-            <div class="location-icon ember-glow">&#128293;</div>
-            <div class="location-name">Torre del Filosofo</div>
-          </div>
-          <div class="location-desc">
-            At 2,920 meters, this was once the site of a mountain refuge named after the Greek philosopher
-            Empedocles, who allegedly leapt into the crater to prove his immortality. The original structure
-            was destroyed by eruptions, but the viewpoint remains a key stop.
-          </div>
-          <div class="location-tip">
-            The 4x4 buses typically stop here, and guided walks to the craters begin from this point.
-          </div>
+        <div class="page-header">
+          <span>Vol. IV · Etna</span>
+          <span>Geology &amp; Eruptions</span>
+          <span class="pn-stamp">2</span>
         </div>
 
-        <div class="section-title">Safety First</div>
+        <div class="eyebrow">Chapter the Second</div>
+        <h2 class="display-title">FIRE BENEATH</h2>
+        <div class="script-sub">la fornace della terra</div>
+        <div class="meta-line">a chronology of recent activity</div>
 
-        <p>
-          Access to summit areas is <span class="highlight">strictly regulated</span> and depends on volcanic activity.
-          Authorized guides monitor conditions constantly. Even when the mountain appears calm, sudden increases
-          in activity can occur. Always follow guide instructions and stay within designated areas.
-        </p>
+        <!-- Cross section sketch -->
+        <div class="sketch-frame">
+          <svg viewBox="0 0 320 170" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <radialGradient id="magma" cx="50%" cy="65%" r="40%">
+                <stop offset="0%" stop-color="#f0c060" stop-opacity="1"/>
+                <stop offset="40%" stop-color="#d8602a" stop-opacity="0.95"/>
+                <stop offset="100%" stop-color="#5a1a08" stop-opacity="1"/>
+              </radialGradient>
+              <linearGradient id="crust" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#3a2817"/>
+                <stop offset="100%" stop-color="#1a1108"/>
+              </linearGradient>
+            </defs>
 
-        <div class="info-box">
-          <div class="info-box-title">Important</div>
-          <p>Summit access may close without notice due to volcanic activity. Check conditions at
-          <strong>Funivia dell'Etna</strong> or <strong>INGV Catania</strong> (National Institute of Geophysics)
-          before ascending.</p>
+            <!-- mountain cross-section -->
+            <path d="M 10 160 L 100 60 L 130 38 L 142 30 L 178 30 L 192 38 L 220 60 L 310 160 Z"
+              fill="url(#crust)" stroke="#1a1108" stroke-width="0.6"/>
+
+            <!-- snow rim -->
+            <path d="M 100 60 L 130 38 L 142 30 L 152 36 L 160 30 L 170 36 L 178 30 L 192 38 L 220 60 L 212 64 L 196 56 L 184 60 L 174 54 L 160 60 L 146 54 L 134 60 L 116 54 Z"
+              fill="#f5ecd5" opacity="0.92"/>
+
+            <!-- crater (cut-away) -->
+            <path d="M 142 30 L 168 100 L 178 100 L 192 38 L 220 60 L 198 130 Q 178 142 158 130 L 130 38 Z"
+              fill="#0e0805"/>
+
+            <!-- magma chamber -->
+            <ellipse cx="178" cy="130" rx="32" ry="14" fill="url(#magma)" class="glow-anim"/>
+            <ellipse cx="178" cy="130" rx="44" ry="20" fill="#d8602a" opacity="0.18" class="glow-anim"/>
+
+            <!-- conduit -->
+            <path d="M 168 100 Q 172 116 174 130 M 188 100 Q 184 116 182 130"
+              fill="none" stroke="#d8602a" stroke-width="2" opacity="0.7"/>
+
+            <!-- strata layers -->
+            <g stroke="#a82e1a" stroke-width="0.4" fill="none" opacity="0.45">
+              <path d="M 30 145 Q 60 140 90 138 M 230 138 Q 260 140 290 145"/>
+              <path d="M 30 130 Q 70 122 100 120 M 220 120 Q 250 122 290 130"/>
+              <path d="M 40 115 Q 80 105 105 100 M 215 100 Q 240 105 280 115"/>
+              <path d="M 60 95 Q 90 85 110 80 M 210 80 Q 230 85 260 95"/>
+            </g>
+
+            <!-- bubbles -->
+            <circle cx="170" cy="118" r="1.6" fill="#f0c060" class="glow-anim"/>
+            <circle cx="184" cy="112" r="1.2" fill="#d8602a" class="glow-anim" style="animation-delay:0.5s;"/>
+            <circle cx="178" cy="106" r="1.4" fill="#f0c060" class="glow-anim" style="animation-delay:1s;"/>
+
+            <!-- smoke -->
+            <g class="smoke-anim" opacity="0.5">
+              <ellipse cx="160" cy="20" rx="34" ry="8" fill="#3a2817"/>
+              <ellipse cx="170" cy="14" rx="22" ry="6" fill="#3a2817"/>
+            </g>
+
+            <!-- annotations with lines -->
+            <g font-family="Special Elite" font-size="7" fill="#a82e1a">
+              <line x1="220" y1="62" x2="262" y2="48" stroke="#a82e1a" stroke-width="0.4"/>
+              <text x="266" y="50">RIM · 2900 m</text>
+
+              <line x1="178" y1="118" x2="280" y2="105" stroke="#a82e1a" stroke-width="0.4"/>
+              <text x="282" y="108">MAGMA</text>
+
+              <line x1="100" y1="110" x2="42" y2="98" stroke="#a82e1a" stroke-width="0.4"/>
+              <text x="6" y="98">STRATA</text>
+
+              <line x1="178" y1="38" x2="178" y2="14" stroke="#a82e1a" stroke-width="0.4"/>
+              <text x="178" y="9" text-anchor="middle">VENT</text>
+            </g>
+          </svg>
+          <div class="sketch-caption"><span class="fig">Fig. 2</span> cross-section of the central conduit</div>
         </div>
-      </div>
-      <div class="nav-hint">
-        <div class="nav-arrow" onclick="prevPage()">&#8249;</div>
-        <span class="page-indicator">3 / 8</span>
-        <div class="nav-arrow" onclick="nextPage()">&#8250;</div>
-      </div>
-    </div>
 
-    <!-- PAGE 4: A Day Itinerary -->
-    <div class="page" data-page="4">
-      <div class="page-inner">
-        <div class="ornament">&#9788;</div>
-        <h2 class="page-title">YOUR ETNA DAY</h2>
-        <p class="page-subtitle">A Suggested Journey</p>
-
-        <p class="lead">
-          From the early morning mists to the golden evening light,
-          here is how to make the most of your volcanic adventure.
-        </p>
+        <div class="section-head">
+          <span class="num">i</span>
+          <span class="label">Notable Eruptions</span>
+        </div>
 
         <div class="timeline">
-          <div class="timeline-item">
-            <div class="timeline-time">8:00 AM</div>
-            <div class="timeline-title">Depart from Catania</div>
-            <div class="timeline-desc">
-              Begin the 35km drive south of Etna to Rifugio Sapienza. The winding road passes through
-              lava fields and chestnut forests. Stop at viewpoints to photograph the mountain.
-            </div>
+          <div class="t-item">
+            <div class="t-year">1669</div>
+            <div class="t-event">The Great Catania Flow</div>
+            <div class="t-desc">Lava reached the Ionian Sea and engulfed parts of Catania. The walls of Castello Ursino, once seaside, are now <em>half a mile inland</em>.</div>
           </div>
-
-          <div class="timeline-item">
-            <div class="timeline-time">9:30 AM</div>
-            <div class="timeline-title">Rifugio Sapienza</div>
-            <div class="timeline-desc">
-              Arrive at the base station (1,900m). Purchase tickets for cable car and optional
-              4x4 transfer. Explore the 2001 and 2002 lava flows nearby.
-            </div>
+          <div class="t-item">
+            <div class="t-year">1928</div>
+            <div class="t-event">Mascali</div>
+            <div class="t-desc">An entire town was buried in three days. Mussolini watched the destruction from a nearby hill.</div>
           </div>
-
-          <div class="timeline-item">
-            <div class="timeline-time">10:30 AM</div>
-            <div class="timeline-title">Cable Car Ascent</div>
-            <div class="timeline-desc">
-              Rise to 2,500m through spectacular volcanic terrain. At the top, join the
-              4x4 shuttle to Torre del Filosofo.
-            </div>
+          <div class="t-item">
+            <div class="t-year">1971</div>
+            <div class="t-event">Loss of the Old Observatory</div>
+            <div class="t-desc">Lava destroyed the original 19th-century vulcanological observatory at the summit.</div>
           </div>
-
-          <div class="timeline-item">
-            <div class="timeline-time">11:30 AM - 1:30 PM</div>
-            <div class="timeline-title">Summit Exploration</div>
-            <div class="timeline-desc">
-              Guided walk to active craters. Witness fumaroles, touch warm rock, and
-              gaze into the caldera. Take time to absorb the otherworldly landscape.
-            </div>
+          <div class="t-item">
+            <div class="t-year">2002–03</div>
+            <div class="t-event">The Tourist Station Flow</div>
+            <div class="t-desc">Lava destroyed cable car pylons and chalets at Rifugio Sapienza. The black scar is still visible.</div>
           </div>
-
-          <div class="timeline-item">
-            <div class="timeline-time">2:00 PM</div>
-            <div class="timeline-title">Descent & Lunch</div>
-            <div class="timeline-desc">
-              Return via 4x4 and cable car. Enjoy a hearty Sicilian lunch at one of the
-              mountain rifugios&mdash;try local sausages grilled over lava stones.
-            </div>
-          </div>
-
-          <div class="timeline-item">
-            <div class="timeline-time">4:00 PM</div>
-            <div class="timeline-title">Silvestri Craters</div>
-            <div class="timeline-desc">
-              Explore these extinct craters near Rifugio Sapienza on foot. An easy
-              walk with remarkable lunar landscapes and panoramic views.
-            </div>
+          <div class="t-item">
+            <div class="t-year">2021–24</div>
+            <div class="t-event">The Southeast Crater Surges</div>
+            <div class="t-desc">A series of paroxysms added <em>~30 m</em> of new height. Etna is, briefly, the tallest she has ever been.</div>
           </div>
         </div>
-      </div>
-      <div class="nav-hint">
-        <div class="nav-arrow" onclick="prevPage()">&#8249;</div>
-        <span class="page-indicator">4 / 8</span>
-        <div class="nav-arrow" onclick="nextPage()">&#8250;</div>
+
+        <p class="margin-note right" style="top: 90px;">"a tongue of fire" — Pliny, A.D. 79</p>
+
+        <div class="info-panel">
+          <div class="info-panel-title">A Note on Type</div>
+          <p>Etna is a <strong>composite stratovolcano</strong> — built up over half a million years from alternating layers of lava, ash, and tephra. Her relative gentleness comes from <em>basaltic</em> magma: hot, fluid, low in silica, and content to flow rather than detonate.</p>
+        </div>
+
+        <div class="page-footer">
+          <span>etna · cap. ii</span>
+          <div class="flourish"></div>
+          <span class="footer-num">— 2 —</span>
+          <div class="flourish"></div>
+          <span>ii</span>
+        </div>
       </div>
     </div>
 
-    <!-- PAGE 5: Catania -->
+    <!-- ========== ETNA III — THE ASCENT ========== -->
+    <div class="page" data-page="4">
+      <div class="ruled-margin"></div>
+      <div class="ruled-page"></div>
+      <div class="page-inner">
+        <div class="page-header">
+          <span>Vol. IV · Etna</span>
+          <span>The Ascent</span>
+          <span class="pn-stamp">3</span>
+        </div>
+
+        <div class="eyebrow">Chapter the Third</div>
+        <h2 class="display-title">UPON THE SLOPES</h2>
+        <div class="script-sub">l'ascesa</div>
+        <div class="meta-line">1,900 m → 2,500 m → summit · half day</div>
+
+        <!-- Altitude profile -->
+        <div class="sketch-frame">
+          <svg viewBox="0 0 320 130" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="profGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#a82e1a" stop-opacity="0.32"/>
+                <stop offset="100%" stop-color="#a82e1a" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+
+            <!-- elevation grid -->
+            <g stroke="#3a2817" stroke-width="0.3" fill="none" opacity="0.35" stroke-dasharray="2,2">
+              <line x1="0" y1="20" x2="320" y2="20"/>
+              <line x1="0" y1="50" x2="320" y2="50"/>
+              <line x1="0" y1="80" x2="320" y2="80"/>
+              <line x1="0" y1="110" x2="320" y2="110"/>
+            </g>
+
+            <!-- elevation labels -->
+            <g font-family="Special Elite" font-size="6" fill="#7a6240">
+              <text x="2" y="22">3500</text>
+              <text x="2" y="52">2500</text>
+              <text x="2" y="82">1500</text>
+              <text x="2" y="112">500</text>
+            </g>
+
+            <!-- Etna profile from sea to summit and down to plain -->
+            <path d="M 30 113 L 60 110 L 90 95 L 130 65 L 175 28 L 220 60 L 260 100 L 300 115 L 300 120 L 30 120 Z" fill="url(#profGrad)"/>
+            <path d="M 30 113 L 60 110 L 90 95 L 130 65 L 175 28 L 220 60 L 260 100 L 300 115"
+              fill="none" stroke="#a82e1a" stroke-width="1.4" stroke-linecap="round"/>
+
+            <!-- waypoint dots -->
+            <g>
+              <!-- Catania -->
+              <circle cx="60" cy="110" r="3" fill="#3a2817"/>
+              <text x="60" y="124" text-anchor="middle" font-family="Special Elite" font-size="6" fill="#3a2817">CATANIA</text>
+              <text x="60" y="103" text-anchor="middle" font-family="EB Garamond" font-style="italic" font-size="7" fill="#7a6240">7m</text>
+
+              <!-- Rifugio -->
+              <circle cx="130" cy="65" r="3" fill="#a82e1a"/>
+              <text x="130" y="124" text-anchor="middle" font-family="Special Elite" font-size="6" fill="#a82e1a">RIFUGIO</text>
+              <text x="130" y="58" text-anchor="middle" font-family="EB Garamond" font-style="italic" font-size="7" fill="#a82e1a">1900m</text>
+
+              <!-- Cable top -->
+              <circle cx="155" cy="44" r="3" fill="#a82e1a"/>
+              <text x="155" y="124" text-anchor="middle" font-family="Special Elite" font-size="6" fill="#a82e1a">CABLE</text>
+              <text x="155" y="37" text-anchor="middle" font-family="EB Garamond" font-style="italic" font-size="7" fill="#a82e1a">2500m</text>
+
+              <!-- Summit -->
+              <circle cx="175" cy="28" r="4" fill="#f0c060" stroke="#a82e1a" stroke-width="1"/>
+              <text x="175" y="124" text-anchor="middle" font-family="Special Elite" font-size="6" fill="#a82e1a">SUMMIT</text>
+              <text x="175" y="20" text-anchor="middle" font-family="Cinzel" font-size="7" font-weight="700" fill="#a82e1a">3357m</text>
+
+              <!-- Taormina -->
+              <circle cx="260" cy="100" r="3" fill="#7a8b6e"/>
+              <text x="260" y="124" text-anchor="middle" font-family="Special Elite" font-size="6" fill="#4f5e44">TAORMINA</text>
+              <text x="260" y="93" text-anchor="middle" font-family="EB Garamond" font-style="italic" font-size="7" fill="#4f5e44">200m</text>
+            </g>
+
+            <!-- ground baseline -->
+            <line x1="0" y1="120" x2="320" y2="120" stroke="#3a2817" stroke-width="0.5"/>
+          </svg>
+          <div class="sketch-caption"><span class="fig">Fig. 3</span> profile of an ascent · sea to summit</div>
+        </div>
+
+        <p class="lead">
+          The path upward is well-trodden: a winding road, a 15-minute cable car,
+          a juddering 4×4 over black scoria, and at last — the smoking rim.
+        </p>
+
+        <div class="section-head">
+          <span class="num">i</span>
+          <span class="label">By Cable Car</span>
+        </div>
+
+        <div class="body">
+          <p>From <em>Rifugio Sapienza</em> at 1,900 m, the <em>Funivia dell'Etna</em> climbs to 2,500 m in fifteen minutes over lunar fields of black scoria and silver ash. From the upper station, specialised <em>Unimog</em> 4×4 buses continue to <em>Torre del Filosofo</em> at 2,920 m, where guided walks to the summit craters begin.</p>
+        </div>
+
+        <div class="info-panel">
+          <div class="info-panel-title">Logistics, in brief</div>
+          <p><strong>Cable car only:</strong> ~€35 round trip · operates 09:00–16:30</p>
+          <p><strong>With 4×4 + guide:</strong> ~€70 (recommended for craters)</p>
+          <p><strong>Time required:</strong> half a day from Rifugio · full day from Catania or Taormina</p>
+        </div>
+
+        <p class="margin-note right" style="top: 470px;">bring layers — 15° colder up top!</p>
+
+        <div class="section-head">
+          <span class="num">ii</span>
+          <span class="label">Upon the Summit</span>
+        </div>
+
+        <div class="body">
+          <p>Four craters cluster at the top: the <em>Northeast</em> (youngest), the <em>Voragine</em> and <em>Bocca Nuova</em> within the central caldera, and the <em>Southeast</em> — the most active in recent years. Standing at the rim, watching smoke rise from the earth's depths, one understands why ancient peoples saw gods in mountains.</p>
+        </div>
+
+        <span class="specimen-tag">SPECIMEN · scoria · 2002 flow · 38°N 14.99°E</span>
+
+        <div class="info-panel">
+          <div class="info-panel-title">Important · Read Twice</div>
+          <p>Summit access may close <strong>without notice</strong> due to volcanic activity. Authorised guides monitor conditions constantly. Verify status at <strong>Funivia dell'Etna</strong> or <strong>INGV Catania</strong> (the Italian National Institute of Geophysics) before setting out.</p>
+        </div>
+
+        <div class="page-footer">
+          <span>etna · cap. iii</span>
+          <div class="flourish"></div>
+          <span class="footer-num">— 3 —</span>
+          <div class="flourish"></div>
+          <span>iii</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== ETNA IV — AROUND THE SLOPES ========== -->
     <div class="page" data-page="5">
+      <div class="ruled-margin"></div>
+      <div class="ruled-page"></div>
       <div class="page-inner">
-        <div class="ornament">&#127963;</div>
-        <h2 class="page-title">CATANIA</h2>
-        <p class="page-subtitle">La Città dell'Elefante</p>
-
-        <p class="lead">
-          Built, destroyed, and rebuilt countless times from Etna's eruptions,
-          Catania is a baroque phoenix rising from volcanic ashes.
-        </p>
-
-        <div class="section-title">The Baroque Heart</div>
-
-        <p>
-          After the catastrophic 1693 earthquake, Catania was rebuilt in exuberant Sicilian Baroque style,
-          using the dark volcanic stone that gives the city its distinctive character. The UNESCO-listed
-          <span class="highlight">Via dei Crociferi</span> showcases this architectural splendor with
-          churches and monasteries carved from black lava rock.
-        </p>
-
-        <div class="location-card">
-          <div class="location-card-header">
-            <div class="location-icon">&#128024;</div>
-            <div class="location-name">Piazza del Duomo</div>
-          </div>
-          <div class="location-desc">
-            The city's heart, dominated by the <span class="highlight">Fontana dell'Elefante</span>&mdash;an
-            ancient lava-stone elephant carrying an Egyptian obelisk. The Duomo, dedicated to Saint Agatha,
-            has been rebuilt seven times after earthquakes and eruptions.
-          </div>
-          <div class="location-tip">
-            Visit in early evening when the black and white baroque facades glow in golden light.
-          </div>
+        <div class="page-header">
+          <span>Vol. IV · Etna</span>
+          <span>Around the Slopes</span>
+          <span class="pn-stamp">4</span>
         </div>
 
-        <div class="section-title">Must-See Catania</div>
+        <div class="eyebrow">Chapter the Fourth</div>
+        <h2 class="display-title">NOTES &amp; WANDERINGS</h2>
+        <div class="script-sub">intorno al vulcano</div>
+        <div class="meta-line">vines · myths · pistachios · the railway</div>
+        <p class="lead">
+          A volcano is not only her summit. The lower slopes are a country of vineyards,
+          chestnut forests, hilltop villages and an extraordinary little train.
+        </p>
 
-        <ul class="feature-list">
-          <li><strong>La Pescheria:</strong> The famous fish market, a sensory explosion of the sea's bounty. Mornings only.</li>
-          <li><strong>Monastery of San Nicolò l'Arena:</strong> One of Europe's largest Benedictine monasteries, now a university.</li>
-          <li><strong>Roman Amphitheatre:</strong> Hidden beneath Piazza Stesicoro, once held 15,000 spectators.</li>
-          <li><strong>Via Etnea:</strong> The elegant main street running toward the volcano, lined with baroque palaces.</li>
-          <li><strong>Castello Ursino:</strong> Frederick II's 13th-century fortress, now housing the civic museum.</li>
+        <div class="section-head">
+          <span class="num">i</span>
+          <span class="label">Volcanic Wines</span>
+        </div>
+
+        <div class="body">
+          <p><em>Etna DOC</em> wines have gained quiet international fame. The native <em>Nerello Mascalese</em> grape produces reds often compared to Burgundy — elegant, mineral, smoky. The white <em>Carricante</em> is its equal: bright acidity, almond and blossom. Vines grow on terraces that stand on lava no older than the Roman empire.</p>
+        </div>
+
+        <span class="tag red">CANTINA BENANTI</span>
+        <span class="tag sage">PASSOPISCIARO</span>
+        <span class="tag">RANDAZZO</span>
+
+        <div class="loc-card">
+          <div class="loc-head">
+            <div class="loc-icon">⌘</div>
+            <div>
+              <div class="loc-name">Randazzo</div>
+              <div class="loc-it">borgo medievale</div>
+            </div>
+          </div>
+          <div class="loc-desc">
+            A medieval town built entirely of <em>black volcanic stone</em> — miraculously spared by every lava flow that has come close. Its Sunday market is the heart of Etna wine country.
+          </div>
+          <div class="loc-tip">Cantina Benanti or Passopisciaro for tastings with views over ancient vines.</div>
+        </div>
+
+        <div class="section-head">
+          <span class="num">ii</span>
+          <span class="label">Villages of Note</span>
+        </div>
+        <ul class="feat-list">
+          <li><strong>Bronte</strong> — pistachio capital of Italy. Everything green, everything delicious.</li>
+          <li><strong>Zafferana Etnea</strong> — honey town; the autumn <em>Ottobrata</em> festival fills the streets.</li>
+          <li><strong>Linguaglossa</strong> — gateway to the northern slopes and the best winter ski-touring.</li>
+          <li><strong>Nicolosi</strong> — closest to Rifugio Sapienza; base for excursions.</li>
+          <li><strong>Milo</strong> — tiny, quiet, with a celebrated wine cooperative.</li>
         </ul>
 
-        <div class="info-box">
-          <div class="info-box-title">Local Flavors</div>
-          <p><strong>Arancini:</strong> Fried rice balls, Catania's signature street food.</p>
-          <p><strong>Pasta alla Norma:</strong> Named after Bellini's opera, with eggplant and ricotta salata.</p>
-          <p><strong>Granita:</strong> The breakfast of champions&mdash;with brioche and whipped cream.</p>
+        <p class="margin-note" style="top: 540px;">try the lava-stone grilled sausage at any rifugio</p>
+
+        <div class="section-head">
+          <span class="num">iii</span>
+          <span class="label">The Circumetnea Railway</span>
         </div>
-      </div>
-      <div class="nav-hint">
-        <div class="nav-arrow" onclick="prevPage()">&#8249;</div>
-        <span class="page-indicator">5 / 8</span>
-        <div class="nav-arrow" onclick="nextPage()">&#8250;</div>
+
+        <div class="body">
+          <p>A narrow-gauge train circles the volcano in three slow hours, from <em>Catania Borgo</em> to <em>Riposto</em> via Randazzo. It passes through lava fields, chestnut groves, blood-orange orchards and almond terraces. There are few finer ways to spend a Sicilian morning.</p>
+        </div>
+
+        <div class="info-panel">
+          <div class="info-panel-title">Field Notes · A Local Plate</div>
+          <p><strong>Pasta alla Norma</strong> — eggplant, ricotta salata, basil. Named for Bellini's opera; born in Catania.</p>
+          <p><strong>Pistachio everything</strong> — pesto, gelato, biscotti, sausage. Bronte, naturally.</p>
+          <p><strong>Granita con brioche</strong> — almond or pistachio, eaten for breakfast. Always for breakfast.</p>
+        </div>
+
+        <div class="page-footer">
+          <span>etna · cap. iv</span>
+          <div class="flourish"></div>
+          <span class="footer-num">— 4 —</span>
+          <div class="flourish"></div>
+          <span>iv</span>
+        </div>
       </div>
     </div>
 
-    <!-- PAGE 6: Taormina -->
+    <!-- ========== TAORMINA I — THE BALCONY ========== -->
     <div class="page" data-page="6">
+      <div class="ruled-margin"></div>
+      <div class="ruled-page"></div>
       <div class="page-inner">
-        <div class="ornament">&#127965;</div>
-        <h2 class="page-title">TAORMINA</h2>
-        <p class="page-subtitle">The Balcony of Sicily</p>
-
-        <p class="lead">
-          Perched on a cliff 200 meters above the Ionian Sea, Taormina has captivated
-          travelers since the Grand Tour era with its impossible beauty.
-        </p>
-
-        <div class="section-title">The Greek Theatre</div>
-
-        <p>
-          The <span class="highlight">Teatro Antico</span> is the undisputed star. Built by the Greeks in
-          the 3rd century BC and later modified by the Romans, it offers what Goethe called "the greatest
-          work of art and nature combined"&mdash;a stage framed by Mount Etna and the sea.
-        </p>
-
-        <p>
-          Arrive early morning to avoid crowds and catch the soft light on the ancient stones. In summer,
-          the theatre hosts concerts and performances&mdash;experiencing opera against Etna's silhouette
-          is unforgettable.
-        </p>
-
-        <div class="location-card">
-          <div class="location-card-header">
-            <div class="location-icon">&#128248;</div>
-            <div class="location-name">Isola Bella</div>
-          </div>
-          <div class="location-desc">
-            This tiny island nature reserve sits in a perfect cove below Taormina, connected to the beach
-            by a narrow strip of sand. Take the cable car (<span class="highlight">Funivia Taormina-Mazzarò</span>)
-            down for swimming and the views back up to the hilltop town.
-          </div>
-          <div class="location-tip">
-            The water is crystal clear. Bring snorkeling gear to explore the marine reserve.
-          </div>
+        <div class="page-header">
+          <span>Vol. IV · Taormina</span>
+          <span>The Balcony</span>
+          <span class="pn-stamp">5</span>
         </div>
 
-        <div class="section-title">Wandering the Town</div>
+        <div class="eyebrow">Chapter the Fifth</div>
+        <h2 class="display-title">TAORMINA</h2>
+        <div class="script-sub">il balcone di Sicilia</div>
+        <div class="meta-line">cliffside · 200 m above the Ionian sea</div>
 
-        <ul class="feature-list">
-          <li><strong>Corso Umberto:</strong> The elegant main street, pedestrianized and perfect for evening passeggiata.</li>
-          <li><strong>Piazza IX Aprile:</strong> A terrace over the sea with checkerboard paving and endless views.</li>
-          <li><strong>Giardini della Villa Comunale:</strong> Victorian gardens with eccentric follies and Etna views.</li>
-          <li><strong>Castelmola:</strong> A tiny village above Taormina reached by winding road&mdash;don't miss the almond wine.</li>
-        </ul>
+        <!-- Greek theatre with Etna behind -->
+        <div class="sketch-frame">
+          <svg viewBox="0 0 320 160" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="taoStone" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#3a2817"/>
+                <stop offset="100%" stop-color="#6b4d35"/>
+              </linearGradient>
+              <radialGradient id="taoCrater" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#d8804a" stop-opacity="0.9"/>
+                <stop offset="100%" stop-color="#a82e1a" stop-opacity="0"/>
+              </radialGradient>
+            </defs>
+
+            <!-- distant Etna -->
+            <g opacity="0.92">
+              <path d="M 180 100 L 240 35 L 254 30 L 270 35 L 320 100 L 320 110 L 180 110 Z" fill="#3a2817" opacity="0.7"/>
+              <path d="M 240 35 L 254 30 L 270 35 L 264 40 L 254 36 L 246 40 Z" fill="#f5ecd5" opacity="0.7"/>
+              <ellipse cx="256" cy="35" rx="6" ry="1.5" fill="#0e0805"/>
+              <circle cx="256" cy="35" r="2.5" fill="#a82e1a" opacity="0.7" class="glow-anim"/>
+              <circle cx="256" cy="35" r="10" fill="url(#taoCrater)" class="glow-anim"/>
+              <ellipse cx="256" cy="22" rx="13" ry="5" fill="#3a2817" opacity="0.4" class="smoke-anim"/>
+              <text x="256" y="14" text-anchor="middle" font-family="Special Elite" font-size="6" fill="#a82e1a">ETNA</text>
+            </g>
+
+            <!-- sea -->
+            <rect x="0" y="100" width="320" height="60" fill="#a8b9c8" opacity="0.32"/>
+            <g stroke="#6a8ba8" stroke-width="0.4" fill="none" opacity="0.6">
+              <path d="M 0 110 Q 30 108 60 110 T 320 112" stroke-dasharray="4,3"/>
+              <path d="M 0 122 Q 40 120 80 122 T 320 124" stroke-dasharray="6,4"/>
+              <path d="M 0 138 Q 50 136 100 138 T 320 140" stroke-dasharray="3,2"/>
+            </g>
+
+            <!-- Isola Bella -->
+            <ellipse cx="100" cy="128" rx="20" ry="4" fill="#3a2817"/>
+            <path d="M 80 128 Q 92 118 100 116 Q 110 116 120 128 Z" fill="#5a4222"/>
+            <circle cx="96" cy="121" r="1.5" fill="#7a8b6e"/>
+            <circle cx="104" cy="120" r="1.2" fill="#7a8b6e"/>
+            <text x="100" y="148" text-anchor="middle" font-family="Italianno" font-size="14" fill="#4a6585" opacity="0.85">Isola Bella</text>
+
+            <!-- cliff with Greek theatre -->
+            <g transform="translate(40, 56)">
+              <!-- cliff -->
+              <path d="M -40 50 L -28 28 L 0 22 L 78 18 L 96 26 L 112 50 Z"
+                fill="url(#taoStone)" stroke="#1a1108" stroke-width="0.4"/>
+              <!-- theatre arc tiers -->
+              <g stroke="#3a2817" stroke-width="0.7" fill="none" opacity="0.9">
+                <path d="M 0 38 A 30 14 0 0 1 60 38"/>
+                <path d="M 4 35 A 26 12 0 0 1 56 35"/>
+                <path d="M 8 32 A 22 10 0 0 1 52 32"/>
+                <path d="M 12 29 A 18 8 0 0 1 48 29"/>
+                <path d="M 16 26 A 14 6 0 0 1 44 26"/>
+              </g>
+              <!-- stage columns -->
+              <g fill="#1a1108">
+                <rect x="14" y="22" width="2.5" height="5"/>
+                <rect x="22" y="20" width="2.5" height="7"/>
+                <rect x="30" y="20" width="2.5" height="7"/>
+                <rect x="38" y="20" width="2.5" height="7"/>
+                <rect x="46" y="22" width="2.5" height="5"/>
+              </g>
+              <!-- ruined wall -->
+              <path d="M 12 22 L 12 18 L 18 18 L 18 16 L 26 16 L 26 14 L 36 14 L 36 16 L 42 16 L 42 18 L 50 18 L 50 22 Z" fill="#3a2817" stroke="#1a1108" stroke-width="0.3"/>
+              <!-- annotation -->
+              <line x1="32" y1="14" x2="32" y2="2" stroke="#a82e1a" stroke-width="0.4"/>
+              <text x="32" y="-2" text-anchor="middle" font-family="Special Elite" font-size="6" fill="#a82e1a">TEATRO ANTICO</text>
+            </g>
+          </svg>
+          <div class="sketch-caption"><span class="fig">Fig. 4</span> the theatre, the sea, the volcano</div>
+        </div>
+
+        <p class="lead">
+          Perched 200 metres above the Ionian Sea, Taormina has captivated travellers since the
+          Grand Tour. Goethe came. Wilde came. D. H. Lawrence stayed.
+        </p>
+
+        <p class="body drop-cap">
+          Founded by Greeks fleeing Naxos in <span class="pen-underline">358 B.C.</span>, the town clings to a long ridge of <em>Monte Tauro</em> with the sea on one flank and the volcano on the other. Its single main street, <em>Corso Umberto</em>, runs from gate to gate along the spine of the cliff — a stage set of cafés, palaces, lemon-yellow façades and unexpected views.
+        </p>
+
+        <p class="margin-note" style="top: 360px;">Goethe, 1787: "the greatest work of art &amp; nature combined"</p>
+
+        <div class="section-head">
+          <span class="num">i</span>
+          <span class="label">The Greek Theatre</span>
+        </div>
+
+        <div class="body">
+          <p>The <em>Teatro Antico</em> is the prize. Built by the Greeks in the 3rd century B.C. and modified by the Romans, it offers a stage framed by Mount Etna and the sea — perhaps the most theatrical view in the Mediterranean. Arrive at opening time to catch the light raking the stones. In summer the theatre still hosts concerts and operas; an evening performance against Etna's silhouette is a memory you do not forget.</p>
+        </div>
 
         <div class="quote">
           <p class="quote-text">"If somebody should spend only one day in Sicily and asked: What shall I see? I would answer without hesitation: Taormina."</p>
-          <p class="quote-author">- Guy de Maupassant</p>
+          <p class="quote-author">— guy de maupassant</p>
         </div>
-      </div>
-      <div class="nav-hint">
-        <div class="nav-arrow" onclick="prevPage()">&#8249;</div>
-        <span class="page-indicator">6 / 8</span>
-        <div class="nav-arrow" onclick="nextPage()">&#8250;</div>
+
+        <div class="page-footer">
+          <span>taormina · cap. v</span>
+          <div class="flourish"></div>
+          <span class="footer-num">— 5 —</span>
+          <div class="flourish"></div>
+          <span>v</span>
+        </div>
       </div>
     </div>
 
-    <!-- PAGE 7: Etna Wine & Villages -->
+    <!-- ========== TAORMINA II — A WALKING TOUR ========== -->
     <div class="page" data-page="7">
+      <div class="ruled-margin"></div>
+      <div class="ruled-page"></div>
       <div class="page-inner">
-        <div class="ornament">&#127863;</div>
-        <h2 class="page-title">ETNA WINE COUNTRY</h2>
-        <p class="page-subtitle">Vini Vulcanici</p>
+        <div class="page-header">
+          <span>Vol. IV · Taormina</span>
+          <span>A Walking Tour</span>
+          <span class="pn-stamp">6</span>
+        </div>
+
+        <div class="eyebrow">Chapter the Sixth</div>
+        <h2 class="display-title">A WALK ALONG THE RIDGE</h2>
+        <div class="script-sub">passeggiata</div>
+        <div class="meta-line">corso umberto · piazza ix aprile · castelmola</div>
 
         <p class="lead">
-          The volcanic slopes produce wines of extraordinary character,
-          grown on terraces where vines cling to mineral-rich ash and lava.
+          A morning's walk takes you from gate to gate, with detours down the cliff to Isola Bella
+          and up the road to a tiny perched village whose almond wine is dangerous.
         </p>
 
-        <div class="section-title">The Volcanic Terroir</div>
-
-        <p>
-          <span class="highlight">Etna DOC</span> wines have gained international acclaim. The native
-          <span class="highlight">Nerello Mascalese</span> grape produces reds often compared to Burgundy&mdash;elegant,
-          complex, with a distinctive minerality from volcanic soils. The white <span class="highlight">Carricante</span>
-          is equally exceptional, with bright acidity and floral notes.
-        </p>
-
-        <div class="location-card">
-          <div class="location-card-header">
-            <div class="location-icon">&#127815;</div>
-            <div class="location-name">Randazzo</div>
-          </div>
-          <div class="location-desc">
-            This medieval town, miraculously spared by lava flows, is the heart of Etna wine country.
-            Its streets are built entirely of black volcanic stone, creating a striking atmosphere.
-            The weekly Sunday market draws visitors from across the region.
-          </div>
-          <div class="location-tip">
-            Visit Cantina Benanti or Passopisciaro for tastings with views over ancient vineyards.
-          </div>
+        <div class="section-head">
+          <span class="num">i</span>
+          <span class="label">Down to the Sea</span>
         </div>
 
-        <div class="section-title">Villages Worth Exploring</div>
+        <div class="loc-card">
+          <div class="loc-head">
+            <div class="loc-icon">≈</div>
+            <div>
+              <div class="loc-name">Isola Bella</div>
+              <div class="loc-it">la perla del Mediterraneo</div>
+            </div>
+          </div>
+          <div class="loc-desc">
+            A pearl of an island in a perfect cove, joined to the beach by a sandbar that appears and disappears with the tide. Once private, now a nature reserve. The water is <em>impossibly clear</em>.
+          </div>
+          <div class="loc-tip">take the funivia down (€3) — the walk back up is murder in summer</div>
+        </div>
 
-        <ul class="feature-list">
-          <li><strong>Zafferana Etnea:</strong> Famous for honey and the autumn Ottobrata festival.</li>
-          <li><strong>Linguaglossa:</strong> Gateway to the northern slopes, with excellent hiking access.</li>
-          <li><strong>Nicolosi:</strong> The closest town to Rifugio Sapienza, base for Etna excursions.</li>
-          <li><strong>Bronte:</strong> The pistachio capital of Italy&mdash;everything here is green and delicious.</li>
+        <div class="section-head">
+          <span class="num">ii</span>
+          <span class="label">The Town Itself</span>
+        </div>
+
+        <ul class="feat-list">
+          <li><strong>Corso Umberto</strong> — the long pedestrianised spine; cafés, gelato, evening passeggiata.</li>
+          <li><strong>Piazza IX Aprile</strong> — chequerboard terrace over the sea; sit here at sunset.</li>
+          <li><strong>Porta Catania &amp; Porta Messina</strong> — the two medieval gates that bookend the corso.</li>
+          <li><strong>Villa Comunale</strong> — Victorian gardens with eccentric follies and Etna views (free).</li>
+          <li><strong>Duomo di San Nicolò</strong> — fortified cathedral; black lava stone meets baroque marble.</li>
+          <li><strong>Naumachie</strong> — a Roman gymnasium wall hidden behind a row of houses.</li>
         </ul>
 
-        <div class="info-box">
-          <div class="info-box-title">The Circumetnea Railway</div>
-          <p>This narrow-gauge railway circles the volcano, connecting Catania to Riposto via Randazzo.
-          The 3-hour journey passes through lava fields, orchards, and vineyards&mdash;one of Sicily's
-          most scenic train rides. Departures from Catania Borgo station.</p>
+        <p class="margin-note right" style="top: 410px;">the Bam Bar makes the best granita in Sicily — fight me</p>
+
+        <div class="section-head">
+          <span class="num">iii</span>
+          <span class="label">Up to Castelmola</span>
         </div>
-      </div>
-      <div class="nav-hint">
-        <div class="nav-arrow" onclick="prevPage()">&#8249;</div>
-        <span class="page-indicator">7 / 8</span>
-        <div class="nav-arrow" onclick="nextPage()">&#8250;</div>
+
+        <div class="loc-card">
+          <div class="loc-head">
+            <div class="loc-icon">▲</div>
+            <div>
+              <div class="loc-name">Castelmola</div>
+              <div class="loc-it">il borgo sopra Taormina</div>
+            </div>
+          </div>
+          <div class="loc-desc">
+            A ten-minute drive (or a steep, lovely walk) above Taormina. A handful of stone streets, a ruined castle, and the most complete view of Etna and the coast you will see from anywhere — sea on one side, volcano on the other.
+          </div>
+          <div class="loc-tip">try the almond wine at Bar Turrisi — the décor is, ahem, anatomical</div>
+        </div>
+
+        <span class="specimen-tag">PRESSED · genista aetnensis · Castelmola, June</span>
+
+        <div class="info-panel">
+          <div class="info-panel-title">When to Walk</div>
+          <p><strong>Early morning</strong> — Corso Umberto belongs to locals; the theatre is empty.</p>
+          <p><strong>Sunset</strong> — Piazza IX Aprile glows pink, Etna turns rose, the lights of the coast switch on one by one.</p>
+          <p><strong>Avoid</strong> July afternoons — the cruise ships disgorge and Corso Umberto becomes a slow-moving river.</p>
+        </div>
+
+        <div class="page-footer">
+          <span>taormina · cap. vi</span>
+          <div class="flourish"></div>
+          <span class="footer-num">— 6 —</span>
+          <div class="flourish"></div>
+          <span>vi</span>
+        </div>
       </div>
     </div>
 
-    <!-- PAGE 8: Practical Information -->
+    <!-- ========== FIELD NOTES ========== -->
     <div class="page" data-page="8">
+      <div class="ruled-margin"></div>
+      <div class="ruled-page"></div>
       <div class="page-inner">
-        <div class="ornament">&#9733;</div>
-        <h2 class="page-title">PRACTICAL NOTES</h2>
-        <p class="page-subtitle">Essential Information</p>
+        <div class="page-header">
+          <span>Vol. IV · Appendix</span>
+          <span>Field Notes</span>
+          <span class="pn-stamp">7</span>
+        </div>
 
-        <div class="section-title">Getting There</div>
+        <div class="eyebrow">Appendix · Practical</div>
+        <h2 class="display-title">FIELD NOTES</h2>
+        <div class="script-sub">note pratiche</div>
+        <div class="meta-line">how · when · what to bring</div>
 
-        <p>
-          <strong>By Car:</strong> From Catania, take the A18 autostrada south, then SP92 to Rifugio Sapienza (~1 hour).
-          From Taormina, head south on the A18 (~1.5 hours).
-        </p>
+        <div class="section-head">
+          <span class="num">i</span>
+          <span class="label">Getting There</span>
+        </div>
 
-        <p>
-          <strong>By Bus:</strong> AST buses run from Catania (Piazza Papa Giovanni XXIII) to Rifugio Sapienza.
-          Check schedules&mdash;service is limited, especially off-season.
-        </p>
+        <div class="body">
+          <p><strong>To Etna:</strong> from Catania, take the A18 then the SP92 to <em>Rifugio Sapienza</em> (~1 h). AST buses run from Piazza Papa Giovanni XXIII once a day; service is limited off-season.</p>
+          <p><strong>To Taormina:</strong> Catania to Taormina by train (~50 min) or by car along the A18 (~45 min). The station is at sea level — take the local bus or funivia up to the town.</p>
+          <p><strong>Combined day:</strong> stay in Taormina, take a guided full-day Etna excursion. Many operators include transport, guide, and crater access.</p>
+        </div>
 
-        <p>
-          <strong>Organized Tours:</strong> Many operators offer full-day excursions from Catania or Taormina,
-          including transport, guide, and crater access.
-        </p>
+        <div class="section-head">
+          <span class="num">ii</span>
+          <span class="label">When to Visit</span>
+        </div>
 
-        <div class="section-title">What to Wear</div>
-
-        <ul class="feature-list">
-          <li>Sturdy hiking boots or shoes with good grip</li>
-          <li>Layers: temperatures drop ~6°C per 1000m of elevation</li>
-          <li>Wind-proof jacket&mdash;summit winds can be fierce</li>
-          <li>Sunglasses and sun protection (UV is intense at altitude)</li>
-          <li>Long pants to protect from sharp volcanic rock</li>
+        <ul class="feat-list">
+          <li><strong>Spring · Apr–Jun</strong> — wildflowers on the lower slopes, snow on the summit. Mild, fewer crowds.</li>
+          <li><strong>Summer · Jul–Sep</strong> — peak season. Best summit access. Book the cable car early.</li>
+          <li><strong>Autumn · Oct–Nov</strong> — grape and chestnut harvests. Weather variable.</li>
+          <li><strong>Winter · Dec–Mar</strong> — Etna becomes a ski resort. Rare to ski an active volcano with sea views.</li>
         </ul>
 
-        <div class="section-title">When to Visit</div>
+        <p class="margin-note" style="top: 380px;">May = best month, full stop</p>
 
-        <p>
-          <strong>Spring (April-June):</strong> Wildflowers bloom on lower slopes, snow still caps the summit.
-          Mild temperatures, fewer crowds.
-        </p>
+        <div class="section-head">
+          <span class="num">iii</span>
+          <span class="label">What to Bring</span>
+        </div>
 
-        <p>
-          <strong>Summer (July-September):</strong> Peak season. Best conditions for summit access.
-          Book cable car early to avoid queues.
-        </p>
+        <ul class="feat-list">
+          <li>Sturdy hiking shoes — volcanic rock is sharp.</li>
+          <li><strong>Layers</strong> — temperature drops ~6°C per 1,000 m of elevation.</li>
+          <li>Wind-proof jacket — summit gusts can be ferocious.</li>
+          <li>Sunglasses, sunscreen, water — UV at altitude is fierce.</li>
+          <li>Long trousers — protection from scoria and sun.</li>
+        </ul>
 
-        <p>
-          <strong>Autumn (October-November):</strong> Grape harvest, chestnut festivals. Weather can be unpredictable.
-        </p>
-
-        <p>
-          <strong>Winter (December-March):</strong> Etna transforms into a ski resort. Unique experience
-          of skiing on an active volcano with sea views.
-        </p>
+        <div class="info-panel">
+          <div class="info-panel-title">Stay Connected</div>
+          <p><strong>INGV Catania</strong> · ct.ingv.it — real-time volcanic monitoring</p>
+          <p><strong>Funivia dell'Etna</strong> · funiviaetna.com — cable car &amp; weather</p>
+          <p><strong>Parco dell'Etna</strong> · parcoetna.it — park authority &amp; trails</p>
+        </div>
 
         <div class="quote">
-          <p class="quote-text">"The fire below reminds us to live fully, for the earth itself is restless and alive."</p>
-          <p class="quote-author">- Anonymous</p>
+          <p class="quote-text">"The fire below reminds us to live fully — for the earth itself is restless and alive."</p>
+          <p class="quote-author">— anon., from a wall in catania</p>
         </div>
 
-        <div class="info-box">
-          <div class="info-box-title">Stay Connected</div>
-          <p><strong>INGV Catania:</strong> www.ct.ingv.it (real-time volcano monitoring)</p>
-          <p><strong>Funivia dell'Etna:</strong> www.funiviaetna.com (cable car info)</p>
-          <p><strong>Parco dell'Etna:</strong> www.parcoetna.it (park authority)</p>
+        <div class="page-footer">
+          <span>· fin ·</span>
+          <div class="flourish"></div>
+          <span class="footer-num">— vii —</span>
+          <div class="flourish"></div>
+          <span>·</span>
         </div>
-      </div>
-      <div class="nav-hint">
-        <div class="nav-arrow" onclick="prevPage()">&#8249;</div>
-        <span class="page-indicator">8 / 8</span>
-        <div class="nav-arrow disabled">&#8250;</div>
       </div>
     </div>
 
   </div>
 </div>
 
+<div class="controls">
+  <button class="nav-btn" id="prevBtn" aria-label="Previous page" onclick="prevPage()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+  </button>
+  <div class="page-indicator" id="pageIndicator">0 / 8</div>
+  <button class="nav-btn" id="nextBtn" aria-label="Next page" onclick="nextPage()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+  </button>
+</div>
+
 <script>
-  let currentPage = 1;
-  const totalPages = 8;
-  const pages = document.querySelectorAll('.page');
+  // ========== TOC DATA ==========
+  const chapters = [
+    { num: 'I',   name: 'A Living Earth',          it: 'la Muntagna',          page: 2, fol: '1' },
+    { num: 'II',  name: 'Fire Beneath',            it: 'la fornace',           page: 3, fol: '2' },
+    { num: 'III', name: 'Upon the Slopes',         it: "l'ascesa",             page: 4, fol: '3' },
+    { num: 'IV',  name: 'Notes & Wanderings',      it: 'intorno al vulcano',   page: 5, fol: '4' },
+    { num: 'V',   name: 'Taormina · The Balcony',  it: 'il balcone',           page: 6, fol: '5' },
+    { num: 'VI',  name: 'A Walk along the Ridge',  it: 'passeggiata',          page: 7, fol: '6' },
+    { num: '—',   name: 'Field Notes',             it: 'note pratiche',        page: 8, fol: 'vii' }
+  ];
+
+  // Build TOC
+  const tocList = document.getElementById('tocList');
+  chapters.forEach(ch => {
+    const item = document.createElement('div');
+    item.className = 'toc-item';
+    item.dataset.target = ch.page;
+    item.innerHTML = `
+      <span class="toc-num">${ch.num}</span>
+      <span class="toc-name">${ch.name} <em>· ${ch.it}</em></span>
+      <span class="toc-dots"></span>
+      <span class="toc-page">${ch.fol}</span>
+    `;
+    item.addEventListener('click', () => goToPage(parseInt(item.dataset.target)));
+    tocList.appendChild(item);
+  });
+
+  // ========== NAVIGATION ==========
+  let currentPage = 0;
+  const totalPages = 9;
 
   function showPage(n, direction) {
     const current = document.querySelector('.page.active');
     const next = document.querySelector(`.page[data-page="${n}"]`);
-
     if (!next || current === next) return;
-
-    // Reset scroll position
-    next.querySelector('.page-inner').scrollTop = 0;
-
-    // Apply transition classes
+    next.querySelector('.page-inner')?.scrollTo({ top: 0 });
     current.classList.remove('active');
     current.classList.add(direction === 'next' ? 'leaving-right' : 'leaving-left');
-
     next.classList.add('active');
-
-    // Cleanup
-    setTimeout(() => {
-      current.classList.remove('leaving-right', 'leaving-left');
-    }, 650);
-
+    setTimeout(() => current.classList.remove('leaving-right', 'leaving-left'), 650);
     currentPage = n;
     updateNav();
+    stopTTS();
   }
-
-  function nextPage() {
-    if (currentPage < totalPages) showPage(currentPage + 1, 'next');
+  function nextPage() { if (currentPage < totalPages - 1) showPage(currentPage + 1, 'next'); }
+  function prevPage() { if (currentPage > 0) showPage(currentPage - 1, 'prev'); }
+  function goToPage(n) {
+    if (n === currentPage) return;
+    showPage(n, n > currentPage ? 'next' : 'prev');
   }
-
-  function prevPage() {
-    if (currentPage > 1) showPage(currentPage - 1, 'prev');
-  }
-
   function updateNav() {
-    document.querySelectorAll('.nav-hint').forEach(nav => {
-      const arrows = nav.querySelectorAll('.nav-arrow');
-      arrows[0].classList.toggle('disabled', currentPage === 1);
-      arrows[1].classList.toggle('disabled', currentPage === totalPages);
-      nav.querySelector('.page-indicator').textContent = `${currentPage} / ${totalPages}`;
-    });
+    document.getElementById('prevBtn').disabled = currentPage === 0;
+    document.getElementById('nextBtn').disabled = currentPage === totalPages - 1;
+    document.getElementById('pageIndicator').textContent = `${currentPage} / ${totalPages - 1}`;
   }
+  updateNav();
 
-  // Touch/swipe support
-  let touchStartX = 0;
-  let touchEndX = 0;
-
+  // ========== SWIPE/KEYBOARD ==========
+  let tsx = 0, tex = 0, tsy = 0, tey = 0;
   document.addEventListener('touchstart', e => {
-    touchStartX = e.changedTouches[0].screenX;
+    tsx = e.changedTouches[0].screenX;
+    tsy = e.changedTouches[0].screenY;
   }, { passive: true });
-
   document.addEventListener('touchend', e => {
-    touchEndX = e.changedTouches[0].screenX;
-    handleSwipe();
-  }, { passive: true });
-
-  function handleSwipe() {
-    const threshold = 50;
-    const diff = touchStartX - touchEndX;
-    if (Math.abs(diff) > threshold) {
-      if (diff > 0) nextPage();
-      else prevPage();
+    tex = e.changedTouches[0].screenX;
+    tey = e.changedTouches[0].screenY;
+    const dx = tsx - tex, dy = tsy - tey;
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) {
+      if (dx > 0) nextPage(); else prevPage();
     }
-  }
-
-  // Keyboard navigation
+  }, { passive: true });
   document.addEventListener('keydown', e => {
     if (e.key === 'ArrowRight' || e.key === ' ') nextPage();
     if (e.key === 'ArrowLeft') prevPage();
   });
 
-  // ========== AMBIENT SOUND SYSTEM ==========
-  let audioContext = null;
-  let ambientNodes = {};
-  let ambientPlaying = false;
-
+  // ========== AMBIENT SOUND ==========
+  let audioContext = null, ambientNodes = {}, ambientPlaying = false;
   function initAudio() {
     if (audioContext) return;
     audioContext = new (window.AudioContext || window.webkitAudioContext)();
   }
-
   function createWindNoise() {
-    const bufferSize = 2 * audioContext.sampleRate;
-    const buffer = audioContext.createBuffer(1, bufferSize, audioContext.sampleRate);
-    const data = buffer.getChannelData(0);
-
-    for (let i = 0; i < bufferSize; i++) {
-      data[i] = Math.random() * 2 - 1;
-    }
-
+    const bs = 2 * audioContext.sampleRate;
+    const buf = audioContext.createBuffer(1, bs, audioContext.sampleRate);
+    const d = buf.getChannelData(0);
+    for (let i = 0; i < bs; i++) d[i] = Math.random() * 2 - 1;
     const noise = audioContext.createBufferSource();
-    noise.buffer = buffer;
-    noise.loop = true;
-
-    // Bandpass filter for wind-like sound
+    noise.buffer = buf; noise.loop = true;
     const filter = audioContext.createBiquadFilter();
-    filter.type = 'bandpass';
-    filter.frequency.value = 400;
-    filter.Q.value = 0.5;
-
-    // LFO for wind modulation
+    filter.type = 'bandpass'; filter.frequency.value = 400; filter.Q.value = 0.5;
     const lfo = audioContext.createOscillator();
     const lfoGain = audioContext.createGain();
-    lfo.frequency.value = 0.15;
-    lfoGain.gain.value = 200;
-    lfo.connect(lfoGain);
-    lfoGain.connect(filter.frequency);
-
-    const gainNode = audioContext.createGain();
-    gainNode.gain.value = 0;
-
-    noise.connect(filter);
-    filter.connect(gainNode);
-    gainNode.connect(audioContext.destination);
-
-    noise.start();
-    lfo.start();
-
-    return { noise, filter, gainNode, lfo };
+    lfo.frequency.value = 0.15; lfoGain.gain.value = 200;
+    lfo.connect(lfoGain); lfoGain.connect(filter.frequency);
+    const g = audioContext.createGain(); g.gain.value = 0;
+    noise.connect(filter); filter.connect(g); g.connect(audioContext.destination);
+    noise.start(); lfo.start();
+    return { noise, filter, gainNode: g, lfo };
   }
-
-  function createVolcanicRumble() {
-    const oscillator = audioContext.createOscillator();
-    oscillator.type = 'sine';
-    oscillator.frequency.value = 35;
-
-    // Sub-bass oscillator
-    const subOsc = audioContext.createOscillator();
-    subOsc.type = 'sine';
-    subOsc.frequency.value = 20;
-
-    // LFO for rumble variation
+  function createRumble() {
+    const o = audioContext.createOscillator(); o.type = 'sine'; o.frequency.value = 35;
+    const so = audioContext.createOscillator(); so.type = 'sine'; so.frequency.value = 20;
     const lfo = audioContext.createOscillator();
-    const lfoGain = audioContext.createGain();
-    lfo.frequency.value = 0.08;
-    lfoGain.gain.value = 10;
-    lfo.connect(lfoGain);
-    lfoGain.connect(oscillator.frequency);
-
-    const gainNode = audioContext.createGain();
-    gainNode.gain.value = 0;
-
-    const subGain = audioContext.createGain();
-    subGain.gain.value = 0;
-
-    oscillator.connect(gainNode);
-    subOsc.connect(subGain);
-    gainNode.connect(audioContext.destination);
-    subGain.connect(audioContext.destination);
-
-    oscillator.start();
-    subOsc.start();
-    lfo.start();
-
-    return { oscillator, subOsc, gainNode, subGain, lfo };
+    const lg = audioContext.createGain();
+    lfo.frequency.value = 0.08; lg.gain.value = 10;
+    lfo.connect(lg); lg.connect(o.frequency);
+    const g = audioContext.createGain(); g.gain.value = 0;
+    const sg = audioContext.createGain(); sg.gain.value = 0;
+    o.connect(g); so.connect(sg); g.connect(audioContext.destination); sg.connect(audioContext.destination);
+    o.start(); so.start(); lfo.start();
+    return { oscillator: o, subOsc: so, gainNode: g, subGain: sg, lfo };
   }
-
-  function createEmberCrackle() {
-    const bufferSize = audioContext.sampleRate * 0.05;
-    const buffer = audioContext.createBuffer(1, bufferSize, audioContext.sampleRate);
-    const data = buffer.getChannelData(0);
-
-    for (let i = 0; i < bufferSize; i++) {
-      data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.3));
-    }
-
-    const gainNode = audioContext.createGain();
-    gainNode.gain.value = 0;
-    gainNode.connect(audioContext.destination);
-
-    // Random crackle scheduler
-    function scheduleCrackle() {
-      if (!ambientPlaying) return;
-
-      const source = audioContext.createBufferSource();
-      source.buffer = buffer;
-
-      const filter = audioContext.createBiquadFilter();
-      filter.type = 'highpass';
-      filter.frequency.value = 2000 + Math.random() * 3000;
-
-      const crackleeGain = audioContext.createGain();
-      crackleeGain.gain.value = (0.1 + Math.random() * 0.2) * (ambientNodes.masterGain || 0.3);
-
-      source.connect(filter);
-      filter.connect(crackleeGain);
-      crackleeGain.connect(audioContext.destination);
-      source.start();
-
-      setTimeout(scheduleCrackle, 100 + Math.random() * 500);
-    }
-
-    return { gainNode, scheduleCrackle };
-  }
-
   function startAmbient() {
     initAudio();
-    if (audioContext.state === 'suspended') {
-      audioContext.resume();
-    }
-
+    if (audioContext.state === 'suspended') audioContext.resume();
     ambientNodes.wind = createWindNoise();
-    ambientNodes.rumble = createVolcanicRumble();
-    ambientNodes.crackle = createEmberCrackle();
-    ambientNodes.masterGain = 0.3;
-
-    // Fade in
-    const volume = document.getElementById('ambientVolume').value / 100;
-    ambientNodes.wind.gainNode.gain.setTargetAtTime(0.15 * volume, audioContext.currentTime, 0.5);
-    ambientNodes.rumble.gainNode.gain.setTargetAtTime(0.2 * volume, audioContext.currentTime, 0.5);
-    ambientNodes.rumble.subGain.gain.setTargetAtTime(0.15 * volume, audioContext.currentTime, 0.5);
-
+    ambientNodes.rumble = createRumble();
+    const v = 0.3;
+    ambientNodes.wind.gainNode.gain.setTargetAtTime(0.15 * v, audioContext.currentTime, 0.5);
+    ambientNodes.rumble.gainNode.gain.setTargetAtTime(0.2 * v, audioContext.currentTime, 0.5);
+    ambientNodes.rumble.subGain.gain.setTargetAtTime(0.15 * v, audioContext.currentTime, 0.5);
     ambientPlaying = true;
-    ambientNodes.crackle.scheduleCrackle();
   }
-
   function stopAmbient() {
     if (!ambientNodes.wind) return;
-
-    const fadeTime = 0.5;
-    ambientNodes.wind.gainNode.gain.setTargetAtTime(0, audioContext.currentTime, fadeTime);
-    ambientNodes.rumble.gainNode.gain.setTargetAtTime(0, audioContext.currentTime, fadeTime);
-    ambientNodes.rumble.subGain.gain.setTargetAtTime(0, audioContext.currentTime, fadeTime);
-
+    const t = 0.5;
+    ambientNodes.wind.gainNode.gain.setTargetAtTime(0, audioContext.currentTime, t);
+    ambientNodes.rumble.gainNode.gain.setTargetAtTime(0, audioContext.currentTime, t);
+    ambientNodes.rumble.subGain.gain.setTargetAtTime(0, audioContext.currentTime, t);
     ambientPlaying = false;
-
     setTimeout(() => {
-      if (ambientNodes.wind) {
-        ambientNodes.wind.noise.stop();
-        ambientNodes.wind.lfo.stop();
-        ambientNodes.rumble.oscillator.stop();
-        ambientNodes.rumble.subOsc.stop();
-        ambientNodes.rumble.lfo.stop();
-        ambientNodes = {};
-      }
+      try {
+        ambientNodes.wind?.noise.stop();
+        ambientNodes.wind?.lfo.stop();
+        ambientNodes.rumble?.oscillator.stop();
+        ambientNodes.rumble?.subOsc.stop();
+        ambientNodes.rumble?.lfo.stop();
+      } catch(e) {}
+      ambientNodes = {};
     }, 1000);
   }
-
-  function updateAmbientVolume(value) {
-    if (!ambientPlaying) return;
-    const volume = value / 100;
-    ambientNodes.masterGain = volume;
-    ambientNodes.wind.gainNode.gain.setTargetAtTime(0.15 * volume, audioContext.currentTime, 0.1);
-    ambientNodes.rumble.gainNode.gain.setTargetAtTime(0.2 * volume, audioContext.currentTime, 0.1);
-    ambientNodes.rumble.subGain.gain.setTargetAtTime(0.15 * volume, audioContext.currentTime, 0.1);
-  }
-
-  // ========== TEXT-TO-SPEECH SYSTEM ==========
-  let currentUtterance = null;
-  let isSpeaking = false;
-
-  function getPageText() {
-    const activePage = document.querySelector('.page.active .page-inner');
-    if (!activePage) return '';
-
-    // Clone to avoid modifying original
-    const clone = activePage.cloneNode(true);
-
-    // Remove navigation elements
-    clone.querySelectorAll('.back-link, .nav-hint').forEach(el => el.remove());
-
-    // Get clean text
-    let text = clone.innerText;
-
-    // Clean up extra whitespace
-    text = text.replace(/\s+/g, ' ').trim();
-
-    return text;
-  }
-
-  function startTTS() {
-    if (!('speechSynthesis' in window)) {
-      alert('Text-to-speech is not supported in your browser.');
-      return;
+  document.getElementById('ambientBtn').addEventListener('click', () => {
+    initAudio();
+    if (ambientPlaying) {
+      stopAmbient();
+      document.getElementById('ambientBtn').classList.remove('active');
+    } else {
+      startAmbient();
+      document.getElementById('ambientBtn').classList.add('active');
     }
+  });
 
+  // ========== TTS ==========
+  let currentUtterance = null, isSpeaking = false;
+  function getPageText() {
+    const ap = document.querySelector('.page.active .page-inner');
+    if (!ap) return '';
+    const c = ap.cloneNode(true);
+    c.querySelectorAll('.back-link, .sketch-frame, .margin-note, .specimen-tag, svg, .page-header, .page-footer').forEach(el => el.remove());
+    return (c.innerText || '').replace(/\s+/g, ' ').trim();
+  }
+  function startTTS() {
+    if (!('speechSynthesis' in window)) { alert('Text-to-speech is not supported in your browser.'); return; }
     stopTTS();
-
     const text = getPageText();
     if (!text) return;
-
     currentUtterance = new SpeechSynthesisUtterance(text);
-    currentUtterance.rate = 0.9;
+    currentUtterance.rate = 0.92;
     currentUtterance.pitch = 1;
-    currentUtterance.volume = document.getElementById('ttsVolume').value / 100;
-
-    // Try to find a good English voice
+    currentUtterance.volume = 0.85;
     const voices = speechSynthesis.getVoices();
-    const preferredVoice = voices.find(v => v.lang.startsWith('en') && v.name.includes('Google')) ||
-                          voices.find(v => v.lang.startsWith('en') && v.name.includes('Natural')) ||
-                          voices.find(v => v.lang.startsWith('en'));
-    if (preferredVoice) {
-      currentUtterance.voice = preferredVoice;
-    }
-
+    const pref = voices.find(v => v.lang.startsWith('en') && v.name.includes('Google')) ||
+                 voices.find(v => v.lang.startsWith('en') && v.name.includes('Natural')) ||
+                 voices.find(v => v.lang.startsWith('en'));
+    if (pref) currentUtterance.voice = pref;
     currentUtterance.onstart = () => {
       isSpeaking = true;
       document.getElementById('readingIndicator').classList.add('visible');
       document.getElementById('ttsBtn').classList.add('active');
     };
-
-    currentUtterance.onend = () => {
+    currentUtterance.onend = currentUtterance.onerror = () => {
       isSpeaking = false;
       document.getElementById('readingIndicator').classList.remove('visible');
       document.getElementById('ttsBtn').classList.remove('active');
     };
-
-    currentUtterance.onerror = () => {
-      isSpeaking = false;
-      document.getElementById('readingIndicator').classList.remove('visible');
-      document.getElementById('ttsBtn').classList.remove('active');
-    };
-
     speechSynthesis.speak(currentUtterance);
   }
-
   function stopTTS() {
-    if (speechSynthesis.speaking) {
-      speechSynthesis.cancel();
-    }
+    if (window.speechSynthesis && speechSynthesis.speaking) speechSynthesis.cancel();
     isSpeaking = false;
-    document.getElementById('readingIndicator').classList.remove('visible');
-    document.getElementById('ttsBtn').classList.remove('active');
+    document.getElementById('readingIndicator')?.classList.remove('visible');
+    document.getElementById('ttsBtn')?.classList.remove('active');
   }
-
-  // Load voices
   if ('speechSynthesis' in window) {
     speechSynthesis.getVoices();
     speechSynthesis.onvoiceschanged = () => speechSynthesis.getVoices();
   }
-
-  // ========== EVENT LISTENERS ==========
-  const ambientBtn = document.getElementById('ambientBtn');
-  const ttsBtn = document.getElementById('ttsBtn');
-  const volumeControl = document.getElementById('volumeControl');
-
-  ambientBtn.addEventListener('click', () => {
-    initAudio();
-    if (ambientPlaying) {
-      stopAmbient();
-      ambientBtn.classList.remove('active');
-    } else {
-      startAmbient();
-      ambientBtn.classList.add('active');
-    }
+  document.getElementById('ttsBtn').addEventListener('click', () => {
+    if (isSpeaking) stopTTS(); else startTTS();
   });
-
-  ttsBtn.addEventListener('click', () => {
-    if (isSpeaking) {
-      stopTTS();
-    } else {
-      startTTS();
-    }
-  });
-
-  // Long press for volume control
-  let pressTimer;
-  [ambientBtn, ttsBtn].forEach(btn => {
-    btn.addEventListener('mousedown', () => {
-      pressTimer = setTimeout(() => {
-        volumeControl.classList.toggle('visible');
-      }, 500);
-    });
-    btn.addEventListener('mouseup', () => clearTimeout(pressTimer));
-    btn.addEventListener('mouseleave', () => clearTimeout(pressTimer));
-  });
-
-  // Click outside to close volume
-  document.addEventListener('click', (e) => {
-    if (!e.target.closest('.audio-panel')) {
-      volumeControl.classList.remove('visible');
-    }
-  });
-
-  document.getElementById('ambientVolume').addEventListener('input', (e) => {
-    updateAmbientVolume(e.target.value);
-  });
-
-  document.getElementById('ttsVolume').addEventListener('input', (e) => {
-    if (currentUtterance) {
-      currentUtterance.volume = e.target.value / 100;
-    }
-  });
-
-  // Stop TTS when changing pages
-  const originalShowPage = showPage;
-  showPage = function(n, direction) {
-    stopTTS();
-    originalShowPage(n, direction);
-  };
 </script>
 
 </body>
