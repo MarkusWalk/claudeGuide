@@ -650,6 +650,75 @@
   }
   .loc-tip::before { content: '✎ '; color: var(--vermillion); }
 
+  /* google maps links */
+  .map-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-family: 'Special Elite', monospace;
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    color: var(--vermillion);
+    text-decoration: none;
+    text-transform: uppercase;
+    padding: 2px 6px;
+    border: 1px solid var(--vermillion);
+    border-radius: 2px;
+    background: rgba(168, 46, 26, 0.05);
+    transition: all 0.18s;
+    vertical-align: middle;
+    white-space: nowrap;
+    cursor: pointer;
+  }
+  .map-link:hover, .map-link:active {
+    background: var(--vermillion);
+    color: var(--paper);
+    box-shadow: 0 2px 6px rgba(168, 46, 26, 0.4);
+  }
+  .map-link svg {
+    width: 10px; height: 10px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2;
+  }
+  .map-link.tiny {
+    padding: 1px 4px;
+    font-size: 8px;
+    margin-left: 4px;
+  }
+  .map-link.inline {
+    border: none;
+    background: none;
+    padding: 0 2px;
+    font-family: inherit;
+    font-size: inherit;
+    letter-spacing: 0;
+    text-transform: none;
+    color: var(--vermillion-deep);
+    text-decoration: underline;
+    text-decoration-color: rgba(168, 46, 26, 0.4);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+  }
+  .map-link.inline::after {
+    content: '↗';
+    margin-left: 1px;
+    font-size: 0.85em;
+    color: var(--vermillion);
+  }
+  .map-link.inline:hover {
+    background: rgba(168, 46, 26, 0.08);
+    box-shadow: none;
+    color: var(--vermillion-deep);
+  }
+  .loc-head .map-link {
+    margin-left: auto;
+  }
+  .leaflet-popup-content .map-link {
+    margin-top: 4px;
+    display: inline-flex;
+  }
+
   /* ========== COVER ========== */
   .cover-page {
     background: radial-gradient(ellipse at 50% 30%, #e2d2a8 0%, #c8b078 60%, #9a7c45 100%);
@@ -1321,9 +1390,9 @@
 
         <div class="info-panel">
           <div class="info-panel-title">Notable Episodes</div>
-          <p><strong>1669 · Catania</strong> — lava reached the Ionian Sea, swallowed villages, fused the harbour.</p>
-          <p><strong>1928 · Mascali</strong> — an entire town buried in three days.</p>
-          <p><strong>2002 · Sapienza</strong> — destroyed cable car pylons; still visible as a black scar.</p>
+          <p><strong>1669 · <a class="map-link inline" href="https://www.google.com/maps/search/?api=1&amp;query=Catania,Sicily" target="_blank" rel="noopener">Catania</a></strong> — lava reached the Ionian Sea, swallowed villages, fused the harbour.</p>
+          <p><strong>1928 · <a class="map-link inline" href="https://www.google.com/maps/search/?api=1&amp;query=Mascali,Sicily" target="_blank" rel="noopener">Mascali</a></strong> — an entire town buried in three days.</p>
+          <p><strong>2002 · <a class="map-link inline" href="https://www.google.com/maps/search/?api=1&amp;query=Rifugio+Sapienza+Etna" target="_blank" rel="noopener">Sapienza</a></strong> — destroyed cable car pylons; still visible as a black scar.</p>
           <p><strong>2021–24 · Southeast Crater</strong> — paroxysms added <em>~30 m</em> of new height.</p>
         </div>
 
@@ -1370,7 +1439,7 @@
         </div>
 
         <div class="body">
-          <p>From <em>Rifugio Sapienza</em> at 1,900 m, the <em>Funivia dell'Etna</em> climbs to 2,500 m in fifteen minutes over lunar fields of black scoria and silver ash. From the upper station, specialised <em>Unimog</em> 4×4 buses continue to <em>Torre del Filosofo</em> at 2,920 m, where guided walks to the summit craters begin.</p>
+          <p>From <a class="map-link inline" href="https://www.google.com/maps/search/?api=1&amp;query=Rifugio+Sapienza+Etna" target="_blank" rel="noopener"><em>Rifugio Sapienza</em></a> at 1,900 m, the <a class="map-link inline" href="https://www.google.com/maps/search/?api=1&amp;query=Funivia+dell%27Etna" target="_blank" rel="noopener"><em>Funivia dell'Etna</em></a> climbs to 2,500 m in fifteen minutes over lunar fields of black scoria and silver ash. From the upper station, specialised <em>Unimog</em> 4×4 buses continue to <a class="map-link inline" href="https://www.google.com/maps/search/?api=1&amp;query=Torre+del+Filosofo+Etna" target="_blank" rel="noopener"><em>Torre del Filosofo</em></a> at 2,920 m, where guided walks to the summit craters begin.</p>
         </div>
 
         <div class="info-panel">
@@ -1448,11 +1517,17 @@
               <div class="loc-name">Randazzo</div>
               <div class="loc-it">borgo medievale</div>
             </div>
+            <a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=Randazzo,Sicily" target="_blank" rel="noopener" title="Open in Google Maps">
+              <svg viewBox="0 0 24 24"><path d="M12 22s8-7 8-13a8 8 0 10-16 0c0 6 8 13 8 13z"/><circle cx="12" cy="9" r="2.5"/></svg>
+              MAP
+            </a>
           </div>
           <div class="loc-desc">
             A medieval town built entirely of <em>black volcanic stone</em> — miraculously spared by every lava flow that has come close. Its Sunday market is the heart of Etna wine country.
           </div>
-          <div class="loc-tip">Cantina Benanti or Passopisciaro for tastings with views over ancient vines.</div>
+          <div class="loc-tip">
+            <a class="map-link inline" href="https://www.google.com/maps/search/?api=1&amp;query=Cantina+Benanti+Etna" target="_blank" rel="noopener">Cantina Benanti</a> or <a class="map-link inline" href="https://www.google.com/maps/search/?api=1&amp;query=Passopisciaro+winery" target="_blank" rel="noopener">Passopisciaro</a> for tastings with views over ancient vines.
+          </div>
         </div>
 
         <div class="section-head">
@@ -1460,11 +1535,11 @@
           <span class="label">Villages of Note</span>
         </div>
         <ul class="feat-list">
-          <li><strong>Bronte</strong> — pistachio capital of Italy. Everything green, everything delicious.</li>
-          <li><strong>Zafferana Etnea</strong> — honey town; the autumn <em>Ottobrata</em> festival fills the streets.</li>
-          <li><strong>Linguaglossa</strong> — gateway to the northern slopes and the best winter ski-touring.</li>
-          <li><strong>Nicolosi</strong> — closest to Rifugio Sapienza; base for excursions.</li>
-          <li><strong>Milo</strong> — tiny, quiet, with a celebrated wine cooperative.</li>
+          <li><strong>Bronte</strong> <a class="map-link tiny" href="https://www.google.com/maps/search/?api=1&amp;query=Bronte,Sicily" target="_blank" rel="noopener">MAP</a> — pistachio capital of Italy. Everything green, everything delicious.</li>
+          <li><strong>Zafferana Etnea</strong> <a class="map-link tiny" href="https://www.google.com/maps/search/?api=1&amp;query=Zafferana+Etnea" target="_blank" rel="noopener">MAP</a> — honey town; the autumn <em>Ottobrata</em> festival fills the streets.</li>
+          <li><strong>Linguaglossa</strong> <a class="map-link tiny" href="https://www.google.com/maps/search/?api=1&amp;query=Linguaglossa,Sicily" target="_blank" rel="noopener">MAP</a> — gateway to the northern slopes and the best winter ski-touring.</li>
+          <li><strong>Nicolosi</strong> <a class="map-link tiny" href="https://www.google.com/maps/search/?api=1&amp;query=Nicolosi,Sicily" target="_blank" rel="noopener">MAP</a> — closest to Rifugio Sapienza; base for excursions.</li>
+          <li><strong>Milo</strong> <a class="map-link tiny" href="https://www.google.com/maps/search/?api=1&amp;query=Milo,Sicily" target="_blank" rel="noopener">MAP</a> — tiny, quiet, with a celebrated wine cooperative.</li>
         </ul>
 
         <p class="margin-note" style="top: 540px;">try the lava-stone grilled sausage at any rifugio</p>
@@ -1475,7 +1550,7 @@
         </div>
 
         <div class="body">
-          <p>A narrow-gauge train circles the volcano in three slow hours, from <em>Catania Borgo</em> to <em>Riposto</em> via Randazzo. It passes through lava fields, chestnut groves, blood-orange orchards and almond terraces.</p>
+          <p>A narrow-gauge train circles the volcano in three slow hours, from <a class="map-link inline" href="https://www.google.com/maps/search/?api=1&amp;query=Catania+Borgo+station" target="_blank" rel="noopener"><em>Catania Borgo</em></a> to <a class="map-link inline" href="https://www.google.com/maps/search/?api=1&amp;query=Riposto+station+Sicily" target="_blank" rel="noopener"><em>Riposto</em></a> via Randazzo. It passes through lava fields, chestnut groves, blood-orange orchards and almond terraces.</p>
         </div>
 
         <div class="info-panel">
@@ -1585,7 +1660,7 @@
         </div>
 
         <div class="body">
-          <p>The <em>Teatro Antico</em> is the prize. Built by the Greeks in the 3rd century B.C. and modified by the Romans, it offers a stage framed by Mount Etna and the sea — perhaps the most theatrical view in the Mediterranean. Arrive at opening time to catch the light raking the stones. In summer the theatre still hosts concerts and operas; an evening performance against Etna's silhouette is a memory you do not forget.</p>
+          <p>The <a class="map-link inline" href="https://www.google.com/maps/search/?api=1&amp;query=Teatro+Antico+di+Taormina" target="_blank" rel="noopener"><em>Teatro Antico</em></a> is the prize. Built by the Greeks in the 3rd century B.C. and modified by the Romans, it offers a stage framed by Mount Etna and the sea — perhaps the most theatrical view in the Mediterranean. Arrive at opening time to catch the light raking the stones. In summer the theatre still hosts concerts and operas; an evening performance against Etna's silhouette is a memory you do not forget.</p>
         </div>
 
         <div class="quote">
@@ -1636,11 +1711,15 @@
               <div class="loc-name">Isola Bella</div>
               <div class="loc-it">la perla del Mediterraneo</div>
             </div>
+            <a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=Isola+Bella+Taormina" target="_blank" rel="noopener" title="Open in Google Maps">
+              <svg viewBox="0 0 24 24"><path d="M12 22s8-7 8-13a8 8 0 10-16 0c0 6 8 13 8 13z"/><circle cx="12" cy="9" r="2.5"/></svg>
+              MAP
+            </a>
           </div>
           <div class="loc-desc">
             A pearl of an island in a perfect cove, joined to the beach by a sandbar that appears and disappears with the tide. Once private, now a nature reserve. The water is <em>impossibly clear</em>.
           </div>
-          <div class="loc-tip">take the funivia down (€3) — the walk back up is murder in summer</div>
+          <div class="loc-tip">take the <a class="map-link inline" href="https://www.google.com/maps/search/?api=1&amp;query=Funivia+Taormina+Mazzaro" target="_blank" rel="noopener">funivia</a> down (€3) — the walk back up is murder in summer</div>
         </div>
 
         <div class="section-head">
@@ -1649,15 +1728,15 @@
         </div>
 
         <ul class="feat-list">
-          <li><strong>Corso Umberto</strong> — the long pedestrianised spine; cafés, gelato, evening passeggiata.</li>
-          <li><strong>Piazza IX Aprile</strong> — chequerboard terrace over the sea; sit here at sunset.</li>
-          <li><strong>Porta Catania &amp; Porta Messina</strong> — the two medieval gates that bookend the corso.</li>
-          <li><strong>Villa Comunale</strong> — Victorian gardens with eccentric follies and Etna views (free).</li>
-          <li><strong>Duomo di San Nicolò</strong> — fortified cathedral; black lava stone meets baroque marble.</li>
-          <li><strong>Naumachie</strong> — a Roman gymnasium wall hidden behind a row of houses.</li>
+          <li><strong>Corso Umberto</strong> <a class="map-link tiny" href="https://www.google.com/maps/search/?api=1&amp;query=Corso+Umberto+Taormina" target="_blank" rel="noopener">MAP</a> — the long pedestrianised spine; cafés, gelato, evening passeggiata.</li>
+          <li><strong>Piazza IX Aprile</strong> <a class="map-link tiny" href="https://www.google.com/maps/search/?api=1&amp;query=Piazza+IX+Aprile+Taormina" target="_blank" rel="noopener">MAP</a> — chequerboard terrace over the sea; sit here at sunset.</li>
+          <li><strong>Porta Catania &amp; Porta Messina</strong> <a class="map-link tiny" href="https://www.google.com/maps/search/?api=1&amp;query=Porta+Catania+Taormina" target="_blank" rel="noopener">MAP</a> — the two medieval gates that bookend the corso.</li>
+          <li><strong>Villa Comunale</strong> <a class="map-link tiny" href="https://www.google.com/maps/search/?api=1&amp;query=Villa+Comunale+Taormina" target="_blank" rel="noopener">MAP</a> — Victorian gardens with eccentric follies and Etna views (free).</li>
+          <li><strong>Duomo di San Nicolò</strong> <a class="map-link tiny" href="https://www.google.com/maps/search/?api=1&amp;query=Duomo+di+San+Nicolo+Taormina" target="_blank" rel="noopener">MAP</a> — fortified cathedral; black lava stone meets baroque marble.</li>
+          <li><strong>Naumachie</strong> <a class="map-link tiny" href="https://www.google.com/maps/search/?api=1&amp;query=Naumachie+Taormina" target="_blank" rel="noopener">MAP</a> — a Roman gymnasium wall hidden behind a row of houses.</li>
         </ul>
 
-        <p class="margin-note right" style="top: 410px;">the Bam Bar makes the best granita in Sicily — fight me</p>
+        <p class="margin-note right" style="top: 410px;">the <a class="map-link inline" href="https://www.google.com/maps/search/?api=1&amp;query=Bam+Bar+Taormina" target="_blank" rel="noopener">Bam Bar</a> makes the best granita in Sicily — fight me</p>
 
         <div class="section-head">
           <span class="num">iii</span>
@@ -1671,11 +1750,15 @@
               <div class="loc-name">Castelmola</div>
               <div class="loc-it">il borgo sopra Taormina</div>
             </div>
+            <a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=Castelmola,Sicily" target="_blank" rel="noopener" title="Open in Google Maps">
+              <svg viewBox="0 0 24 24"><path d="M12 22s8-7 8-13a8 8 0 10-16 0c0 6 8 13 8 13z"/><circle cx="12" cy="9" r="2.5"/></svg>
+              MAP
+            </a>
           </div>
           <div class="loc-desc">
             A ten-minute drive (or a steep, lovely walk) above Taormina. A handful of stone streets, a ruined castle, and the most complete view of Etna and the coast you will see from anywhere — sea on one side, volcano on the other.
           </div>
-          <div class="loc-tip">try the almond wine at Bar Turrisi</div>
+          <div class="loc-tip">try the almond wine at <a class="map-link inline" href="https://www.google.com/maps/search/?api=1&amp;query=Bar+Turrisi+Castelmola" target="_blank" rel="noopener">Bar Turrisi</a></div>
         </div>
 
         <span class="specimen-tag">PRESSED · genista aetnensis · Castelmola, June</span>
@@ -1719,9 +1802,9 @@
         </div>
 
         <div class="body">
-          <p><strong>To Etna:</strong> from Catania, take the A18 then the SP92 to <em>Rifugio Sapienza</em> (~1 h). AST buses run from Piazza Papa Giovanni XXIII once a day.</p>
-          <p><strong>To Taormina:</strong> Catania to Taormina by train (~50 min) or by car along the A18 (~45 min).</p>
-          <p><strong>Combined:</strong> stay in Taormina, take a guided full-day Etna excursion.</p>
+          <p><strong>To Etna:</strong> from <a class="map-link inline" href="https://www.google.com/maps/search/?api=1&amp;query=Catania,Sicily" target="_blank" rel="noopener">Catania</a>, take the A18 then the SP92 to <a class="map-link inline" href="https://www.google.com/maps/dir/?api=1&amp;origin=Catania&amp;destination=Rifugio+Sapienza+Etna" target="_blank" rel="noopener"><em>Rifugio Sapienza</em></a> (~1 h). AST buses run from <a class="map-link inline" href="https://www.google.com/maps/search/?api=1&amp;query=Piazza+Papa+Giovanni+XXIII+Catania" target="_blank" rel="noopener">Piazza Papa Giovanni XXIII</a> once a day.</p>
+          <p><strong>To Taormina:</strong> <a class="map-link inline" href="https://www.google.com/maps/dir/?api=1&amp;origin=Catania&amp;destination=Taormina" target="_blank" rel="noopener">Catania to Taormina</a> by train (~50 min) or by car along the A18 (~45 min).</p>
+          <p><strong>Combined:</strong> stay in <a class="map-link inline" href="https://www.google.com/maps/search/?api=1&amp;query=Taormina,Sicily" target="_blank" rel="noopener">Taormina</a>, take a guided full-day Etna excursion.</p>
         </div>
 
         <div class="section-head">
@@ -2208,8 +2291,11 @@ function initSicilyMap() {
   });
   L.marker([37.751, 14.993], { icon: etnaIcon })
     .addTo(leafletMap)
-    .bindPopup('<strong>Mount Etna</strong><br>3,357 m · UNESCO 2013<br><em>la Muntagna</em>')
-    .on('click', () => {});
+    .bindPopup(
+      '<strong>Mount Etna</strong><br>3,357 m · UNESCO 2013<br><em>la Muntagna</em>' +
+      '<br><a class="map-link" href="https://www.google.com/maps/search/?api=1&query=Mount+Etna" target="_blank" rel="noopener">' +
+      '<svg viewBox="0 0 24 24" style="width:10px;height:10px;stroke:currentColor;fill:none;stroke-width:2;"><path d="M12 22s8-7 8-13a8 8 0 10-16 0c0 6 8 13 8 13z"/><circle cx="12" cy="9" r="2.5"/></svg> GOOGLE MAPS</a>'
+    );
 
   // Taormina marker
   const taoIcon = L.divIcon({
@@ -2220,7 +2306,11 @@ function initSicilyMap() {
   });
   L.marker([37.852, 15.291], { icon: taoIcon })
     .addTo(leafletMap)
-    .bindPopup('<strong>Taormina</strong><br>200 m · cliffside town<br><em>il balcone di Sicilia</em>');
+    .bindPopup(
+      '<strong>Taormina</strong><br>200 m · cliffside town<br><em>il balcone di Sicilia</em>' +
+      '<br><a class="map-link" href="https://www.google.com/maps/search/?api=1&query=Taormina,Sicily" target="_blank" rel="noopener">' +
+      '<svg viewBox="0 0 24 24" style="width:10px;height:10px;stroke:currentColor;fill:none;stroke-width:2;"><path d="M12 22s8-7 8-13a8 8 0 10-16 0c0 6 8 13 8 13z"/><circle cx="12" cy="9" r="2.5"/></svg> GOOGLE MAPS</a>'
+    );
 
   // Catania (small, secondary)
   const catIcon = L.divIcon({
@@ -2231,7 +2321,11 @@ function initSicilyMap() {
   });
   L.marker([37.502, 15.087], { icon: catIcon })
     .addTo(leafletMap)
-    .bindPopup('<strong>Catania</strong><br>arrival point');
+    .bindPopup(
+      '<strong>Catania</strong><br>arrival point · airport &amp; trains' +
+      '<br><a class="map-link" href="https://www.google.com/maps/search/?api=1&query=Catania,Sicily" target="_blank" rel="noopener">' +
+      '<svg viewBox="0 0 24 24" style="width:10px;height:10px;stroke:currentColor;fill:none;stroke-width:2;"><path d="M12 22s8-7 8-13a8 8 0 10-16 0c0 6 8 13 8 13z"/><circle cx="12" cy="9" r="2.5"/></svg> GOOGLE MAPS</a>'
+    );
 
   // route line
   L.polyline(
