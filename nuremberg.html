@@ -1,0 +1,2898 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>FR 904 → Nürnberg · A Travel Companion</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Italianno&family=Caveat:wght@400;500;600;700&family=Special+Elite&family=UnifrakturMaguntia&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://unpkg.com/three@0.144.0/build/three.min.js"></script>
+<script src="https://unpkg.com/three@0.144.0/examples/js/controls/OrbitControls.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tsparticles@2.12.0/tsparticles.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+
+<style>
+  :root {
+    --paper:        #f2e9d4;
+    --paper-warm:   #ede2c5;
+    --paper-cool:   #ebe2c8;
+    --paper-edge:   #c9b88a;
+    --paper-deep:   #b8a576;
+
+    --ink:          #1f1810;
+    --ink-soft:     #4a3a25;
+    --ink-faint:    #7a6440;
+    --ink-ghost:    #a39072;
+
+    --pen:          #1d2a3a;
+
+    /* Nuremberg sandstone red */
+    --sandstone:        #b53e2a;
+    --sandstone-deep:   #82261a;
+    --rust:             #c45e34;
+
+    /* Bavarian / Franconian palette */
+    --bavaria-blue:     #0a4d8c;
+    --bavaria-blue-deep:#0a3260;
+    --bavaria-light:    #4a90c5;
+    --sky:              #6a9bc8;
+
+    --gold:        #b8893a;
+    --gold-light:  #d6b46a;
+    --gold-deep:   #8a6420;
+
+    --franc-green: #4a5c3e;
+    --half-timber: #3a2817;
+
+    --shadow:       rgba(40, 28, 14, 0.18);
+    --shadow-deep:  rgba(30, 20, 10, 0.45);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; width: 100%; overflow: hidden; overscroll-behavior: none; }
+
+  body {
+    font-family: 'EB Garamond', Georgia, serif;
+    color: var(--ink);
+    background:
+      radial-gradient(ellipse at 50% 0%, rgba(10, 77, 140, 0.18) 0%, transparent 55%),
+      radial-gradient(ellipse at 50% 100%, rgba(184, 137, 58, 0.12) 0%, transparent 55%),
+      radial-gradient(ellipse at center, #2a3a4f 0%, #16202c 60%, #0a1118 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    position: relative;
+  }
+
+  #tsparticles {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  /* ========== BOOK ========== */
+  .book {
+    position: relative;
+    width: 100%;
+    max-width: 480px;
+    height: calc(100vh - 24px);
+    max-height: 820px;
+    perspective: 1800px;
+    z-index: 1;
+  }
+  .pages { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; }
+
+  .page {
+    position: absolute;
+    inset: 0;
+    background: var(--paper);
+    border-radius: 3px 12px 12px 3px;
+    box-shadow:
+      0 4px 22px var(--shadow),
+      0 18px 50px var(--shadow-deep),
+      inset 0 0 80px rgba(160, 110, 60, 0.18),
+      inset 10px 0 18px rgba(110, 75, 38, 0.16);
+    overflow: hidden;
+    opacity: 0;
+    pointer-events: none;
+    transform: rotateY(-12deg) translateX(-30px) scale(0.96);
+    transition:
+      opacity 0.55s cubic-bezier(.2,.7,.3,1),
+      transform 0.65s cubic-bezier(.2,.7,.3,1);
+    transform-origin: left center;
+  }
+  .page.active {
+    opacity: 1; pointer-events: auto;
+    transform: rotateY(0) translateX(0) scale(1);
+    z-index: 2;
+  }
+  .page.leaving-right { opacity: 0; transform: rotateY(-72deg) translateX(-50px) scale(0.92); z-index: 1; }
+  .page.leaving-left  { opacity: 0; transform: rotateY(0) translateX(40px) scale(0.96);    z-index: 1; }
+
+  .page::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      radial-gradient(circle at 22% 28%, rgba(140, 90, 40, 0.06) 0%, transparent 36%),
+      radial-gradient(circle at 78% 72%, rgba(120, 80, 40, 0.07) 0%, transparent 42%),
+      radial-gradient(circle at 50% 88%, rgba(180, 120, 60, 0.05) 0%, transparent 36%),
+      url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='320' height='320'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' seed='4'/><feColorMatrix values='0 0 0 0 0.32 0 0 0 0 0.21 0 0 0 0 0.1 0 0 0 0.09 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+    pointer-events: none;
+    mix-blend-mode: multiply;
+    z-index: 1;
+  }
+  .page::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60px 30px at 8% 12%, rgba(140, 90, 40, 0.18) 0%, transparent 70%),
+      radial-gradient(ellipse 40px 20px at 92% 88%, rgba(140, 90, 40, 0.14) 0%, transparent 70%),
+      linear-gradient(90deg, rgba(80, 50, 25, 0.18) 0%, transparent 4%, transparent 96%, rgba(80, 50, 25, 0.12) 100%);
+    pointer-events: none;
+    mix-blend-mode: multiply;
+    z-index: 1;
+  }
+
+  .page-inner {
+    position: relative;
+    height: 100%;
+    width: 100%;
+    padding: 28px 24px 56px 38px;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    overflow-x: hidden;
+    z-index: 3;
+    scrollbar-width: thin;
+    scrollbar-color: var(--ink-faint) transparent;
+  }
+  .page-inner::-webkit-scrollbar { width: 3px; }
+  .page-inner::-webkit-scrollbar-thumb { background: var(--ink-faint); border-radius: 2px; }
+
+  .ruled-margin {
+    position: absolute;
+    top: 0; bottom: 0;
+    left: 30px;
+    width: 1px;
+    background: linear-gradient(to bottom,
+      transparent 0%,
+      rgba(10, 77, 140, 0.28) 6%,
+      rgba(10, 77, 140, 0.42) 50%,
+      rgba(10, 77, 140, 0.28) 94%,
+      transparent 100%);
+    z-index: 2;
+    pointer-events: none;
+  }
+  .ruled-page {
+    position: absolute;
+    inset: 0;
+    background-image: repeating-linear-gradient(
+      to bottom,
+      transparent 0px, transparent 25px,
+      rgba(80, 60, 35, 0.05) 26px, rgba(80, 60, 35, 0.05) 26.5px,
+      transparent 26.5px, transparent 27px
+    );
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 8px;
+    margin-bottom: 6px;
+    border-bottom: 1px solid var(--ink-ghost);
+    font-family: 'Special Elite', monospace;
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+  }
+  .page-header .pn-stamp {
+    color: var(--sandstone);
+    border: 1px solid var(--sandstone);
+    padding: 1px 6px;
+    border-radius: 2px;
+    font-weight: 700;
+    transform: rotate(-2deg);
+    background: rgba(181, 62, 42, 0.05);
+  }
+
+  .page-footer {
+    margin-top: auto;
+    padding-top: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-family: 'Special Elite', monospace;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+  }
+  .page-footer .flourish {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--ink-ghost) 30%, var(--ink-ghost) 70%, transparent);
+    margin: 0 12px;
+  }
+  .footer-num { color: var(--sandstone); font-weight: 700; }
+
+  /* marginalia */
+  .margin-note {
+    position: absolute;
+    left: -3px;
+    width: 78px;
+    font-family: 'Caveat', cursive;
+    font-size: 14px;
+    color: var(--pen);
+    line-height: 1.15;
+    transform: rotate(-3deg);
+    z-index: 4;
+    pointer-events: none;
+    opacity: 0.78;
+  }
+  .margin-note.right {
+    left: auto; right: -2px;
+    transform: rotate(2deg);
+    text-align: right;
+  }
+  .margin-note::before {
+    content: '↳';
+    color: var(--sandstone);
+    margin-right: 3px;
+  }
+  .margin-note.right::before { content: '↰'; margin-right: 0; margin-left: 3px; }
+
+  .tag {
+    display: inline-block;
+    font-family: 'Special Elite', monospace;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    border: 1px solid var(--ink-faint);
+    padding: 3px 8px;
+    border-radius: 2px;
+    background: rgba(245, 232, 200, 0.5);
+    transform: rotate(-1deg);
+    margin: 2px 4px 2px 0;
+  }
+  .tag.red { color: var(--sandstone); border-color: var(--sandstone); background: rgba(181, 62, 42, 0.06); }
+  .tag.blue { color: var(--bavaria-blue); border-color: var(--bavaria-blue); background: rgba(10, 77, 140, 0.06); }
+  .tag.green { color: var(--franc-green); border-color: var(--franc-green); background: rgba(74, 92, 62, 0.08); }
+  .tag.gold { color: var(--gold-deep); border-color: var(--gold); background: rgba(184, 137, 58, 0.08); }
+
+  /* typography */
+  .eyebrow {
+    font-family: 'Special Elite', monospace;
+    font-size: 10px;
+    letter-spacing: 0.45em;
+    color: var(--sandstone);
+    text-transform: uppercase;
+    text-align: center;
+    margin-bottom: 4px;
+  }
+  .display-title {
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    font-size: 30px;
+    line-height: 0.98;
+    letter-spacing: 0.05em;
+    text-align: center;
+    color: var(--ink);
+    text-shadow: 0 1px 0 rgba(255, 245, 220, 0.6);
+  }
+  .script-sub {
+    font-family: 'Italianno', cursive;
+    font-size: 32px;
+    line-height: 1;
+    text-align: center;
+    color: var(--bavaria-blue);
+    margin-top: -2px;
+  }
+  .gothic {
+    font-family: 'UnifrakturMaguntia', serif;
+    color: var(--sandstone-deep);
+  }
+  .meta-line {
+    font-family: 'Special Elite', monospace;
+    font-size: 9px;
+    letter-spacing: 0.25em;
+    color: var(--ink-faint);
+    text-align: center;
+    text-transform: uppercase;
+    margin: 6px 0 4px;
+  }
+  .lead {
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    font-size: 14.5px;
+    line-height: 1.55;
+    text-align: center;
+    color: var(--ink-soft);
+    margin: 8px 4px 12px;
+  }
+  .body {
+    font-family: 'EB Garamond', serif;
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--ink);
+    text-align: justify;
+    hyphens: auto;
+  }
+  .body p { margin-bottom: 10px; }
+  .body p:last-child { margin-bottom: 0; }
+  .body em { color: var(--sandstone-deep); font-style: italic; }
+  .body strong { color: var(--ink); font-weight: 600; }
+  .body .pen-underline {
+    text-decoration: underline;
+    text-decoration-color: var(--bavaria-blue);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+  }
+  .drop-cap::first-letter {
+    font-family: 'UnifrakturMaguntia', serif;
+    font-size: 56px;
+    font-weight: 700;
+    float: left;
+    line-height: 0.85;
+    padding: 8px 10px 0 0;
+    color: var(--sandstone-deep);
+    text-shadow: 0 1px 0 rgba(255, 245, 220, 0.5);
+  }
+
+  .section-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 14px 0 8px;
+  }
+  .section-head .num {
+    font-family: 'Cinzel', serif;
+    font-weight: 600;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--sandstone);
+    border: 1px solid var(--sandstone);
+    padding: 2px 6px;
+    border-radius: 50%;
+    width: 22px; height: 22px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .section-head .label {
+    font-family: 'Cinzel', serif;
+    font-weight: 600;
+    font-size: 12px;
+    letter-spacing: 0.32em;
+    color: var(--ink);
+    text-transform: uppercase;
+    flex: 1;
+    border-bottom: 1px solid var(--ink-ghost);
+    padding-bottom: 4px;
+  }
+
+  .sketch-frame {
+    position: relative;
+    margin: 14px 6px 18px;
+    padding: 14px 12px 30px;
+    background: rgba(252, 246, 226, 0.55);
+    border: 1px solid var(--ink-ghost);
+    box-shadow:
+      0 2px 6px rgba(60, 40, 20, 0.12),
+      inset 0 0 30px rgba(160, 110, 60, 0.08);
+  }
+  .sketch-frame::before, .sketch-frame::after {
+    content: '';
+    position: absolute;
+    width: 14px; height: 14px;
+    border: 1.5px solid var(--bavaria-blue);
+  }
+  .sketch-frame::before { top: -1px; left: -1px; border-right: none; border-bottom: none; }
+  .sketch-frame::after  { bottom: -1px; right: -1px; border-left: none; border-top: none; }
+  .sketch-frame svg, .sketch-frame .frame-target { width: 100%; height: auto; display: block; }
+  .sketch-caption {
+    position: absolute;
+    bottom: 6px; left: 0; right: 0;
+    text-align: center;
+    font-family: 'Caveat', cursive;
+    font-size: 14px;
+    color: var(--pen);
+  }
+  .sketch-caption .fig {
+    font-family: 'Special Elite', monospace;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    color: var(--sandstone);
+    text-transform: uppercase;
+    margin-right: 6px;
+  }
+
+  .info-panel {
+    background:
+      linear-gradient(135deg, rgba(10, 77, 140, 0.05) 0%, rgba(74, 144, 197, 0.04) 100%),
+      var(--paper-warm);
+    border: 1px solid var(--ink-ghost);
+    border-left: 3px solid var(--bavaria-blue);
+    padding: 12px 14px;
+    margin: 14px 0;
+    border-radius: 0 4px 4px 0;
+    position: relative;
+  }
+  .info-panel::before {
+    content: '';
+    position: absolute;
+    top: -6px;
+    left: 12px; right: 12px;
+    height: 6px;
+    background:
+      repeating-linear-gradient(45deg, transparent 0, transparent 3px,
+        rgba(10, 77, 140, 0.18) 3px, rgba(10, 77, 140, 0.18) 5px);
+  }
+  .info-panel-title {
+    font-family: 'Special Elite', monospace;
+    font-size: 9px;
+    color: var(--bavaria-blue);
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .info-panel-title::before { content: '◈'; color: var(--gold); font-size: 12px; }
+  .info-panel.red { border-left-color: var(--sandstone); }
+  .info-panel.red .info-panel-title { color: var(--sandstone); }
+  .info-panel.red::before {
+    background: repeating-linear-gradient(45deg, transparent 0, transparent 3px,
+      rgba(181, 62, 42, 0.18) 3px, rgba(181, 62, 42, 0.18) 5px);
+  }
+  .info-panel p { font-size: 13.5px; line-height: 1.55; color: var(--ink); margin-bottom: 6px; }
+  .info-panel p:last-child { margin-bottom: 0; }
+  .info-panel strong { color: var(--sandstone-deep); }
+
+  .feat-list { list-style: none; margin: 12px 0; }
+  .feat-list li {
+    position: relative;
+    padding: 5px 0 5px 22px;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--ink);
+    border-bottom: 1px dotted rgba(10, 77, 140, 0.22);
+  }
+  .feat-list li:last-child { border-bottom: none; }
+  .feat-list li::before {
+    content: '✦';
+    position: absolute;
+    left: 2px; top: 5px;
+    color: var(--bavaria-blue);
+    font-size: 11px;
+  }
+  .feat-list li strong { font-family: 'Cinzel', serif; font-size: 12px; color: var(--ink); letter-spacing: 0.04em; }
+
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin: 14px 0;
+  }
+  .stat-cell {
+    background: rgba(252, 246, 226, 0.6);
+    border: 1px solid var(--ink-ghost);
+    padding: 8px 10px;
+    text-align: center;
+    position: relative;
+  }
+  .stat-cell::before {
+    content: '';
+    position: absolute;
+    inset: 2px;
+    border: 1px dotted var(--ink-ghost);
+    pointer-events: none;
+  }
+  .stat-val {
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    font-size: 16px;
+    color: var(--bavaria-blue);
+    letter-spacing: 0.04em;
+  }
+  .stat-lbl {
+    font-family: 'Special Elite', monospace;
+    font-size: 8px;
+    color: var(--ink-faint);
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    margin-top: 3px;
+  }
+
+  .quote {
+    text-align: center;
+    padding: 14px 18px;
+    margin: 16px 6px;
+    border-top: 1px solid var(--ink-ghost);
+    border-bottom: 1px solid var(--ink-ghost);
+    position: relative;
+  }
+  .quote::before {
+    content: '"';
+    position: absolute;
+    top: -8px; left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Cinzel', serif;
+    font-size: 32px;
+    color: var(--sandstone);
+    background: var(--paper);
+    padding: 0 8px;
+    line-height: 1;
+  }
+  .quote-text {
+    font-family: 'Italianno', cursive;
+    font-size: 22px;
+    color: var(--ink);
+    line-height: 1.25;
+    margin: 6px 0 4px;
+  }
+  .quote-author {
+    font-family: 'Special Elite', monospace;
+    font-size: 8px;
+    color: var(--ink-faint);
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+  }
+
+  .loc-card {
+    background: rgba(252, 246, 226, 0.55);
+    border: 1px solid var(--ink-ghost);
+    padding: 12px 14px;
+    margin: 12px 0;
+    position: relative;
+  }
+  .loc-card::after {
+    content: '';
+    position: absolute;
+    top: -1px; left: -1px; right: -1px;
+    height: 2px;
+    background: var(--sandstone);
+  }
+  .loc-head { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .loc-icon {
+    width: 28px; height: 28px;
+    border: 1.5px solid var(--sandstone);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--sandstone);
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    font-size: 12px;
+    background: var(--paper);
+    flex-shrink: 0;
+  }
+  .loc-name { font-family: 'Cinzel', serif; font-size: 13px; font-weight: 600; color: var(--ink); letter-spacing: 0.05em; line-height: 1.1; }
+  .loc-it { font-family: 'EB Garamond', serif; font-style: italic; font-size: 12px; color: var(--ink-faint); margin-top: 1px; }
+  .loc-desc { font-size: 13.5px; line-height: 1.55; color: var(--ink); text-align: left; }
+  .loc-desc em { color: var(--sandstone-deep); }
+  .loc-tip {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px dotted var(--ink-ghost);
+    font-family: 'Caveat', cursive;
+    font-size: 14px;
+    color: var(--pen);
+    line-height: 1.25;
+  }
+  .loc-tip::before { content: '✎ '; color: var(--sandstone); }
+
+  /* google maps links */
+  .map-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-family: 'Special Elite', monospace;
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    color: var(--sandstone);
+    text-decoration: none;
+    text-transform: uppercase;
+    padding: 2px 6px;
+    border: 1px solid var(--sandstone);
+    border-radius: 2px;
+    background: rgba(181, 62, 42, 0.05);
+    transition: all 0.18s;
+    vertical-align: middle;
+    white-space: nowrap;
+    cursor: pointer;
+  }
+  .map-link:hover, .map-link:active {
+    background: var(--sandstone);
+    color: var(--paper);
+    box-shadow: 0 2px 6px rgba(181, 62, 42, 0.4);
+  }
+  .map-link svg { width: 10px; height: 10px; stroke: currentColor; fill: none; stroke-width: 2; }
+  .map-link.tiny { padding: 1px 4px; font-size: 8px; margin-left: 4px; }
+  .map-link.inline {
+    border: none; background: none;
+    padding: 0 2px;
+    font-family: inherit; font-size: inherit;
+    letter-spacing: 0; text-transform: none;
+    color: var(--sandstone-deep);
+    text-decoration: underline;
+    text-decoration-color: rgba(181, 62, 42, 0.4);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+  }
+  .map-link.inline::after {
+    content: '↗';
+    margin-left: 1px;
+    font-size: 0.85em;
+    color: var(--sandstone);
+  }
+  .map-link.inline:hover { background: rgba(181, 62, 42, 0.08); box-shadow: none; color: var(--sandstone-deep); }
+  .loc-head .map-link { margin-left: auto; }
+
+  /* ========== COVER ========== */
+  .cover-page {
+    background:
+      radial-gradient(ellipse at 50% 30%, #e8d8a8 0%, #c9a87a 60%, #9a7a48 100%);
+  }
+  .cover-page::before {
+    background-image:
+      url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='320' height='320'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' seed='6'/><feColorMatrix values='0 0 0 0 0.32 0 0 0 0 0.21 0 0 0 0 0.1 0 0 0 0.16 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  }
+
+  .cover-inner {
+    position: relative;
+    height: 100%;
+    width: 100%;
+    padding: 22px 20px 50px;
+    display: flex;
+    flex-direction: column;
+    z-index: 3;
+  }
+  .cover-frame {
+    position: relative;
+    flex: 1;
+    border: 2px double var(--ink);
+    padding: 16px 14px 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(252, 246, 226, 0.15);
+  }
+  .cover-frame::before, .cover-frame::after {
+    content: '';
+    position: absolute;
+    width: 26px; height: 26px;
+  }
+  .cover-frame::before { top: 4px; left: 4px; border-left: 1px solid var(--ink); border-top: 1px solid var(--ink); }
+  .cover-frame::after  { bottom: 4px; right: 4px; border-right: 1px solid var(--ink); border-bottom: 1px solid var(--ink); }
+
+  .cover-top { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .cover-pre {
+    font-family: 'Special Elite', monospace;
+    font-size: 9px;
+    letter-spacing: 0.5em;
+    color: var(--ink-soft);
+    text-transform: uppercase;
+  }
+  .cover-coords {
+    font-family: 'Special Elite', monospace;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    color: var(--ink-faint);
+    margin-top: 2px;
+  }
+  .cover-title {
+    font-family: 'UnifrakturMaguntia', serif;
+    font-weight: 400;
+    font-size: 56px;
+    line-height: 1;
+    letter-spacing: 0.02em;
+    color: var(--sandstone-deep);
+    text-align: center;
+    margin: 4px 0 2px;
+    text-shadow: 0 1px 0 rgba(255, 245, 220, 0.5);
+  }
+  .cover-flight {
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.4em;
+    color: var(--bavaria-blue);
+    margin-top: 4px;
+  }
+  .cover-sub {
+    font-family: 'Italianno', cursive;
+    font-size: 24px;
+    color: var(--bavaria-blue);
+    line-height: 1;
+    margin-top: 2px;
+  }
+
+  .volcano-3d, .plane-3d {
+    position: relative;
+    width: 100%;
+    height: 200px;
+    margin: 4px 0;
+    cursor: grab;
+  }
+  .plane-3d:active { cursor: grabbing; }
+  .plane-3d canvas { display: block; width: 100% !important; height: 100% !important; }
+  .v3d-tag, .v3d-readout, .v3d-hint {
+    position: absolute;
+    font-family: 'Special Elite', monospace;
+    pointer-events: none;
+  }
+  .v3d-tag {
+    top: 4px; left: 8px;
+    font-size: 8px;
+    letter-spacing: 0.2em;
+    color: var(--bavaria-blue);
+    text-transform: uppercase;
+    background: rgba(239, 229, 205, 0.7);
+    border: 1px solid var(--bavaria-blue);
+    padding: 2px 6px;
+    border-radius: 2px;
+  }
+  .v3d-readout {
+    top: 4px; right: 8px;
+    font-size: 8px;
+    letter-spacing: 0.15em;
+    color: var(--ink-soft);
+    background: rgba(239, 229, 205, 0.7);
+    border: 1px solid var(--ink-faint);
+    padding: 2px 6px;
+    border-radius: 2px;
+  }
+  .v3d-hint {
+    bottom: 2px; left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Caveat', cursive;
+    font-size: 12px;
+    color: var(--ink-faint);
+    opacity: 0.7;
+  }
+
+  /* boarding pass strip on cover */
+  .boarding-strip {
+    width: 100%;
+    background: var(--paper);
+    border: 1px solid var(--ink);
+    border-radius: 4px;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    padding: 8px 10px;
+    margin-top: 6px;
+    position: relative;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  }
+  .boarding-strip::before, .boarding-strip::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--paper-deep);
+    box-shadow: inset 0 0 0 1px var(--ink);
+    transform: translateY(-50%);
+  }
+  .boarding-strip::before { left: -4px; }
+  .boarding-strip::after  { right: -4px; }
+  .bs-side {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+  .bs-side.right { align-items: flex-end; text-align: right; }
+  .bs-code {
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    font-size: 22px;
+    letter-spacing: 0.06em;
+    color: var(--sandstone-deep);
+    line-height: 1;
+  }
+  .bs-name {
+    font-family: 'Special Elite', monospace;
+    font-size: 8px;
+    letter-spacing: 0.2em;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+  }
+  .bs-arrow {
+    font-family: 'Cinzel', serif;
+    font-size: 18px;
+    color: var(--bavaria-blue);
+    padding: 0 14px;
+  }
+
+  .cover-bottom {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    width: 100%;
+  }
+  .cover-byline {
+    font-family: 'Caveat', cursive;
+    font-size: 16px;
+    color: var(--pen);
+    transform: rotate(-1deg);
+    margin-top: 4px;
+  }
+  .cover-place {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 0.4em;
+    color: var(--ink);
+    margin-top: 4px;
+  }
+  .cover-year {
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    font-size: 11px;
+    color: var(--ink-soft);
+  }
+
+  /* PASSPORT STAMP */
+  .passport-stamp {
+    position: absolute;
+    top: 18px; right: 14px;
+    width: 84px; height: 84px;
+    border: 2px solid var(--bavaria-blue-deep);
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--bavaria-blue-deep);
+    transform: rotate(-12deg);
+    z-index: 5;
+    background: radial-gradient(circle at 35% 30%, rgba(255,255,255,0.4), transparent 60%);
+    opacity: 0.85;
+    box-shadow: inset 0 0 8px rgba(10, 50, 96, 0.2);
+  }
+  .passport-stamp::before {
+    content: '';
+    position: absolute;
+    inset: 4px;
+    border: 1px dashed var(--bavaria-blue-deep);
+    border-radius: 50%;
+    opacity: 0.5;
+  }
+  .ps-top {
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    text-align: center;
+    line-height: 1.1;
+  }
+  .ps-mid {
+    font-family: 'UnifrakturMaguntia', serif;
+    font-size: 18px;
+    line-height: 1;
+    margin: 2px 0;
+  }
+  .ps-bot {
+    font-family: 'Special Elite', monospace;
+    font-size: 7px;
+    letter-spacing: 0.2em;
+    text-align: center;
+  }
+
+  .ribbon {
+    position: absolute;
+    top: -4px; right: 32px;
+    width: 14px; height: 80px;
+    background: linear-gradient(to bottom, var(--bavaria-blue) 0%, var(--bavaria-blue-deep) 100%);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    z-index: 4; pointer-events: none;
+  }
+  .ribbon::after {
+    content: '';
+    position: absolute;
+    bottom: -7px; left: 0;
+    width: 0; height: 0;
+    border-left: 7px solid var(--bavaria-blue);
+    border-right: 7px solid var(--bavaria-blue-deep);
+    border-bottom: 7px solid transparent;
+  }
+
+  .swipe-hint {
+    position: absolute;
+    bottom: 16px; left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Caveat', cursive;
+    font-size: 15px;
+    color: var(--pen);
+    opacity: 0;
+    animation: fadeBlink 5s ease-in-out 1.5s forwards;
+    z-index: 4;
+  }
+  @keyframes fadeBlink {
+    0%, 100% { opacity: 0; }
+    20%, 80% { opacity: 0.75; }
+  }
+
+  /* TOC */
+  .toc-list { display: flex; flex-direction: column; gap: 4px; margin: 6px 0 12px; }
+  .toc-item {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    padding: 8px 4px;
+    cursor: pointer;
+    border-radius: 3px;
+    transition: background 0.2s;
+  }
+  .toc-item:hover, .toc-item:active { background: rgba(10, 77, 140, 0.06); }
+  .toc-num { font-family: 'Cinzel', serif; font-weight: 600; font-size: 13px; color: var(--sandstone); min-width: 30px; letter-spacing: 0.06em; }
+  .toc-name { font-family: 'EB Garamond', serif; font-size: 16px; color: var(--ink); font-weight: 500; }
+  .toc-name em { font-style: italic; color: var(--ink-faint); font-size: 13px; }
+  .toc-dots { flex: 1; border-bottom: 1.5px dotted var(--ink-faint); margin: 0 6px 5px; opacity: 0.55; }
+  .toc-page { font-family: 'Cinzel', serif; font-size: 11px; color: var(--ink-soft); }
+
+  /* big boarding pass on flight page */
+  .bp-card {
+    position: relative;
+    background:
+      linear-gradient(135deg, #fbf5e2 0%, #efe3c2 100%);
+    border: 1px solid var(--ink);
+    border-radius: 6px;
+    padding: 14px 16px 16px;
+    margin: 14px 0;
+    box-shadow: 0 4px 12px rgba(60, 40, 20, 0.18);
+    overflow: hidden;
+  }
+  .bp-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 6px;
+    background: linear-gradient(90deg, var(--bavaria-blue) 0%, var(--bavaria-blue) 50%, var(--gold) 50%, var(--gold) 100%);
+  }
+  .bp-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/><feColorMatrix values='0 0 0 0 0.7 0 0 0 0 0.55 0 0 0 0 0.3 0 0 0 0.06 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+    pointer-events: none;
+    mix-blend-mode: multiply;
+    opacity: 0.4;
+  }
+  .bp-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px dashed var(--ink-faint);
+    padding-bottom: 8px;
+    margin-bottom: 10px;
+    margin-top: 6px;
+  }
+  .bp-airline {
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.18em;
+    color: var(--bavaria-blue);
+  }
+  .bp-flight {
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--sandstone-deep);
+    letter-spacing: 0.1em;
+  }
+  .bp-route {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 8px;
+    margin: 8px 0 12px;
+  }
+  .bp-port { text-align: center; }
+  .bp-iata {
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    font-size: 36px;
+    letter-spacing: 0.06em;
+    color: var(--ink);
+    line-height: 1;
+  }
+  .bp-city {
+    font-family: 'Special Elite', monospace;
+    font-size: 8px;
+    letter-spacing: 0.18em;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+    margin-top: 3px;
+  }
+  .bp-time {
+    font-family: 'Cinzel', serif;
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--bavaria-blue);
+    margin-top: 4px;
+  }
+  .bp-arc {
+    position: relative;
+    font-size: 22px;
+    color: var(--bavaria-blue);
+    text-align: center;
+  }
+  .bp-arc svg { width: 80px; height: 28px; }
+  .bp-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    border-top: 1px dashed var(--ink-faint);
+    padding-top: 10px;
+  }
+  .bp-cell {
+    text-align: center;
+  }
+  .bp-cell .lbl {
+    font-family: 'Special Elite', monospace;
+    font-size: 7px;
+    letter-spacing: 0.22em;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 3px;
+  }
+  .bp-cell .val {
+    font-family: 'Cinzel', serif;
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--sandstone-deep);
+  }
+  .bp-barcode {
+    margin-top: 12px;
+    height: 28px;
+    background-image:
+      repeating-linear-gradient(90deg,
+        var(--ink) 0, var(--ink) 1px, transparent 1px, transparent 2px,
+        var(--ink) 2px, var(--ink) 4px, transparent 4px, transparent 5px,
+        var(--ink) 5px, var(--ink) 6px, transparent 6px, transparent 9px,
+        var(--ink) 9px, var(--ink) 10px, transparent 10px, transparent 12px,
+        var(--ink) 12px, var(--ink) 14px, transparent 14px, transparent 17px);
+    border-radius: 1px;
+  }
+  .bp-foot {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 6px;
+    font-family: 'Special Elite', monospace;
+    font-size: 8px;
+    letter-spacing: 0.2em;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+  }
+
+  /* back link */
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Special Elite', monospace;
+    font-size: 9px;
+    letter-spacing: 0.25em;
+    color: var(--ink-faint);
+    text-decoration: none;
+    text-transform: uppercase;
+    padding: 4px 8px;
+    border: 1px solid var(--ink-ghost);
+    border-radius: 2px;
+    transition: all 0.2s;
+    align-self: flex-start;
+  }
+  .back-link:hover { color: var(--sandstone); border-color: var(--sandstone); }
+  .back-link svg { width: 11px; height: 11px; }
+
+  /* controls */
+  .controls {
+    position: fixed;
+    bottom: 14px; left: 50%;
+    transform: translateX(-50%);
+    display: flex; align-items: center; gap: 12px;
+    z-index: 100;
+  }
+  .nav-btn {
+    width: 42px; height: 42px;
+    border-radius: 50%;
+    background: rgba(239, 229, 205, 0.94);
+    border: 1px solid var(--ink-ghost);
+    color: var(--bavaria-blue-deep);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+    box-shadow: 0 4px 14px rgba(0,0,0,0.4);
+    transition: all 0.2s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .nav-btn:hover, .nav-btn:active { background: var(--paper); transform: translateY(-2px); border-color: var(--bavaria-blue); }
+  .nav-btn:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
+  .nav-btn svg { width: 18px; height: 18px; }
+  .page-indicator {
+    font-family: 'Special Elite', monospace;
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    color: var(--paper);
+    background: rgba(10, 50, 96, 0.85);
+    padding: 8px 14px;
+    border-radius: 18px;
+    min-width: 64px;
+    text-align: center;
+    backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+  }
+
+  /* audio */
+  .audio-panel {
+    position: fixed; top: 14px; right: 14px;
+    z-index: 100; display: flex; gap: 8px;
+  }
+  .audio-btn {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    background: rgba(239, 229, 205, 0.94);
+    border: 1px solid var(--ink-ghost);
+    color: var(--bavaria-blue-deep);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+    box-shadow: 0 4px 14px rgba(0,0,0,0.4);
+    transition: all 0.2s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .audio-btn:hover, .audio-btn:active { background: var(--paper); transform: scale(1.05); border-color: var(--bavaria-blue); }
+  .audio-btn.active {
+    background: var(--bavaria-blue-deep);
+    color: var(--paper);
+    border-color: var(--bavaria-blue-deep);
+    box-shadow: 0 4px 16px rgba(10, 77, 140, 0.5);
+  }
+  .audio-btn svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2; }
+
+  .reading-indicator {
+    position: fixed;
+    bottom: 70px; left: 50%;
+    transform: translateX(-50%);
+    background: rgba(10, 50, 96, 0.92);
+    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+    border: 1px solid var(--bavaria-light);
+    border-radius: 22px;
+    padding: 8px 18px;
+    display: flex; align-items: center; gap: 10px;
+    opacity: 0; visibility: hidden;
+    transition: all 0.3s ease;
+    z-index: 99;
+  }
+  .reading-indicator.visible { opacity: 1; visibility: visible; }
+  .waves { display: flex; align-items: center; gap: 2px; height: 14px; }
+  .wave { width: 2px; height: 100%; background: var(--gold-light); border-radius: 1px; animation: wave 0.85s ease-in-out infinite; }
+  .wave:nth-child(2) { animation-delay: 0.1s; }
+  .wave:nth-child(3) { animation-delay: 0.2s; }
+  .wave:nth-child(4) { animation-delay: 0.3s; }
+  @keyframes wave { 0%,100% { transform: scaleY(0.4); } 50% { transform: scaleY(1); } }
+  .reading-indicator span {
+    font-family: 'Special Elite', monospace;
+    font-size: 9px;
+    color: var(--paper);
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+  }
+  .reading-indicator .ind-btn {
+    background: none;
+    border: 1px solid transparent;
+    color: var(--gold-light);
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 50%;
+    width: 24px; height: 24px;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+  }
+  .reading-indicator .ind-btn:hover { border-color: var(--gold-light); background: rgba(214, 180, 106, 0.18); }
+  .reading-indicator.paused .waves { opacity: 0.35; }
+  .reading-indicator.paused .wave { animation-play-state: paused; }
+
+  /* leaflet (sepia for parchment look) */
+  .map-container {
+    position: relative;
+    width: 100%;
+    height: 220px;
+    border-radius: 2px;
+    overflow: hidden;
+    border: 1px solid rgba(122, 98, 64, 0.3);
+  }
+  .leaflet-container {
+    background: var(--paper-warm) !important;
+    font-family: 'EB Garamond', serif !important;
+  }
+  .leaflet-tile {
+    filter: sepia(60%) contrast(0.93) brightness(1.06) saturate(0.95) hue-rotate(-4deg);
+  }
+  .leaflet-popup-content-wrapper {
+    background: var(--paper);
+    border: 1px solid var(--ink-faint);
+    border-radius: 3px;
+    box-shadow: 2px 3px 8px rgba(60, 40, 20, 0.4);
+    color: var(--ink);
+  }
+  .leaflet-popup-content { font-family: 'EB Garamond', serif; font-size: 13px; margin: 8px 12px; }
+  .leaflet-popup-content strong { font-family: 'Cinzel', serif; color: var(--bavaria-blue-deep); }
+  .leaflet-popup-tip { background: var(--paper); }
+  .map-pin { background: none !important; border: none !important; }
+  .map-pin-inner {
+    width: 100%; height: 100%;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    color: var(--paper);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+    border: 2px solid var(--paper);
+  }
+  .map-pin.dest .map-pin-inner {
+    background: radial-gradient(circle at 35% 30%, var(--rust), var(--sandstone-deep));
+    width: 30px; height: 30px;
+    font-size: 14px;
+    animation: pinPulse 2.5s ease-in-out infinite;
+  }
+  .map-pin.orig .map-pin-inner {
+    background: radial-gradient(circle at 35% 30%, var(--bavaria-light), var(--bavaria-blue-deep));
+    width: 24px; height: 24px;
+    font-size: 11px;
+  }
+  @keyframes pinPulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(181, 62, 42, 0.5); }
+    50% { box-shadow: 0 0 0 12px rgba(181, 62, 42, 0); }
+  }
+
+  /* d3 */
+  .d3-tooltip {
+    position: fixed;
+    background: rgba(10, 50, 96, 0.95);
+    color: var(--paper);
+    border: 1px solid var(--gold);
+    border-radius: 3px;
+    padding: 8px 12px;
+    font-family: 'EB Garamond', serif;
+    font-size: 12px;
+    line-height: 1.4;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s;
+    max-width: 220px;
+    z-index: 200;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+  }
+  .d3-tooltip.visible { opacity: 1; }
+  .d3-tooltip strong {
+    font-family: 'Cinzel', serif;
+    color: var(--gold-light);
+    display: block;
+    margin-bottom: 4px;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+  }
+  .d3-tooltip .d3-meta {
+    font-family: 'Special Elite', monospace;
+    font-size: 9px;
+    color: var(--gold-light);
+    letter-spacing: 0.15em;
+  }
+  .d3-axis text { font-family: 'Special Elite', monospace !important; font-size: 9px !important; fill: var(--ink-faint) !important; letter-spacing: 0.1em; }
+  .d3-axis path, .d3-axis line { stroke: var(--ink-faint); }
+  .timeline-svg, .profile-svg { width: 100%; height: auto; display: block; }
+
+  @media (max-height: 700px) {
+    .cover-title { font-size: 44px; }
+    .display-title { font-size: 24px; }
+    .body { font-size: 13.5px; }
+    .page-inner { padding: 22px 20px 50px 34px; }
+    .ruled-margin { left: 26px; }
+    .plane-3d { height: 170px; }
+  }
+  @media (min-width: 768px) {
+    .book { max-width: 540px; max-height: 880px; }
+  }
+</style>
+</head>
+<body>
+
+<div id="tsparticles"></div>
+
+<div class="audio-panel">
+  <button class="audio-btn" id="ambientBtn" title="Cabin ambience">
+    <svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+  </button>
+  <button class="audio-btn" id="ttsBtn" title="Read page aloud">
+    <svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+  </button>
+</div>
+
+<div class="reading-indicator" id="readingIndicator">
+  <div class="waves" id="ttsWaves"><div class="wave"></div><div class="wave"></div><div class="wave"></div><div class="wave"></div></div>
+  <span id="ttsStatus">Reading</span>
+  <button class="ind-btn" id="pauseBtn" type="button" onclick="togglePauseTTS()" aria-label="Pause / resume reading">
+    <svg id="pauseIcon" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>
+    <svg id="playIcon" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="display:none;"><path d="M7 4 L19 12 L7 20 Z"/></svg>
+  </button>
+  <button class="ind-btn stop-btn" type="button" onclick="stopTTS()" aria-label="Stop reading">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>
+  </button>
+</div>
+
+<div class="d3-tooltip" id="d3Tooltip"></div>
+
+<div class="book">
+  <div class="pages" id="pages">
+
+    <!-- ========== COVER ========== -->
+    <div class="page cover-page active" data-page="0">
+      <div class="ribbon"></div>
+      <div class="passport-stamp">
+        <div class="ps-top">DEUTSCHLAND</div>
+        <div class="ps-mid">NUE</div>
+        <div class="ps-bot">27·IV·2026</div>
+      </div>
+      <div class="cover-inner">
+        <div class="cover-frame">
+          <div class="cover-top">
+            <div class="cover-pre">A FLIGHT &amp; CITY COMPANION</div>
+            <div class="cover-coords">49° 27′ N · 11° 04′ E</div>
+            <h1 class="cover-title">Nürnberg</h1>
+            <div class="cover-flight">FR · 904</div>
+            <div class="cover-sub">a Franconian arrival</div>
+          </div>
+
+          <div class="plane-3d" id="plane3d">
+            <span class="v3d-tag">Fig. I · in flight</span>
+            <span class="v3d-readout" id="v3dReadout">FL 380 · 858 km/h</span>
+            <span class="v3d-hint">drag to rotate · pinch to zoom</span>
+          </div>
+
+          <div class="boarding-strip">
+            <div class="bs-side">
+              <div class="bs-code">PMI</div>
+              <div class="bs-name">Palma</div>
+            </div>
+            <div class="bs-arrow">✈</div>
+            <div class="bs-side right">
+              <div class="bs-code">NUE</div>
+              <div class="bs-name">Nürnberg</div>
+            </div>
+          </div>
+
+          <div class="cover-bottom">
+            <div class="cover-byline">— Mon. 27 April 2026 · ein Reisetagebuch —</div>
+            <div class="cover-place">BAVARIA · DEUTSCHLAND</div>
+            <div class="cover-year">vol. v · anno mmxxvi</div>
+          </div>
+        </div>
+      </div>
+      <div class="swipe-hint">— turn the page —</div>
+    </div>
+
+    <!-- ========== INDEX / FLIGHT MAP ========== -->
+    <div class="page" data-page="1">
+      <div class="ruled-margin"></div>
+      <div class="ruled-page"></div>
+      <div class="page-inner">
+        <div class="page-header">
+          <span>Vol. V</span>
+          <span>Index &amp; Route</span>
+          <span class="pn-stamp">i</span>
+        </div>
+
+        <a href="index.html" class="back-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+          All Guides
+        </a>
+
+        <div class="eyebrow">Contents of the Volume</div>
+        <h2 class="display-title">INDEX</h2>
+        <div class="script-sub">flight, then city</div>
+
+        <div class="toc-list" id="tocList"></div>
+
+        <div class="sketch-frame">
+          <div class="map-container">
+            <div class="frame-target" id="flightMap" style="height: 220px;"></div>
+          </div>
+          <div class="sketch-caption"><span class="fig">Fig. 1</span> the great-circle route · PMI → NUE</div>
+        </div>
+
+        <div class="page-footer">
+          <span>•</span>
+          <div class="flourish"></div>
+          <span class="footer-num">i</span>
+          <div class="flourish"></div>
+          <span>•</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== CHAPTER I — FLIGHT FR 904 ========== -->
+    <div class="page" data-page="2">
+      <div class="ruled-margin"></div>
+      <div class="ruled-page"></div>
+      <div class="page-inner">
+        <div class="page-header">
+          <span>Vol. V · Flight</span>
+          <span>FR 904</span>
+          <span class="pn-stamp">1</span>
+        </div>
+
+        <div class="eyebrow">Chapter the First</div>
+        <h2 class="display-title">FLIGHT FR 904</h2>
+        <div class="script-sub">deine Bordkarte</div>
+        <div class="meta-line">Mon · 27 April 2026 · Boeing 737-800</div>
+
+        <!-- Boarding pass full card -->
+        <div class="bp-card">
+          <div class="bp-head">
+            <div class="bp-airline">RYANAIR · BOARDING PASS</div>
+            <div class="bp-flight">FR 904</div>
+          </div>
+          <div class="bp-route">
+            <div class="bp-port">
+              <div class="bp-iata">PMI</div>
+              <div class="bp-city">Palma de Mallorca</div>
+              <div class="bp-time">14:25</div>
+            </div>
+            <div class="bp-arc">
+              <svg viewBox="0 0 80 28" xmlns="http://www.w3.org/2000/svg">
+                <path d="M 4 22 Q 40 -2 76 22" fill="none" stroke="#0a4d8c" stroke-width="1.2" stroke-dasharray="3,2"/>
+                <path d="M 40 4 L 36 12 L 44 12 Z" fill="#0a4d8c" transform="rotate(0 40 8)"/>
+                <text x="40" y="2" text-anchor="middle" font-family="Special Elite" font-size="6" fill="#0a4d8c">2 H 10</text>
+              </svg>
+            </div>
+            <div class="bp-port">
+              <div class="bp-iata">NUE</div>
+              <div class="bp-city">Nürnberg</div>
+              <div class="bp-time">16:35</div>
+            </div>
+          </div>
+          <div class="bp-grid">
+            <div class="bp-cell"><span class="lbl">Date</span><span class="val">27 APR</span></div>
+            <div class="bp-cell"><span class="lbl">Gate</span><span class="val">tbd</span></div>
+            <div class="bp-cell"><span class="lbl">Boarding</span><span class="val">13:55</span></div>
+            <div class="bp-cell"><span class="lbl">Aircraft</span><span class="val">B738</span></div>
+          </div>
+          <div class="bp-barcode"></div>
+          <div class="bp-foot">
+            <span>FR904 · PMINUE · 27APR26</span>
+            <span>SEAT · ___</span>
+          </div>
+        </div>
+
+        <p class="margin-note right" style="top: 220px;">check the gate ~30 min before boarding!</p>
+
+        <!-- D3 flight phase timeline -->
+        <div class="sketch-frame">
+          <div class="frame-target" id="flightTimeline" style="min-height: 140px;"></div>
+          <div class="sketch-caption"><span class="fig">Fig. 2</span> phases of the flight · local times</div>
+        </div>
+
+        <div class="info-panel">
+          <div class="info-panel-title">Things to Know</div>
+          <p><strong>Carry-on:</strong> Ryanair allows one small bag (40 × 20 × 25 cm) free. A 10-kg cabin bag needs <em>Priority</em> or extra fee.</p>
+          <p><strong>Boarding:</strong> doors close 20 min before departure. Late = denied — <em>Ryanair is strict</em>.</p>
+          <p><strong>Online check-in</strong> opens 24 h before (2 h with paid Priority). Print or save the pass — paper or app.</p>
+        </div>
+
+        <div class="section-head">
+          <span class="num">i</span>
+          <span class="label">Aboard the 737</span>
+        </div>
+        <div class="body">
+          <p>The Boeing 737-800 carries <em>189 passengers</em> in a 3-3 layout. Ryanair's seats do not recline — the airline removed the mechanism years ago to save weight and turnaround time. Lavatories at the front and rear; tray tables fold up; window views to the right (over the Alps) are the prize on this northbound route.</p>
+        </div>
+
+        <div class="page-footer">
+          <span>flight · cap. i</span>
+          <div class="flourish"></div>
+          <span class="footer-num">— 1 —</span>
+          <div class="flourish"></div>
+          <span>i</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== CHAPTER II — ARRIVING ========== -->
+    <div class="page" data-page="3">
+      <div class="ruled-margin"></div>
+      <div class="ruled-page"></div>
+      <div class="page-inner">
+        <div class="page-header">
+          <span>Vol. V · Arrival</span>
+          <span>NUE → City</span>
+          <span class="pn-stamp">2</span>
+        </div>
+
+        <div class="eyebrow">Chapter the Second</div>
+        <h2 class="display-title">FROM RUNWAY TO RAMPARTS</h2>
+        <div class="script-sub">Ankunft</div>
+        <div class="meta-line">NUE airport · 7 km · 12 minutes by U-Bahn</div>
+
+        <!-- D3 altitude profile of the descent -->
+        <div class="sketch-frame">
+          <div class="frame-target" id="descentProfile" style="min-height: 180px;"></div>
+          <div class="sketch-caption"><span class="fig">Fig. 3</span> typical descent profile · cruise → touchdown</div>
+        </div>
+
+        <p class="lead">
+          Albrecht Dürer Airport sits oddly close to the city — closer than almost any
+          European capital airport to its centre. A €3.70 ticket and twelve minutes of U-Bahn
+          deposit you at <em>Hauptbahnhof</em>, ready to walk into the medieval old town.
+        </p>
+
+        <div class="section-head">
+          <span class="num">i</span>
+          <span class="label">U-Bahn 2 · the simplest way</span>
+        </div>
+
+        <div class="body">
+          <p>Walk out of <a class="map-link inline" href="https://www.google.com/maps/search/?api=1&amp;query=Nuremberg+Airport+NUE" target="_blank" rel="noopener">Terminal 1</a>, follow signs for <strong>U-Bahn</strong>. The <em>U2</em> line runs <span class="pen-underline">driverless</span> — there is no front cab, so sit in the front seat for a children's-eye view of the tunnel rushing toward you.</p>
+          <p>Ride to <a class="map-link inline" href="https://www.google.com/maps/search/?api=1&amp;query=Hauptbahnhof+Nuremberg" target="_blank" rel="noopener"><em>Hauptbahnhof</em></a> in 12 minutes. From there, the medieval gate of Königstor is across the square — the city walls begin five steps later.</p>
+        </div>
+
+        <div class="info-panel">
+          <div class="info-panel-title">Tickets · 2026</div>
+          <p><strong>Single (Einzelfahrkarte):</strong> €3.70 · valid for 90 min, one direction.</p>
+          <p><strong>Day pass (TagesTicket Solo):</strong> €9.30 · all VAG transport, all day.</p>
+          <p><strong>Group day pass (TagesTicket Plus):</strong> €13.70 · up to 6 people.</p>
+          <p>Buy at the blue VAG machines (English available) or via the <strong>VAG Fahrplan &amp; Tickets</strong> app.</p>
+        </div>
+
+        <p class="margin-note" style="top: 470px;">no turnstiles — but check your ticket! random fare control</p>
+
+        <div class="section-head">
+          <span class="num">ii</span>
+          <span class="label">By Taxi</span>
+        </div>
+
+        <div class="body">
+          <p>A taxi from NUE to the centre runs roughly <strong>€20–25</strong> and 15 minutes. Convenient with luggage; rarely necessary otherwise. Uber is not common in Nuremberg — use <strong>FreeNow</strong> or just the airport rank.</p>
+        </div>
+
+        <span class="tag blue">U2 · NUE → HBF</span>
+        <span class="tag red">€3.70</span>
+        <span class="tag gold">12 MIN</span>
+
+        <div class="page-footer">
+          <span>arrival · cap. ii</span>
+          <div class="flourish"></div>
+          <span class="footer-num">— 2 —</span>
+          <div class="flourish"></div>
+          <span>ii</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== CHAPTER III — OLD TOWN ========== -->
+    <div class="page" data-page="4">
+      <div class="ruled-margin"></div>
+      <div class="ruled-page"></div>
+      <div class="page-inner">
+        <div class="page-header">
+          <span>Vol. V · City</span>
+          <span>The Old Town</span>
+          <span class="pn-stamp">3</span>
+        </div>
+
+        <div class="eyebrow">Chapter the Third</div>
+        <h2 class="display-title">DIE ALTSTADT</h2>
+        <div class="script-sub">die Heimliche Hauptstadt</div>
+        <div class="meta-line">"the secret capital of the Holy Roman Empire"</div>
+
+        <!-- Old town SVG sketch -->
+        <div class="sketch-frame">
+          <svg viewBox="0 0 320 160" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="stoneG" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#b53e2a"/>
+                <stop offset="100%" stop-color="#82261a"/>
+              </linearGradient>
+              <linearGradient id="timberG" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#5a4222"/>
+                <stop offset="100%" stop-color="#3a2817"/>
+              </linearGradient>
+            </defs>
+            <!-- sky tint -->
+            <rect x="0" y="0" width="320" height="100" fill="rgba(74, 144, 197, 0.08)"/>
+            <!-- river Pegnitz -->
+            <rect x="0" y="135" width="320" height="20" fill="rgba(74, 144, 197, 0.18)"/>
+            <g stroke="#4a90c5" stroke-width="0.4" fill="none" opacity="0.6">
+              <path d="M 0 142 Q 30 140 60 142 T 320 144" stroke-dasharray="4,3"/>
+              <path d="M 0 150 Q 40 148 80 150 T 320 152" stroke-dasharray="6,4"/>
+            </g>
+            <!-- castle hill (top right) -->
+            <g transform="translate(220, 10)">
+              <path d="M -20 80 L 80 80 L 80 50 L 70 50 L 70 30 L 50 20 L 30 30 L 30 50 L 20 50 L 20 60 L 0 60 L 0 50 L -10 50 L -10 70 L -20 70 Z"
+                fill="url(#stoneG)" stroke="#3a2817" stroke-width="0.5"/>
+              <!-- main tower (Sinwellturm) -->
+              <rect x="40" y="10" width="20" height="40" fill="url(#stoneG)" stroke="#3a2817" stroke-width="0.5"/>
+              <polygon points="38,10 62,10 50,-2" fill="#82261a" stroke="#3a2817" stroke-width="0.4"/>
+              <rect x="46" y="20" width="3" height="6" fill="#1a1108"/>
+              <rect x="51" y="20" width="3" height="6" fill="#1a1108"/>
+              <!-- battlements -->
+              <g fill="#82261a">
+                <rect x="-20" y="78" width="3" height="4"/>
+                <rect x="-13" y="78" width="3" height="4"/>
+                <rect x="-6" y="78" width="3" height="4"/>
+                <rect x="74" y="48" width="3" height="3"/>
+                <rect x="68" y="48" width="3" height="3"/>
+              </g>
+              <text x="30" y="-6" text-anchor="middle" font-family="Special Elite" font-size="6" fill="#82261a">KAISERBURG</text>
+            </g>
+
+            <!-- Frauenkirche (left) -->
+            <g transform="translate(40, 60)">
+              <rect x="0" y="20" width="40" height="60" fill="url(#stoneG)" stroke="#3a2817" stroke-width="0.5"/>
+              <polygon points="0,20 40,20 20,0" fill="#82261a" stroke="#3a2817" stroke-width="0.4"/>
+              <!-- rose window -->
+              <circle cx="20" cy="35" r="5" fill="#3a2817"/>
+              <circle cx="20" cy="35" r="3" fill="#b8893a"/>
+              <!-- gables -->
+              <polygon points="0,80 40,80 20,68" fill="#3a2817"/>
+              <text x="20" y="92" text-anchor="middle" font-family="Special Elite" font-size="6" fill="#82261a">FRAUENKIRCHE</text>
+            </g>
+
+            <!-- Schöner Brunnen -->
+            <g transform="translate(110, 60)">
+              <line x1="6" y1="80" x2="6" y2="20" stroke="#b8893a" stroke-width="2"/>
+              <polygon points="0,18 12,18 6,4" fill="#b8893a" stroke="#3a2817" stroke-width="0.3"/>
+              <circle cx="6" cy="80" r="4" fill="#b8893a" stroke="#3a2817" stroke-width="0.3"/>
+              <text x="6" y="96" text-anchor="middle" font-family="Special Elite" font-size="5" fill="#82261a">BRUNNEN</text>
+            </g>
+
+            <!-- half-timber houses -->
+            <g transform="translate(140, 90)">
+              <rect width="30" height="30" fill="#f5e8c5" stroke="#3a2817" stroke-width="0.4"/>
+              <g stroke="url(#timberG)" stroke-width="1.2" fill="none">
+                <line x1="0" y1="10" x2="30" y2="10"/>
+                <line x1="0" y1="20" x2="30" y2="20"/>
+                <line x1="10" y1="0" x2="10" y2="30"/>
+                <line x1="20" y1="0" x2="20" y2="30"/>
+                <line x1="0" y1="0" x2="10" y2="10"/>
+                <line x1="20" y1="0" x2="30" y2="10"/>
+              </g>
+              <polygon points="0,0 30,0 15,-12" fill="#3a2817"/>
+            </g>
+            <g transform="translate(175, 95)">
+              <rect width="28" height="25" fill="#ede2c5" stroke="#3a2817" stroke-width="0.4"/>
+              <g stroke="url(#timberG)" stroke-width="1.2" fill="none">
+                <line x1="0" y1="8" x2="28" y2="8"/>
+                <line x1="0" y1="17" x2="28" y2="17"/>
+                <line x1="9" y1="0" x2="9" y2="25"/>
+                <line x1="19" y1="0" x2="19" y2="25"/>
+              </g>
+              <polygon points="0,0 28,0 14,-10" fill="#3a2817"/>
+            </g>
+
+            <!-- bridge -->
+            <g transform="translate(200, 130)">
+              <path d="M 0 8 Q 15 -2 30 8" fill="none" stroke="#3a2817" stroke-width="1.2"/>
+              <path d="M 0 12 L 30 12" stroke="#3a2817" stroke-width="0.6"/>
+            </g>
+
+            <!-- ground -->
+            <line x1="0" y1="135" x2="320" y2="135" stroke="#3a2817" stroke-width="0.4"/>
+          </svg>
+          <div class="sketch-caption"><span class="fig">Fig. 4</span> the rooftops of Nürnberg</div>
+        </div>
+
+        <p class="lead">
+          Nürnberg's old town is a sandstone-red riddle of half-timbered houses, gabled roofs,
+          and the Pegnitz running through the middle. Two-thirds was rebuilt after 1945 — done so carefully
+          that even Nürnbergers cannot always tell new from old.
+        </p>
+
+        <div class="section-head">
+          <span class="num">i</span>
+          <span class="label">The Heart</span>
+        </div>
+
+        <div class="loc-card">
+          <div class="loc-head">
+            <div class="loc-icon">★</div>
+            <div>
+              <div class="loc-name">Hauptmarkt</div>
+              <div class="loc-it">der schöne Brunnen</div>
+            </div>
+            <a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=Hauptmarkt+Nuremberg" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24"><path d="M12 22s8-7 8-13a8 8 0 10-16 0c0 6 8 13 8 13z"/><circle cx="12" cy="9" r="2.5"/></svg>
+              MAP
+            </a>
+          </div>
+          <div class="loc-desc">
+            The market square with the gilded Gothic <em>Schöner Brunnen</em> ("Beautiful Fountain", 1396) at one corner. Find the <em>brass ring</em> set in the iron grille — turn it three times for luck. The square also holds the daily market, and from late November the world's most famous Christkindlesmarkt.
+          </div>
+          <div class="loc-tip">at noon, watch the Männleinlaufen on the Frauenkirche — seven electors bow to the Emperor</div>
+        </div>
+
+        <div class="section-head">
+          <span class="num">ii</span>
+          <span class="label">Sandstone Skyline</span>
+        </div>
+
+        <ul class="feat-list">
+          <li><strong>St. Sebald</strong> <a class="map-link tiny" href="https://www.google.com/maps/search/?api=1&amp;query=St.+Sebaldus+Church+Nuremberg" target="_blank" rel="noopener">MAP</a> — the older of two great Gothic churches; Peter Vischer's bronze shrine within.</li>
+          <li><strong>St. Lorenz</strong> <a class="map-link tiny" href="https://www.google.com/maps/search/?api=1&amp;query=St.+Lorenz+Nuremberg" target="_blank" rel="noopener">MAP</a> — south of the river; Veit Stoss's hanging <em>Annunciation</em> floats above the choir.</li>
+          <li><strong>Heilig-Geist-Spital</strong> <a class="map-link tiny" href="https://www.google.com/maps/search/?api=1&amp;query=Heilig-Geist-Spital+Nuremberg" target="_blank" rel="noopener">MAP</a> — the medieval hospital straddling the Pegnitz; the picture-book bridge view of Nürnberg.</li>
+          <li><strong>Weißgerbergasse</strong> <a class="map-link tiny" href="https://www.google.com/maps/search/?api=1&amp;query=Weissgerbergasse+Nuremberg" target="_blank" rel="noopener">MAP</a> — the prettiest half-timbered street to survive the war intact.</li>
+          <li><strong>Henkersteg</strong> <a class="map-link tiny" href="https://www.google.com/maps/search/?api=1&amp;query=Henkersteg+Nuremberg" target="_blank" rel="noopener">MAP</a> — the covered "Hangman's Bridge" with a small museum in the tower.</li>
+        </ul>
+
+        <p class="margin-note right" style="top: 540px;">touch the brass ring on the fountain — three turns!</p>
+
+        <div class="page-footer">
+          <span>city · cap. iii</span>
+          <div class="flourish"></div>
+          <span class="footer-num">— 3 —</span>
+          <div class="flourish"></div>
+          <span>iii</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== CHAPTER IV — KAISERBURG ========== -->
+    <div class="page" data-page="5">
+      <div class="ruled-margin"></div>
+      <div class="ruled-page"></div>
+      <div class="page-inner">
+        <div class="page-header">
+          <span>Vol. V · City</span>
+          <span>The Castle</span>
+          <span class="pn-stamp">4</span>
+        </div>
+
+        <div class="eyebrow">Chapter the Fourth</div>
+        <h2 class="display-title">KAISERBURG</h2>
+        <div class="script-sub">die Burg über der Stadt</div>
+        <div class="meta-line">imperial castle · 11th century · 351 m above sea</div>
+
+        <p class="lead">
+          Every Holy Roman Emperor between 1050 and 1571 stayed here. The view from the
+          Sinwellturm is the same view they saw — sandstone roofs falling away to the south,
+          green Franconian hills to the north.
+        </p>
+
+        <div class="loc-card">
+          <div class="loc-head">
+            <div class="loc-icon">▲</div>
+            <div>
+              <div class="loc-name">Imperial Castle</div>
+              <div class="loc-it">Kaiserburg</div>
+            </div>
+            <a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=Kaiserburg+Nuremberg" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24"><path d="M12 22s8-7 8-13a8 8 0 10-16 0c0 6 8 13 8 13z"/><circle cx="12" cy="9" r="2.5"/></svg>
+              MAP
+            </a>
+          </div>
+          <div class="loc-desc">
+            A complex of three parts: the <em>Kaiserburg</em> (imperial), the <em>Burggrafenburg</em> (count's), and the city's own fortifications. Climb the <em>Sinwellturm</em> — a round tower with a 360° view — and descend to the <em>Tiefer Brunnen</em>, a 50-metre well that the guide will lower a candle into. The candle keeps shrinking long after you stop seeing it.
+          </div>
+          <div class="loc-tip">€7 entry · climb early before tour groups · ~1 hour suffices</div>
+        </div>
+
+        <div class="section-head">
+          <span class="num">i</span>
+          <span class="label">A Brief History</span>
+        </div>
+
+        <p class="body drop-cap">
+          The first stones were laid around <span class="pen-underline">1050</span> on a sandstone outcrop already used by the Salian emperors. Frederick Barbarossa expanded it; Charles IV codified its imperial role in the <em>Goldene Bulle</em> of 1356, which decreed that every newly elected Holy Roman Emperor must hold his first Reichstag in Nürnberg. Until 1571, every emperor came. The city was, briefly, the closest thing the Empire had to a capital.
+        </p>
+
+        <div class="info-panel red">
+          <div class="info-panel-title">Don't Miss</div>
+          <p><strong>The double chapel</strong> — two stacked chapels, one above the other; the emperor sat in the upper, the household in the lower, joined by an opening in the floor.</p>
+          <p><strong>The Sinwellturm</strong> — the round tower; 113 steps; on a clear day you can see all the way to Bamberg.</p>
+          <p><strong>The Burggarten</strong> — the small terraced garden on the city-facing side; <em>free</em> and the best free view in Nürnberg.</p>
+        </div>
+
+        <p class="margin-note" style="top: 380px;">free entry to the gardens — perfect for a sunset look</p>
+
+        <div class="quote">
+          <p class="quote-text">"Nuremberg shines through Germany like a sun amongst moon and stars."</p>
+          <p class="quote-author">— enea silvio piccolomini, 1457</p>
+        </div>
+
+        <div class="page-footer">
+          <span>city · cap. iv</span>
+          <div class="flourish"></div>
+          <span class="footer-num">— 4 —</span>
+          <div class="flourish"></div>
+          <span>iv</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== CHAPTER V — DÜRER & CULTURE ========== -->
+    <div class="page" data-page="6">
+      <div class="ruled-margin"></div>
+      <div class="ruled-page"></div>
+      <div class="page-inner">
+        <div class="page-header">
+          <span>Vol. V · City</span>
+          <span>Dürer &amp; Culture</span>
+          <span class="pn-stamp">5</span>
+        </div>
+
+        <div class="eyebrow">Chapter the Fifth</div>
+        <h2 class="display-title">ALBRECHT DÜRER</h2>
+        <div class="script-sub">der Meister der Linie</div>
+        <div class="meta-line">painter · printmaker · mathematician · son of Nürnberg</div>
+
+        <p class="lead">
+          Born here in 1471, Dürer made Nürnberg the print capital of Europe. The man who drew
+          a hare so finely you can count its eyelashes also drew the first proper rhinoceros
+          most Europeans had ever seen — without ever seeing one.
+        </p>
+
+        <div class="section-head">
+          <span class="num">i</span>
+          <span class="label">Dürer's House</span>
+        </div>
+
+        <div class="loc-card">
+          <div class="loc-head">
+            <div class="loc-icon">A</div>
+            <div>
+              <div class="loc-name">Albrecht-Dürer-Haus</div>
+              <div class="loc-it">where the master worked</div>
+            </div>
+            <a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=Albrecht+Durer+Haus+Nuremberg" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24"><path d="M12 22s8-7 8-13a8 8 0 10-16 0c0 6 8 13 8 13z"/><circle cx="12" cy="9" r="2.5"/></svg>
+              MAP
+            </a>
+          </div>
+          <div class="loc-desc">
+            Half-timber, four storeys, just below the castle. Dürer lived and worked here from <em>1509 until his death in 1528</em>. The kitchen is largely unchanged; the printmaking room has working replicas of his press; the top-floor garret holds copies of his greatest works.
+          </div>
+          <div class="loc-tip">€6 · audio guide narrated by "Frau Dürer" herself · skip the multimedia annex</div>
+        </div>
+
+        <div class="section-head">
+          <span class="num">ii</span>
+          <span class="label">Other Cultural Stops</span>
+        </div>
+
+        <ul class="feat-list">
+          <li><strong>Germanisches Nationalmuseum</strong> <a class="map-link tiny" href="https://www.google.com/maps/search/?api=1&amp;query=Germanisches+Nationalmuseum+Nuremberg" target="_blank" rel="noopener">MAP</a> — Germany's largest museum of German cultural history. The world's oldest globe (Behaim, 1492) lives here.</li>
+          <li><strong>Documentation Center · Reichsparteitagsgelände</strong> <a class="map-link tiny" href="https://www.google.com/maps/search/?api=1&amp;query=Dokumentationszentrum+Reichsparteitagsgelaende+Nuremberg" target="_blank" rel="noopener">MAP</a> — a sober, essential confrontation with the Nazi rallies and their aftermath. Allow 2 hours.</li>
+          <li><strong>Memorium Nuremberg Trials</strong> <a class="map-link tiny" href="https://www.google.com/maps/search/?api=1&amp;query=Memorium+Nuremberg+Trials" target="_blank" rel="noopener">MAP</a> — Courtroom 600, where Göring stood trial. Open most days.</li>
+          <li><strong>Spielzeugmuseum</strong> <a class="map-link tiny" href="https://www.google.com/maps/search/?api=1&amp;query=Spielzeugmuseum+Nuremberg" target="_blank" rel="noopener">MAP</a> — the Toy Museum. Nürnberg has been Europe's toy capital since the 14th century.</li>
+          <li><strong>Neues Museum</strong> <a class="map-link tiny" href="https://www.google.com/maps/search/?api=1&amp;query=Neues+Museum+Nuremberg" target="_blank" rel="noopener">MAP</a> — modern art and design in a striking glass arc. Free Sunday afternoon.</li>
+        </ul>
+
+        <p class="margin-note right" style="top: 410px;">Dürer's "Selbstbildnis" — copy in the house, original in Munich</p>
+
+        <div class="info-panel">
+          <div class="info-panel-title">A Detour</div>
+          <p>Walk five minutes west of Dürer's house to <strong>Tiergärtnertorplatz</strong> <a class="map-link inline" href="https://www.google.com/maps/search/?api=1&amp;query=Tiergaertnertor+Nuremberg" target="_blank" rel="noopener">MAP</a> — the small square with the medieval gate, the half-timber wall and a bronze hare (after Dürer's <em>Feldhase</em>). On warm evenings the city's young drink beer here on the cobbles. It is, quietly, the best square in Nürnberg.</p>
+        </div>
+
+        <div class="page-footer">
+          <span>city · cap. v</span>
+          <div class="flourish"></div>
+          <span class="footer-num">— 5 —</span>
+          <div class="flourish"></div>
+          <span>v</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== CHAPTER VI — FRANCONIAN TABLE ========== -->
+    <div class="page" data-page="7">
+      <div class="ruled-margin"></div>
+      <div class="ruled-page"></div>
+      <div class="page-inner">
+        <div class="page-header">
+          <span>Vol. V · The Table</span>
+          <span>Franconian Eats</span>
+          <span class="pn-stamp">6</span>
+        </div>
+
+        <div class="eyebrow">Chapter the Sixth</div>
+        <h2 class="display-title">DREI IM WECKLA</h2>
+        <div class="script-sub">a Franconian table</div>
+        <div class="meta-line">bratwurst · lebkuchen · rotbier · Schäufele</div>
+
+        <p class="lead">
+          Nürnberg is a small-sausage town in a big-beer country. Eat three little sausages
+          on a roll standing in the street, then eat seven more on a pewter plate sitting down.
+        </p>
+
+        <div class="section-head">
+          <span class="num">i</span>
+          <span class="label">Nürnberger Bratwürste</span>
+        </div>
+
+        <div class="body">
+          <p>The <em>Nürnberger Rostbratwurst</em> is finger-sized and finger-shaped, made of pork seasoned with marjoram. They are protected by EU geographical indication — only sausages made within the city walls (historically) can carry the name.</p>
+
+          <p>The classic order is <em>Drei im Weckla</em> — "three in a roll" — three sausages in a crusty Brötchen with mustard. Eaten standing, in five minutes, at a window.</p>
+        </div>
+
+        <span class="tag red">DREI IM WECKLA · €4.50</span>
+        <span class="tag gold">SECHS · €11</span>
+        <span class="tag green">SAUERKRAUT · €3</span>
+
+        <div class="loc-card">
+          <div class="loc-head">
+            <div class="loc-icon">⌘</div>
+            <div>
+              <div class="loc-name">Bratwurstherzla</div>
+              <div class="loc-it">since 1419</div>
+            </div>
+            <a class="map-link" href="https://www.google.com/maps/search/?api=1&amp;query=Bratwurstherzla+Nuremberg" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24"><path d="M12 22s8-7 8-13a8 8 0 10-16 0c0 6 8 13 8 13z"/><circle cx="12" cy="9" r="2.5"/></svg>
+              MAP
+            </a>
+          </div>
+          <div class="loc-desc">
+            Off the Hauptmarkt, in a tiny crooked half-timber house. Six or eight sausages on pewter, with sauerkraut and a Rotbier. The dining room is the size of a stable. <em>Cash preferred.</em>
+          </div>
+          <div class="loc-tip">other classics: <a class="map-link inline" href="https://www.google.com/maps/search/?api=1&amp;query=Bratwursthaeusle+Nuremberg" target="_blank" rel="noopener">Bratwursthäusle</a> by St. Sebald · <a class="map-link inline" href="https://www.google.com/maps/search/?api=1&amp;query=Bratwurst+Roeslein+Nuremberg" target="_blank" rel="noopener">Bratwurst-Röslein</a> at the Markt</div>
+        </div>
+
+        <div class="section-head">
+          <span class="num">ii</span>
+          <span class="label">Lebkuchen — Year-Round</span>
+        </div>
+
+        <div class="body">
+          <p><em>Lebkuchen</em> are not just for Christmas in Nürnberg. The honeyed gingerbreads have been baked here since the 14th century, when monks crystallised the recipe. The best — labelled <em>Elisenlebkuchen</em> — must be <span class="pen-underline">at least 25% nuts</span> and contain almost no flour.</p>
+
+          <p>Stop at <a class="map-link inline" href="https://www.google.com/maps/search/?api=1&amp;query=Lebkuchen-Schmidt+Nuremberg" target="_blank" rel="noopener">Lebkuchen-Schmidt</a> on the Hauptmarkt or <a class="map-link inline" href="https://www.google.com/maps/search/?api=1&amp;query=Wicklein+Nuremberg" target="_blank" rel="noopener">Wicklein</a> in Hauptbahnhof. They keep for months — they fly home well.</p>
+        </div>
+
+        <div class="section-head">
+          <span class="num">iii</span>
+          <span class="label">Rotbier &amp; Schäufele</span>
+        </div>
+
+        <ul class="feat-list">
+          <li><strong>Rotbier</strong> — Nürnberg's reddish-amber regional beer, brewed since the Middle Ages and almost extinct by 1990. Try at <a class="map-link inline" href="https://www.google.com/maps/search/?api=1&amp;query=Hausbrauerei+Altstadthof+Nuremberg" target="_blank" rel="noopener">Hausbrauerei Altstadthof</a>.</li>
+          <li><strong>Schäufele</strong> — roast pork shoulder, crackling skin scored in a diamond grid, served with potato dumpling (<em>Kloß</em>) and dark gravy. Sunday lunch food.</li>
+          <li><strong>Schwarzbier</strong> — black lager. Not Bavarian Helles — this is Franconia, and the beer is darker and drier.</li>
+          <li><strong>Drei in der Schale</strong> — the rare sit-down version: three little sausages in a tin bowl with horseradish.</li>
+          <li><strong>Sauer'm Zipfel</strong> — sausages braised in vinegar, onion, and Rotbier. A winter dish.</li>
+        </ul>
+
+        <p class="margin-note" style="top: 580px;">say "ein Rotbier, bitte" — they will smile</p>
+
+        <div class="page-footer">
+          <span>table · cap. vi</span>
+          <div class="flourish"></div>
+          <span class="footer-num">— 6 —</span>
+          <div class="flourish"></div>
+          <span>vi</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== FIELD NOTES ========== -->
+    <div class="page" data-page="8">
+      <div class="ruled-margin"></div>
+      <div class="ruled-page"></div>
+      <div class="page-inner">
+        <div class="page-header">
+          <span>Vol. V · Appendix</span>
+          <span>Field Notes</span>
+          <span class="pn-stamp">7</span>
+        </div>
+
+        <div class="eyebrow">Appendix · Practical</div>
+        <h2 class="display-title">FIELD NOTES</h2>
+        <div class="script-sub">das Praktische</div>
+        <div class="meta-line">weather · words · transit · tips</div>
+
+        <div class="section-head">
+          <span class="num">i</span>
+          <span class="label">Late April Weather</span>
+        </div>
+
+        <div class="stat-grid">
+          <div class="stat-cell"><div class="stat-val">8 / 17 °C</div><div class="stat-lbl">night / day</div></div>
+          <div class="stat-cell"><div class="stat-val">~10 days</div><div class="stat-lbl">rainy / month</div></div>
+          <div class="stat-cell"><div class="stat-val">14 h</div><div class="stat-lbl">daylight</div></div>
+          <div class="stat-cell"><div class="stat-val">UV 4–5</div><div class="stat-lbl">moderate</div></div>
+        </div>
+
+        <div class="body">
+          <p>Late April in Franconia is <em>changeable</em>. Sun in the morning, hail in the afternoon, sun again at six. Pack a thin rain shell and a warm layer. Beer-garden weather <em>begins</em> around now if the day is generous.</p>
+        </div>
+
+        <div class="section-head">
+          <span class="num">ii</span>
+          <span class="label">A Few Words</span>
+        </div>
+
+        <ul class="feat-list">
+          <li><strong>Servus</strong> · hello / goodbye (Bavarian/Austrian, used freely in Franconia too)</li>
+          <li><strong>Grüß Gott</strong> · "greet God" — formal hello</li>
+          <li><strong>Bitte</strong> · please / you're welcome / pardon</li>
+          <li><strong>Danke schön</strong> · thank you (very much)</li>
+          <li><strong>Eine Brezn, bitte</strong> · "a pretzel, please"</li>
+          <li><strong>Zahlen, bitte</strong> · "the bill, please" (point at the table)</li>
+          <li><strong>Prost!</strong> · cheers — look in the eyes when you clink</li>
+        </ul>
+
+        <p class="margin-note right" style="top: 360px;">tip ~5–10% — round up at cafés, more at restaurants</p>
+
+        <div class="section-head">
+          <span class="num">iii</span>
+          <span class="label">Practical Trivia</span>
+        </div>
+
+        <div class="info-panel">
+          <div class="info-panel-title">Useful</div>
+          <p><strong>Cash:</strong> still common — many small shops, bratwurst stands and bakeries are <em>cash only</em>. Carry €30–50.</p>
+          <p><strong>Sundays:</strong> nearly all shops shut. Restaurants and museums open. Plan groceries on Saturday.</p>
+          <p><strong>Tap water:</strong> safe and excellent. Restaurants don't usually serve it — order <em>"Leitungswasser"</em> if you must.</p>
+          <p><strong>Quiet hours:</strong> Sundays and after 22:00 are properly observed. No drilling, no loud music.</p>
+        </div>
+
+        <div class="quote">
+          <p class="quote-text">"Wer nicht reist, sieht nichts vom Leben."</p>
+          <p class="quote-author">— a franconian saying</p>
+        </div>
+
+        <div class="page-footer">
+          <span>· fin ·</span>
+          <div class="flourish"></div>
+          <span class="footer-num">— vii —</span>
+          <div class="flourish"></div>
+          <span>·</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="controls">
+  <button class="nav-btn" id="prevBtn" type="button" aria-label="Previous page" onclick="prevPage()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+  </button>
+  <div class="page-indicator" id="pageIndicator">0 / 8</div>
+  <button class="nav-btn" id="nextBtn" type="button" aria-label="Next page" onclick="nextPage()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+  </button>
+</div>
+
+<script>
+/* ============================================================
+   TOC + NAVIGATION
+   ============================================================ */
+const chapters = [
+  { num: 'I',   name: 'Flight FR 904',          it: 'deine Bordkarte',    page: 2, fol: '1' },
+  { num: 'II',  name: 'From Runway to Ramparts', it: 'Ankunft',            page: 3, fol: '2' },
+  { num: 'III', name: 'Die Altstadt',            it: 'old town',           page: 4, fol: '3' },
+  { num: 'IV',  name: 'Kaiserburg',              it: 'the castle',         page: 5, fol: '4' },
+  { num: 'V',   name: 'Albrecht Dürer',          it: 'der Meister',        page: 6, fol: '5' },
+  { num: 'VI',  name: 'Drei im Weckla',          it: 'a Franconian table', page: 7, fol: '6' },
+  { num: '—',   name: 'Field Notes',             it: 'das Praktische',     page: 8, fol: 'vii' }
+];
+const tocList = document.getElementById('tocList');
+chapters.forEach(ch => {
+  const item = document.createElement('div');
+  item.className = 'toc-item';
+  item.dataset.target = ch.page;
+  item.innerHTML = `
+    <span class="toc-num">${ch.num}</span>
+    <span class="toc-name">${ch.name} <em>· ${ch.it}</em></span>
+    <span class="toc-dots"></span>
+    <span class="toc-page">${ch.fol}</span>
+  `;
+  item.addEventListener('click', () => goToPage(parseInt(item.dataset.target)));
+  tocList.appendChild(item);
+});
+
+let currentPage = 0;
+const totalPages = 9;
+function showPage(n, direction) {
+  const current = document.querySelector('.page.active');
+  const next = document.querySelector(`.page[data-page="${n}"]`);
+  if (!next || current === next) return;
+  next.querySelector('.page-inner')?.scrollTo({ top: 0 });
+  current.classList.remove('active');
+  current.classList.add(direction === 'next' ? 'leaving-right' : 'leaving-left');
+  next.classList.add('active');
+  if (window.gsap) {
+    gsap.from(next.querySelectorAll('.display-title, .script-sub, .meta-line, .lead'), {
+      opacity: 0, y: 12, duration: 0.6, stagger: 0.06, ease: 'power2.out', delay: 0.15
+    });
+    gsap.from(next.querySelectorAll('.sketch-frame, .info-panel, .stat-grid, .loc-card, .quote, .bp-card'), {
+      opacity: 0, y: 16, duration: 0.6, stagger: 0.08, ease: 'power2.out', delay: 0.25
+    });
+  }
+  setTimeout(() => current.classList.remove('leaving-right', 'leaving-left'), 650);
+  currentPage = n;
+  updateNav();
+  stopTTS();
+  onPageEnter(n);
+}
+function nextPage() { if (currentPage < totalPages - 1) showPage(currentPage + 1, 'next'); }
+function prevPage() { if (currentPage > 0) showPage(currentPage - 1, 'prev'); }
+function goToPage(n) { if (n !== currentPage) showPage(n, n > currentPage ? 'next' : 'prev'); }
+function updateNav() {
+  document.getElementById('prevBtn').disabled = currentPage === 0;
+  document.getElementById('nextBtn').disabled = currentPage === totalPages - 1;
+  document.getElementById('pageIndicator').textContent = `${currentPage} / ${totalPages - 1}`;
+}
+updateNav();
+
+let tsx=0, tex=0, tsy=0, tey=0;
+document.addEventListener('touchstart', e => {
+  if (e.target.closest('.plane-3d, .leaflet-container, #flightTimeline, #descentProfile, .audio-btn, .nav-btn')) {
+    tsx = -1; return;
+  }
+  tsx = e.changedTouches[0].screenX;
+  tsy = e.changedTouches[0].screenY;
+}, { passive: true });
+document.addEventListener('touchend', e => {
+  if (tsx < 0) return;
+  tex = e.changedTouches[0].screenX;
+  tey = e.changedTouches[0].screenY;
+  const dx = tsx - tex, dy = tsy - tey;
+  if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) {
+    if (dx > 0) nextPage(); else prevPage();
+  }
+}, { passive: true });
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === ' ') nextPage();
+  if (e.key === 'ArrowLeft') prevPage();
+  if (e.key.toLowerCase() === 'p' && isSpeaking) { e.preventDefault(); togglePauseTTS(); }
+});
+
+/* ============================================================
+   tsParticles — drifting clouds
+   ============================================================ */
+if (window.tsParticles) {
+  tsParticles.load('tsparticles', {
+    fpsLimit: 30,
+    particles: {
+      number: { value: 30, density: { enable: true, area: 800 } },
+      color:   { value: ['#e8e0c8', '#d6cfb8', '#bfb9a4', '#a8a18a'] },
+      shape:   { type: 'circle' },
+      opacity: { value: { min: 0.05, max: 0.25 }, animation: { enable: true, speed: 0.4, sync: false } },
+      size:    { value: { min: 2, max: 5 } },
+      move: {
+        enable: true, speed: 0.3, direction: 'right',
+        random: true, straight: false, outModes: { default: 'out' }
+      }
+    },
+    detectRetina: true,
+    background: { color: 'transparent' }
+  });
+}
+
+/* ============================================================
+   Three.js — 737 plane
+   ============================================================ */
+let v3d = null;
+function initPlane3D() {
+  if (v3d || !window.THREE) return;
+  const container = document.getElementById('plane3d');
+  if (!container) return;
+  const w = container.clientWidth || 320;
+  const h = container.clientHeight || 200;
+
+  const scene = new THREE.Scene();
+  scene.fog = new THREE.Fog(0xc8b078, 12, 30);
+
+  const camera = new THREE.PerspectiveCamera(34, w / h, 0.1, 100);
+  camera.position.set(7, 2.4, 7);
+
+  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  renderer.setSize(w, h);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  container.appendChild(renderer.domElement);
+
+  const controls = new THREE.OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true;
+  controls.dampingFactor = 0.08;
+  controls.enablePan = false;
+  controls.minDistance = 6;
+  controls.maxDistance = 14;
+  controls.autoRotate = true;
+  controls.autoRotateSpeed = 0.7;
+
+  const matBody = new THREE.MeshStandardMaterial({ color: 0xf3eddb, roughness: 0.45, metalness: 0.4 });
+  const matTrim = new THREE.MeshStandardMaterial({ color: 0x0a4d8c, roughness: 0.5, metalness: 0.3 });
+  const matGold = new THREE.MeshStandardMaterial({ color: 0xb8893a, roughness: 0.4, metalness: 0.5 });
+  const matEng  = new THREE.MeshStandardMaterial({ color: 0x4a525e, roughness: 0.5, metalness: 0.7 });
+  const matWindow = new THREE.MeshBasicMaterial({ color: 0x101820 });
+
+  const plane = new THREE.Group();
+
+  // fuselage
+  const fuselage = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.4, 4.6, 28), matBody);
+  fuselage.rotation.z = Math.PI / 2;
+  plane.add(fuselage);
+
+  // nose cone
+  const nose = new THREE.Mesh(new THREE.ConeGeometry(0.4, 0.7, 24), matBody);
+  nose.rotation.z = -Math.PI / 2;
+  nose.position.x = 2.65;
+  plane.add(nose);
+
+  // tail cone
+  const tail = new THREE.Mesh(new THREE.ConeGeometry(0.4, 0.55, 24), matBody);
+  tail.rotation.z = Math.PI / 2;
+  tail.position.x = -2.575;
+  plane.add(tail);
+
+  // window strip (a thin dark band along the side)
+  for (let i = 0; i < 24; i++) {
+    const win = new THREE.Mesh(new THREE.PlaneGeometry(0.08, 0.08), matWindow);
+    win.position.set(-1.6 + i * 0.16, 0.05, 0.395);
+    win.rotation.y = 0;
+    plane.add(win);
+    const win2 = win.clone();
+    win2.position.z = -0.395;
+    win2.rotation.y = Math.PI;
+    plane.add(win2);
+  }
+
+  // gold pinstripe (Imperial accent)
+  const stripe = new THREE.Mesh(new THREE.BoxGeometry(4.3, 0.02, 0.81), matGold);
+  stripe.position.set(0, 0.16, 0);
+  plane.add(stripe);
+  const stripe2 = new THREE.Mesh(new THREE.BoxGeometry(4.3, 0.02, 0.81), matTrim);
+  stripe2.position.set(0, -0.18, 0);
+  plane.add(stripe2);
+
+  // wings — swept-back boxes
+  const wingShape = new THREE.Shape();
+  wingShape.moveTo(0, 0);
+  wingShape.lineTo(2.4, 0.2);
+  wingShape.lineTo(2.6, 0.5);
+  wingShape.lineTo(0.6, 0.9);
+  wingShape.lineTo(0, 0.9);
+  wingShape.lineTo(0, 0);
+  const wingGeom = new THREE.ExtrudeGeometry(wingShape, { depth: 0.06, bevelEnabled: false });
+  const wingL = new THREE.Mesh(wingGeom, matBody);
+  wingL.rotation.x = Math.PI / 2;
+  wingL.position.set(0.2, -0.05, 0.35);
+  plane.add(wingL);
+  const wingR = new THREE.Mesh(wingGeom, matBody);
+  wingR.rotation.x = -Math.PI / 2;
+  wingR.rotation.y = 0;
+  wingR.position.set(0.2, -0.05, -0.35);
+  wingR.scale.z = -1;
+  plane.add(wingR);
+
+  // winglets
+  const wingletGeom = new THREE.BoxGeometry(0.5, 0.04, 0.35);
+  const wingletL = new THREE.Mesh(wingletGeom, matBody);
+  wingletL.position.set(0.7, 0.12, 1.18);
+  wingletL.rotation.z = -0.3;
+  plane.add(wingletL);
+  const wingletR = new THREE.Mesh(wingletGeom, matBody);
+  wingletR.position.set(0.7, 0.12, -1.18);
+  wingletR.rotation.z = -0.3;
+  plane.add(wingletR);
+
+  // engines under wings
+  const engineGeom = new THREE.CylinderGeometry(0.18, 0.20, 0.85, 18);
+  const engL = new THREE.Mesh(engineGeom, matEng);
+  engL.rotation.z = Math.PI / 2;
+  engL.position.set(0.6, -0.32, 0.95);
+  plane.add(engL);
+  const engR = new THREE.Mesh(engineGeom, matEng);
+  engR.rotation.z = Math.PI / 2;
+  engR.position.set(0.6, -0.32, -0.95);
+  plane.add(engR);
+  // engine intake disks
+  const intakeGeom = new THREE.CircleGeometry(0.18, 18);
+  const intakeMat = new THREE.MeshBasicMaterial({ color: 0x202830 });
+  const intakeL = new THREE.Mesh(intakeGeom, intakeMat);
+  intakeL.position.set(1.03, -0.32, 0.95);
+  intakeL.rotation.y = Math.PI / 2;
+  plane.add(intakeL);
+  const intakeR = new THREE.Mesh(intakeGeom, intakeMat);
+  intakeR.position.set(1.03, -0.32, -0.95);
+  intakeR.rotation.y = Math.PI / 2;
+  plane.add(intakeR);
+
+  // vertical stabilizer (tail fin)
+  const vstab = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.95, 0.05), matBody);
+  vstab.position.set(-2.0, 0.55, 0);
+  vstab.geometry.translate(0, 0.475, 0);
+  vstab.position.y = 0.05;
+  plane.add(vstab);
+  // fin top stripe
+  const finStripe = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.4, 0.06), matTrim);
+  finStripe.position.set(-2.0, 0.95, 0);
+  plane.add(finStripe);
+
+  // horizontal stabilizers
+  const hstabGeom = new THREE.BoxGeometry(0.5, 0.04, 1.6);
+  const hstab = new THREE.Mesh(hstabGeom, matBody);
+  hstab.position.set(-2.15, 0.18, 0);
+  plane.add(hstab);
+
+  // cockpit windows
+  const cockpitMat = new THREE.MeshBasicMaterial({ color: 0x1a2530 });
+  const cockpit = new THREE.Mesh(new THREE.SphereGeometry(0.25, 18, 12, 0, Math.PI), cockpitMat);
+  cockpit.position.set(2.25, 0.15, 0);
+  cockpit.rotation.y = Math.PI / 2;
+  plane.add(cockpit);
+
+  scene.add(plane);
+
+  // lights
+  scene.add(new THREE.AmbientLight(0xfff5e0, 0.55));
+  const sun = new THREE.DirectionalLight(0xffe5b8, 1.0);
+  sun.position.set(6, 7, 5);
+  scene.add(sun);
+  const fill = new THREE.DirectionalLight(0x9ec0e0, 0.45);
+  fill.position.set(-5, 3, -4);
+  scene.add(fill);
+
+  // contrails (point particles trailing behind)
+  const trailCount = 80;
+  const trailGeom = new THREE.BufferGeometry();
+  const trailPos = new Float32Array(trailCount * 3);
+  const trailLife = [];
+  for (let i = 0; i < trailCount; i++) {
+    trailPos[i*3] = -2.5 - Math.random() * 6;
+    trailPos[i*3+1] = -0.05 + (Math.random() - 0.5) * 0.05;
+    trailPos[i*3+2] = (Math.random() < 0.5 ? 0.95 : -0.95) + (Math.random() - 0.5) * 0.05;
+    trailLife.push({ life: Math.random(), seed: Math.random() });
+  }
+  trailGeom.setAttribute('position', new THREE.BufferAttribute(trailPos, 3));
+  const cv = document.createElement('canvas'); cv.width = 32; cv.height = 32;
+  const cctx = cv.getContext('2d');
+  const grad = cctx.createRadialGradient(16,16,0, 16,16,16);
+  grad.addColorStop(0, 'rgba(255,255,255,0.95)');
+  grad.addColorStop(0.5, 'rgba(220,210,190,0.4)');
+  grad.addColorStop(1, 'rgba(200,180,140,0)');
+  cctx.fillStyle = grad; cctx.beginPath(); cctx.arc(16,16,16,0,Math.PI*2); cctx.fill();
+  const trailTex = new THREE.CanvasTexture(cv);
+  const trailMat = new THREE.PointsMaterial({
+    size: 0.5, map: trailTex, transparent: true, opacity: 0.55,
+    depthWrite: false, color: 0xeae3cc, sizeAttenuation: true
+  });
+  const trail = new THREE.Points(trailGeom, trailMat);
+  scene.add(trail);
+
+  // distant cloud spheres
+  const cloudGroup = new THREE.Group();
+  for (let i = 0; i < 6; i++) {
+    const c = new THREE.Mesh(
+      new THREE.SphereGeometry(0.6 + Math.random()*0.8, 12, 8),
+      new THREE.MeshBasicMaterial({ color: 0xeae3cc, transparent: true, opacity: 0.18, depthWrite: false })
+    );
+    c.position.set(
+      -8 + Math.random() * 16,
+      -2 + Math.random() * 4,
+      -8 + Math.random() * 16
+    );
+    cloudGroup.add(c);
+  }
+  scene.add(cloudGroup);
+
+  let active = true;
+  let frame = 0;
+  const readout = document.getElementById('v3dReadout');
+  function animate() {
+    if (!active) return;
+    requestAnimationFrame(animate);
+    frame++;
+    controls.update();
+
+    // gentle banking & breathing
+    plane.rotation.x = Math.sin(frame * 0.012) * 0.04;
+    plane.rotation.z = Math.sin(frame * 0.008 + 1.0) * 0.06;
+    plane.position.y = Math.sin(frame * 0.014) * 0.08;
+
+    // trail drift
+    const tp = trail.geometry.attributes.position;
+    for (let i = 0; i < trailCount; i++) {
+      let x = tp.getX(i), y = tp.getY(i), z = tp.getZ(i);
+      x -= 0.025;
+      y += Math.sin(frame * 0.02 + trailLife[i].seed * 6) * 0.001;
+      if (x < -10) {
+        x = -2.4 - Math.random() * 0.5;
+        z = (i % 2 === 0 ? 0.95 : -0.95) + (Math.random() - 0.5) * 0.05;
+        y = -0.32 + (Math.random() - 0.5) * 0.05;
+      }
+      tp.setXYZ(i, x, y, z);
+    }
+    tp.needsUpdate = true;
+
+    // clouds drift sideways (perceived motion)
+    cloudGroup.children.forEach(c => {
+      c.position.x -= 0.03;
+      if (c.position.x < -10) c.position.x = 10;
+    });
+
+    if (readout && frame % 24 === 0) {
+      const speed = 850 + Math.round(Math.sin(frame * 0.01) * 18);
+      readout.textContent = `FL 380 · ${speed} km/h`;
+    }
+    renderer.render(scene, camera);
+  }
+  animate();
+
+  const onResize = () => {
+    const nw = container.clientWidth, nh = container.clientHeight;
+    camera.aspect = nw / nh;
+    camera.updateProjectionMatrix();
+    renderer.setSize(nw, nh);
+  };
+  window.addEventListener('resize', onResize);
+  v3d = { pause(){ active=false; }, resume(){ if(!active){ active=true; animate(); } } };
+}
+
+/* ============================================================
+   Leaflet — flight route
+   ============================================================ */
+let leafletMap = null;
+function gcArc(lat1, lng1, lat2, lng2, n=48) {
+  const pts = [];
+  const φ1 = lat1 * Math.PI / 180, φ2 = lat2 * Math.PI / 180;
+  const λ1 = lng1 * Math.PI / 180, λ2 = lng2 * Math.PI / 180;
+  const Δσ = Math.acos(Math.sin(φ1)*Math.sin(φ2) + Math.cos(φ1)*Math.cos(φ2)*Math.cos(λ2-λ1));
+  for (let i = 0; i <= n; i++) {
+    const f = i / n;
+    const A = Math.sin((1-f)*Δσ) / Math.sin(Δσ);
+    const B = Math.sin(f*Δσ) / Math.sin(Δσ);
+    const x = A*Math.cos(φ1)*Math.cos(λ1) + B*Math.cos(φ2)*Math.cos(λ2);
+    const y = A*Math.cos(φ1)*Math.sin(λ1) + B*Math.cos(φ2)*Math.sin(λ2);
+    const z = A*Math.sin(φ1) + B*Math.sin(φ2);
+    const φ = Math.atan2(z, Math.sqrt(x*x+y*y));
+    const λ = Math.atan2(y, x);
+    pts.push([φ*180/Math.PI, λ*180/Math.PI]);
+  }
+  return pts;
+}
+function initFlightMap() {
+  if (leafletMap || !window.L) return;
+  const el = document.getElementById('flightMap');
+  if (!el) return;
+  leafletMap = L.map(el, {
+    zoomControl: false, attributionControl: false, scrollWheelZoom: false, dragging: true, tap: true
+  }).setView([45.0, 8.0], 5);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 10, minZoom: 4
+  }).addTo(leafletMap);
+
+  // Origin: Palma de Mallorca (PMI)
+  const origIcon = L.divIcon({
+    className: 'map-pin orig',
+    html: '<div class="map-pin-inner">PMI</div>',
+    iconSize: [24, 24], iconAnchor: [12, 12]
+  });
+  L.marker([39.5517, 2.7388], { icon: origIcon })
+    .addTo(leafletMap)
+    .bindPopup(
+      '<strong>Palma de Mallorca</strong><br>PMI · departure<br><em>14:25 local</em>' +
+      '<br><a class="map-link" href="https://www.google.com/maps/search/?api=1&query=Palma+de+Mallorca+Airport+PMI" target="_blank" rel="noopener">' +
+      '<svg viewBox="0 0 24 24" style="width:10px;height:10px;stroke:currentColor;fill:none;stroke-width:2;"><path d="M12 22s8-7 8-13a8 8 0 10-16 0c0 6 8 13 8 13z"/><circle cx="12" cy="9" r="2.5"/></svg> GOOGLE MAPS</a>'
+    );
+
+  // Destination: Nuremberg (NUE)
+  const destIcon = L.divIcon({
+    className: 'map-pin dest',
+    html: '<div class="map-pin-inner">NUE</div>',
+    iconSize: [30, 30], iconAnchor: [15, 15]
+  });
+  L.marker([49.4987, 11.0780], { icon: destIcon })
+    .addTo(leafletMap)
+    .bindPopup(
+      '<strong>Nürnberg (NUE)</strong><br>arrival · <em>16:35 local</em><br>U-Bahn 2 → Hbf · 12 min' +
+      '<br><a class="map-link" href="https://www.google.com/maps/search/?api=1&query=Nuremberg+Airport+NUE" target="_blank" rel="noopener">' +
+      '<svg viewBox="0 0 24 24" style="width:10px;height:10px;stroke:currentColor;fill:none;stroke-width:2;"><path d="M12 22s8-7 8-13a8 8 0 10-16 0c0 6 8 13 8 13z"/><circle cx="12" cy="9" r="2.5"/></svg> GOOGLE MAPS</a>'
+    );
+
+  // Great-circle arc
+  const arc = gcArc(39.5517, 2.7388, 49.4987, 11.0780, 48);
+  L.polyline(arc, { color: '#0a4d8c', weight: 2.2, opacity: 0.85 }).addTo(leafletMap);
+  L.polyline(arc, { color: '#b8893a', weight: 1, opacity: 0.7, dashArray: '5,5' }).addTo(leafletMap);
+
+  // animated plane marker traveling along the arc
+  const planeIcon = L.divIcon({
+    className: '', html: '<span style="font-size:18px;color:#82261a;">✈</span>',
+    iconSize: [20, 20], iconAnchor: [10, 10]
+  });
+  const planeMarker = L.marker(arc[0], { icon: planeIcon }).addTo(leafletMap);
+  let pi = 0;
+  setInterval(() => {
+    pi = (pi + 1) % arc.length;
+    planeMarker.setLatLng(arc[pi]);
+  }, 220);
+
+  setTimeout(() => leafletMap.fitBounds(arc, { padding: [16, 16] }), 200);
+}
+
+/* ============================================================
+   D3 — Flight phase timeline
+   ============================================================ */
+let timelineBuilt = false;
+function buildFlightTimeline() {
+  if (timelineBuilt || !window.d3) return;
+  const el = document.getElementById('flightTimeline');
+  if (!el) return;
+  timelineBuilt = true;
+
+  // times in minutes from 13:30
+  const phases = [
+    { t0: 25, t1: 60, name: 'Boarding',   detail: '~35 min · gates close 20 min before departure' },
+    { t0: 55, t1: 65, name: 'Taxi out',   detail: 'taxi to runway' },
+    { t0: 65, t1: 75, name: 'Climb',      detail: '~10 min to cruise altitude' },
+    { t0: 75, t1: 175,name: 'Cruise',     detail: 'FL 380 · ~858 km/h · over the Alps' },
+    { t0: 175,t1: 190,name: 'Descent',    detail: 'beginning ~30 min before landing' },
+    { t0: 190,t1: 195,name: 'Final',      detail: 'final approach into NUE' },
+    { t0: 195,t1: 205,name: 'Taxi in',    detail: 'to gate' }
+  ];
+  const colors = ['#7a8b6e','#a39072','#4a90c5','#0a4d8c','#b8893a','#b53e2a','#7a6440'];
+
+  const width = 540, height = 130;
+  const m = { top: 26, right: 16, bottom: 32, left: 18 };
+  const innerW = width - m.left - m.right;
+  const innerH = height - m.top - m.bottom;
+
+  const svg = d3.select(el).append('svg')
+    .attr('class', 'timeline-svg')
+    .attr('viewBox', `0 0 ${width} ${height}`)
+    .attr('preserveAspectRatio', 'xMidYMid meet');
+
+  const g = svg.append('g').attr('transform', `translate(${m.left},${m.top})`);
+  const x = d3.scaleLinear().domain([0, 220]).range([0, innerW]);
+
+  // hour labels (13:30 + d minutes)
+  const hourTicks = [0, 30, 60, 90, 120, 150, 180, 210];
+  const fmt = m => {
+    const h = Math.floor((13 * 60 + 30 + m) / 60) % 24;
+    const mm = ((13 * 60 + 30 + m) % 60).toString().padStart(2, '0');
+    return `${h.toString().padStart(2,'0')}:${mm}`;
+  };
+  g.selectAll('.tick').data(hourTicks).enter().append('line')
+    .attr('x1', d => x(d)).attr('x2', d => x(d))
+    .attr('y1', 0).attr('y2', innerH)
+    .attr('stroke', '#a89372').attr('stroke-width', 0.4)
+    .attr('stroke-dasharray', '2,2').attr('opacity', 0.5);
+  g.selectAll('.tick-l').data(hourTicks).enter().append('text')
+    .attr('x', d => x(d)).attr('y', innerH + 14)
+    .attr('text-anchor', 'middle')
+    .attr('font-family', 'Special Elite').attr('font-size', 9)
+    .attr('fill', '#7a6440')
+    .text(d => fmt(d));
+
+  // bars
+  const tooltip = d3.select('#d3Tooltip');
+  const bars = g.selectAll('.phase').data(phases).enter().append('g').attr('class', 'phase');
+  bars.append('rect')
+    .attr('x', d => x(d.t0)).attr('y', innerH/2 - 10)
+    .attr('width', d => Math.max(2, x(d.t1) - x(d.t0)))
+    .attr('height', 20)
+    .attr('fill', (d, i) => colors[i])
+    .attr('stroke', '#3a2817').attr('stroke-width', 0.5)
+    .attr('rx', 1)
+    .style('cursor', 'pointer')
+    .on('mouseenter touchstart', (e, d) => {
+      tooltip.classed('visible', true)
+        .html(`<strong>${d.name}</strong>${d.detail}<br><span class="d3-meta">${fmt(d.t0)} – ${fmt(d.t1)}</span>`);
+    })
+    .on('mousemove', e => {
+      const tx = Math.min(e.clientX + 12, window.innerWidth - 240);
+      const ty = Math.min(e.clientY + 12, window.innerHeight - 100);
+      tooltip.style('left', tx + 'px').style('top', ty + 'px');
+    })
+    .on('mouseleave touchend', () => tooltip.classed('visible', false));
+
+  bars.append('text')
+    .attr('x', d => x((d.t0 + d.t1)/2)).attr('y', innerH/2 + 4)
+    .attr('text-anchor', 'middle')
+    .attr('font-family', 'Special Elite').attr('font-size', 8)
+    .attr('fill', 'white')
+    .text(d => x(d.t1) - x(d.t0) > 30 ? d.name.toUpperCase() : '');
+
+  // start / end markers
+  g.append('text').attr('x', x(60)).attr('y', innerH/2 - 14)
+    .attr('text-anchor', 'middle').attr('font-family', 'Cinzel').attr('font-weight', 700)
+    .attr('font-size', 10).attr('fill', '#82261a').text('▼ DEP 14:25');
+  g.append('text').attr('x', x(195)).attr('y', innerH/2 - 14)
+    .attr('text-anchor', 'middle').attr('font-family', 'Cinzel').attr('font-weight', 700)
+    .attr('font-size', 10).attr('fill', '#82261a').text('▼ ARR 16:35');
+
+  svg.append('text').attr('x', width/2).attr('y', 14)
+    .attr('text-anchor', 'middle')
+    .attr('font-family', 'Cinzel').attr('font-weight', 600)
+    .attr('font-size', 10).attr('letter-spacing', '0.15em')
+    .attr('fill', '#1f1810')
+    .text('FLIGHT FR 904 · PHASES OF THE JOURNEY');
+}
+
+/* ============================================================
+   D3 — Descent altitude profile
+   ============================================================ */
+let profileBuilt = false;
+function buildDescentProfile() {
+  if (profileBuilt || !window.d3) return;
+  const el = document.getElementById('descentProfile');
+  if (!el) return;
+  profileBuilt = true;
+
+  // simulated descent profile: time (min from cruise start) vs altitude (m)
+  const data = [
+    { t: 0,   alt: 11580, label: 'CRUISE',  sub: 'FL 380 · 11,580 m' },
+    { t: 30,  alt: 11580, label: '',        sub: 'over the Alps' },
+    { t: 90,  alt: 11580, label: 'TOD',     sub: 'top of descent' },
+    { t: 100, alt: 9500,  label: '',        sub: 'descending' },
+    { t: 110, alt: 6500,  label: '',        sub: '' },
+    { t: 118, alt: 3000,  label: 'INTERCEPT',sub: 'ILS · 28' },
+    { t: 122, alt: 1500,  label: '',        sub: '' },
+    { t: 125, alt: 600,   label: '',        sub: 'over Roth' },
+    { t: 127, alt: 0,     label: 'NUE',     sub: 'touchdown · 318 m elev.' }
+  ];
+
+  const width = 540, height = 200;
+  const m = { top: 22, right: 16, bottom: 36, left: 46 };
+  const innerW = width - m.left - m.right;
+  const innerH = height - m.top - m.bottom;
+
+  const svg = d3.select(el).append('svg')
+    .attr('class', 'profile-svg')
+    .attr('viewBox', `0 0 ${width} ${height}`)
+    .attr('preserveAspectRatio', 'xMidYMid meet');
+
+  const defs = svg.append('defs');
+  const ag = defs.append('linearGradient').attr('id', 'descGrad').attr('x1', 0).attr('y1', 0).attr('x2', 0).attr('y2', 1);
+  ag.append('stop').attr('offset', '0%').attr('stop-color', '#0a4d8c').attr('stop-opacity', 0.35);
+  ag.append('stop').attr('offset', '100%').attr('stop-color', '#0a4d8c').attr('stop-opacity', 0);
+
+  const g = svg.append('g').attr('transform', `translate(${m.left},${m.top})`);
+  const x = d3.scaleLinear().domain([0, 130]).range([0, innerW]);
+  const y = d3.scaleLinear().domain([0, 12000]).range([innerH, 0]);
+
+  // grid + altitude ticks (FL labels)
+  [0, 3000, 6000, 9000, 12000].forEach(v => {
+    g.append('line').attr('x1', 0).attr('x2', innerW).attr('y1', y(v)).attr('y2', y(v))
+      .attr('stroke', '#a89372').attr('stroke-width', 0.4).attr('stroke-dasharray', '2,2').attr('opacity', 0.5);
+    g.append('text').attr('x', -6).attr('y', y(v) + 3).attr('text-anchor', 'end')
+      .attr('font-family', 'Special Elite').attr('font-size', 9).attr('fill', '#7a6440')
+      .text(v === 0 ? '0 m' : 'FL ' + Math.round(v / 30.48));
+  });
+
+  // x-axis (minutes to landing)
+  g.append('g').attr('class', 'd3-axis').attr('transform', `translate(0,${innerH})`)
+    .call(d3.axisBottom(x).tickFormat(d => (130 - d) + ' min').ticks(6).tickSizeOuter(0))
+    .selectAll('text').attr('y', 12);
+
+  const area = d3.area().x(d => x(d.t)).y0(innerH).y1(d => y(d.alt)).curve(d3.curveCatmullRom.alpha(0.5));
+  g.append('path').datum(data).attr('fill', 'url(#descGrad)').attr('d', area);
+
+  const line = d3.line().x(d => x(d.t)).y(d => y(d.alt)).curve(d3.curveCatmullRom.alpha(0.5));
+  const path = g.append('path').datum(data)
+    .attr('fill', 'none').attr('stroke', '#0a4d8c').attr('stroke-width', 1.6)
+    .attr('stroke-linecap', 'round').attr('stroke-linejoin', 'round').attr('d', line);
+  const totalLen = path.node().getTotalLength();
+  path.attr('stroke-dasharray', `${totalLen} ${totalLen}`)
+      .attr('stroke-dashoffset', totalLen)
+      .transition().duration(1500).ease(d3.easeQuadInOut)
+      .attr('stroke-dashoffset', 0);
+
+  const wp = data.filter(d => d.label);
+  const wpG = g.selectAll('.wp').data(wp).enter().append('g');
+  wpG.append('circle')
+    .attr('cx', d => x(d.t)).attr('cy', d => y(d.alt))
+    .attr('r', d => d.label === 'NUE' ? 5 : 3.2)
+    .attr('fill', d => d.label === 'NUE' ? '#b53e2a' : '#0a4d8c')
+    .attr('stroke', '#fff5dc').attr('stroke-width', 1.2);
+  wpG.append('text')
+    .attr('x', d => x(d.t)).attr('y', d => y(d.alt) - 8)
+    .attr('text-anchor', 'middle')
+    .attr('font-family', 'Special Elite')
+    .attr('font-size', d => d.label === 'NUE' ? 9 : 8)
+    .attr('font-weight', d => d.label === 'NUE' ? 700 : 400)
+    .attr('fill', '#82261a')
+    .text(d => d.label);
+
+  svg.append('text').attr('x', width/2).attr('y', 14)
+    .attr('text-anchor', 'middle')
+    .attr('font-family', 'Cinzel').attr('font-weight', 600)
+    .attr('font-size', 10).attr('letter-spacing', '0.15em')
+    .attr('fill', '#1f1810')
+    .text('CRUISE → DESCENT → NUE · ALTITUDE PROFILE');
+}
+
+/* ============================================================
+   PAGE-ENTER HOOKS
+   ============================================================ */
+function onPageEnter(n) {
+  if (n === 0) { initPlane3D(); v3d?.resume(); }
+  else { v3d?.pause(); }
+  if (n === 1) {
+    initFlightMap();
+    setTimeout(() => leafletMap?.invalidateSize(), 350);
+  }
+  if (n === 2) buildFlightTimeline();
+  if (n === 3) buildDescentProfile();
+}
+onPageEnter(0);
+
+/* ============================================================
+   AMBIENT (cabin hum) + TTS w/ pause
+   ============================================================ */
+let audioContext = null, ambientNodes = {}, ambientPlaying = false;
+function initAudio() {
+  if (audioContext) return;
+  audioContext = new (window.AudioContext || window.webkitAudioContext)();
+}
+function createCabinHum() {
+  // pinker, lower-pitched than the volcanic one — mid-frequency cabin drone
+  const bs = 2 * audioContext.sampleRate;
+  const buf = audioContext.createBuffer(1, bs, audioContext.sampleRate);
+  const d = buf.getChannelData(0);
+  for (let i = 0; i < bs; i++) d[i] = Math.random() * 2 - 1;
+  const noise = audioContext.createBufferSource();
+  noise.buffer = buf; noise.loop = true;
+  const filter = audioContext.createBiquadFilter();
+  filter.type = 'lowpass'; filter.frequency.value = 600; filter.Q.value = 0.6;
+  const g = audioContext.createGain(); g.gain.value = 0;
+  noise.connect(filter); filter.connect(g); g.connect(audioContext.destination);
+  noise.start();
+  return { noise, gainNode: g };
+}
+function createEngineDrone() {
+  const o = audioContext.createOscillator(); o.type = 'sawtooth'; o.frequency.value = 110;
+  const o2 = audioContext.createOscillator(); o2.type = 'sine'; o2.frequency.value = 55;
+  const filter = audioContext.createBiquadFilter();
+  filter.type = 'lowpass'; filter.frequency.value = 240; filter.Q.value = 1.0;
+  const g = audioContext.createGain(); g.gain.value = 0;
+  const g2 = audioContext.createGain(); g2.gain.value = 0;
+  o.connect(filter); filter.connect(g); g.connect(audioContext.destination);
+  o2.connect(g2); g2.connect(audioContext.destination);
+  const lfo = audioContext.createOscillator();
+  const lfoG = audioContext.createGain();
+  lfo.frequency.value = 0.06; lfoG.gain.value = 8;
+  lfo.connect(lfoG); lfoG.connect(o.frequency);
+  o.start(); o2.start(); lfo.start();
+  return { o, o2, gainNode: g, subGain: g2, lfo };
+}
+function startAmbient() {
+  initAudio();
+  if (audioContext.state === 'suspended') audioContext.resume();
+  ambientNodes.hum = createCabinHum();
+  ambientNodes.eng = createEngineDrone();
+  const v = 0.32;
+  ambientNodes.hum.gainNode.gain.setTargetAtTime(0.18 * v, audioContext.currentTime, 0.5);
+  ambientNodes.eng.gainNode.gain.setTargetAtTime(0.12 * v, audioContext.currentTime, 0.5);
+  ambientNodes.eng.subGain.gain.setTargetAtTime(0.08 * v, audioContext.currentTime, 0.5);
+  ambientPlaying = true;
+}
+function stopAmbient() {
+  if (!ambientNodes.hum) return;
+  const t = 0.5;
+  ambientNodes.hum.gainNode.gain.setTargetAtTime(0, audioContext.currentTime, t);
+  ambientNodes.eng.gainNode.gain.setTargetAtTime(0, audioContext.currentTime, t);
+  ambientNodes.eng.subGain.gain.setTargetAtTime(0, audioContext.currentTime, t);
+  ambientPlaying = false;
+  setTimeout(() => {
+    try {
+      ambientNodes.hum?.noise.stop();
+      ambientNodes.eng?.o.stop();
+      ambientNodes.eng?.o2.stop();
+      ambientNodes.eng?.lfo.stop();
+    } catch(e) {}
+    ambientNodes = {};
+  }, 1000);
+}
+document.getElementById('ambientBtn').addEventListener('click', () => {
+  initAudio();
+  if (ambientPlaying) {
+    stopAmbient();
+    document.getElementById('ambientBtn').classList.remove('active');
+  } else {
+    startAmbient();
+    document.getElementById('ambientBtn').classList.add('active');
+  }
+});
+
+/* TTS */
+let currentUtterance = null, isSpeaking = false, isPaused = false;
+function getPageText() {
+  const ap = document.querySelector('.page.active .page-inner');
+  if (!ap) return '';
+  const c = ap.cloneNode(true);
+  c.querySelectorAll('.back-link, .sketch-frame, .margin-note, svg, .page-header, .page-footer, #flightMap, #flightTimeline, #descentProfile, #plane3d, .bp-card, .bp-barcode').forEach(el => el.remove());
+  return (c.innerText || '').replace(/\s+/g, ' ').trim();
+}
+function setPauseUI(paused) {
+  const ind = document.getElementById('readingIndicator');
+  const status = document.getElementById('ttsStatus');
+  const pi = document.getElementById('pauseIcon');
+  const py = document.getElementById('playIcon');
+  if (paused) {
+    ind.classList.add('paused');
+    status.textContent = 'Paused';
+    pi.style.display = 'none'; py.style.display = '';
+  } else {
+    ind.classList.remove('paused');
+    status.textContent = 'Reading';
+    pi.style.display = ''; py.style.display = 'none';
+  }
+}
+function startTTS() {
+  if (!('speechSynthesis' in window)) { alert('TTS not supported.'); return; }
+  stopTTS();
+  const text = getPageText();
+  if (!text) return;
+  currentUtterance = new SpeechSynthesisUtterance(text);
+  currentUtterance.rate = 0.92; currentUtterance.pitch = 1; currentUtterance.volume = 0.85;
+  const voices = speechSynthesis.getVoices();
+  const pref = voices.find(v => v.lang.startsWith('en') && v.name.includes('Google')) ||
+               voices.find(v => v.lang.startsWith('en') && v.name.includes('Natural')) ||
+               voices.find(v => v.lang.startsWith('en'));
+  if (pref) currentUtterance.voice = pref;
+  currentUtterance.onstart = () => {
+    isSpeaking = true; isPaused = false; setPauseUI(false);
+    document.getElementById('readingIndicator').classList.add('visible');
+    document.getElementById('ttsBtn').classList.add('active');
+  };
+  currentUtterance.onend = currentUtterance.onerror = () => {
+    isSpeaking = false; isPaused = false; setPauseUI(false);
+    document.getElementById('readingIndicator').classList.remove('visible');
+    document.getElementById('ttsBtn').classList.remove('active');
+  };
+  currentUtterance.onpause  = () => { isPaused = true;  setPauseUI(true); };
+  currentUtterance.onresume = () => { isPaused = false; setPauseUI(false); };
+  speechSynthesis.speak(currentUtterance);
+}
+function pauseTTS() {
+  if (window.speechSynthesis && speechSynthesis.speaking && !speechSynthesis.paused) {
+    speechSynthesis.pause(); isPaused = true; setPauseUI(true);
+  }
+}
+function resumeTTS() {
+  if (window.speechSynthesis && speechSynthesis.paused) {
+    speechSynthesis.resume(); isPaused = false; setPauseUI(false);
+  }
+}
+function togglePauseTTS() { if (!isSpeaking) return; if (isPaused) resumeTTS(); else pauseTTS(); }
+function stopTTS() {
+  if (window.speechSynthesis && (speechSynthesis.speaking || speechSynthesis.paused)) speechSynthesis.cancel();
+  isSpeaking = false; isPaused = false; setPauseUI(false);
+  document.getElementById('readingIndicator')?.classList.remove('visible');
+  document.getElementById('ttsBtn')?.classList.remove('active');
+}
+if ('speechSynthesis' in window) {
+  speechSynthesis.getVoices();
+  speechSynthesis.onvoiceschanged = () => speechSynthesis.getVoices();
+}
+document.getElementById('ttsBtn').addEventListener('click', () => {
+  if (!isSpeaking) { startTTS(); return; }
+  togglePauseTTS();
+});
+</script>
+
+</body>
+</html>

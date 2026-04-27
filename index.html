@@ -328,6 +328,34 @@
     background: linear-gradient(135deg, #b8c5b4 0%, #7a8b6e 50%, #5a6b4e 100%);
   }
 
+  .card-gradient.nuremberg {
+    background:
+      linear-gradient(180deg, #1a3050 0%, #4a90c5 35%, #b53e2a 70%, #82261a 100%);
+    position: relative;
+    overflow: hidden;
+  }
+  .card-gradient.nuremberg::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 30% 70%, rgba(184, 137, 58, 0.4) 0%, transparent 45%);
+  }
+  .card-gradient.nuremberg::after {
+    content: '✈';
+    position: absolute;
+    top: 30%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-25deg);
+    font-size: 5rem;
+    color: rgba(245, 232, 200, 0.5);
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+    animation: planeDrift 6s ease-in-out infinite;
+  }
+  @keyframes planeDrift {
+    0%, 100% { transform: translate(-60%, -50%) rotate(-25deg); }
+    50% { transform: translate(-40%, -55%) rotate(-22deg); }
+  }
+
   .card-icon {
     font-size: 4rem;
     opacity: 0.4;
