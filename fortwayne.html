@@ -178,6 +178,21 @@
     text-align:center; margin-top:6px; line-height:1.15;
   }
 
+  /* live 3-D zoo map */
+  .zoo3d{
+    position:relative; width:100%; aspect-ratio:1 / 0.82; min-height:220px;
+    overflow:hidden; touch-action:none; background:#e9dec0; cursor:grab;
+  }
+  .zoo3d:active{ cursor:grabbing; }
+  .zoo3d canvas{ display:block; }
+  .zoo3d-fallback{ position:absolute; inset:0; transition:opacity .7s ease; }
+  .zoo3d.ready .zoo3d-fallback{ opacity:0; pointer-events:none; }
+  .zoo3d-badge{
+    position:absolute; left:8px; bottom:8px; z-index:3; pointer-events:none;
+    font-family:'Caveat',cursive; font-size:1.02rem; color:#f2e9cf;
+    background:rgba(38,52,59,.62); padding:1px 9px; border-radius:11px;
+  }
+
   /* self-drawing ink — pathLength=1 strokes reveal when the page is current */
   .ink [data-draw]{
     stroke-dasharray:1; stroke-dashoffset:1;
@@ -374,14 +389,18 @@ function illustrationSVG(type){
     let pk=''; for(let i=0;i<18;i++) pk+=`M${70+i*10} 178 l5 -9 l5 9`;
     return open
       + ground(258,.2) + wash('M6 258 H314 V300 H6 Z', C.green, .3, .18)
-      + wash('M70 178 H250 V258 H70 Z', C.brick, .5, .18)
+      + wash('M44 150 H96 V258 H44 Z', C.brickDk, 1.0, .3)
+      + wash('M224 150 H276 V258 H224 Z', C.brickDk, 1.1, .3)
+      + wash('M70 178 H250 V258 H70 Z', C.brick, .5, .2)
+      + wash('M40 150 L70 124 L100 150 Z', C.ink, 1.2, .4)
+      + wash('M220 150 L250 124 L280 150 Z', C.ink, 1.3, .4)
       + P('M70 258 V178 M250 258 V178 M70 178 H250',1.3,.4,1.6)
       + P(pk,1.6,.9,1)
       + P('M150 258 V206 H174 V258 M150 206 q12 -12 24 0',1,1.0)
-      + P('M44 258 V150 H96 V258',1.2,1.2,1.6)
+      + P('M44 258 V150 H96 V258 M44 150 H96',1.2,1.2,1.6)
       + P('M40 150 L70 124 L100 150',.9,1.5,1.6)
       + P('M60 196 h20 v14 h-20 Z',.5,1.8)
-      + P('M224 258 V150 H276 V258',1.2,1.3,1.6)
+      + P('M224 258 V150 H276 V258 M224 150 H276',1.2,1.3,1.6)
       + P('M220 150 L250 124 L280 150',.9,1.6,1.6)
       + P('M240 196 h20 v14 h-20 Z',.5,1.9)
       + P('M159 150 V96',.8,1.7,1.6) + P('M159 98 h34 v20 h-34 Z',.7,2.0)
@@ -675,8 +694,11 @@ function buildAll(){
     const lookLbl=s.lookLabel||'What to look for';
     const factLbl=s.factLabel||'Did you know';
     const chap=s.num?`Chapter ${s.num}`:'An interleaf';
+    const plate = s.id==='zoo'
+      ? `<div class="plate"><div class="plate-frame"><div id="zoo3d" class="zoo3d"><div class="zoo3d-fallback">${illustrationSVG('zoo')}</div><div class="zoo3d-badge">drag to explore</div></div></div><div class="plate-cap">the children's zoo — a living map</div></div>`
+      : `<div class="plate"><div class="plate-frame">${illustrationSVG(s.art)}</div><div class="plate-cap">${s.cap}</div></div>`;
     pagesEl.appendChild(leaf(`
-      <div class="plate"><div class="plate-frame">${illustrationSVG(s.art)}</div><div class="plate-cap">${s.cap}</div></div>
+      ${plate}
       <div class="chap">${chap}</div>
       <h1 class="title">${s.name}</h1>
       <div class="local">${s.local}</div>
@@ -804,6 +826,7 @@ function endTurn(inc){
   pageEls.forEach(p=>{ if(p!==inc) p.classList.remove('turn-out','turn-in'); });
   const sc=inc.querySelector('.leaf-inner'); if(sc) sc.scrollTop=0;
   updateChrome();
+  syncZoo();
 }
 function updateChrome(){
   document.getElementById('progress').textContent=String(currentPage+1).padStart(2,'0')+' / '+String(totalPages).padStart(2,'0');
@@ -815,7 +838,7 @@ document.getElementById('next').addEventListener('click',()=>goTo(currentPage+1)
 document.addEventListener('keydown',e=>{ if(e.key==='ArrowRight')goTo(currentPage+1); else if(e.key==='ArrowLeft')goTo(currentPage-1); });
 let tsx=0,tsy=0;
 document.addEventListener('touchstart',e=>{ tsx=e.touches[0].clientX; tsy=e.touches[0].clientY; },{passive:true});
-document.addEventListener('touchend',e=>{ const dx=e.changedTouches[0].clientX-tsx, dy=e.changedTouches[0].clientY-tsy; if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)*1.5){ if(dx<0)goTo(currentPage+1); else goTo(currentPage-1); } },{passive:true});
+document.addEventListener('touchend',e=>{ if(e.target.closest&&e.target.closest('#zoo3d'))return; const dx=e.changedTouches[0].clientX-tsx, dy=e.changedTouches[0].clientY-tsy; if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)*1.5){ if(dx<0)goTo(currentPage+1); else goTo(currentPage-1); } },{passive:true});
 
 /* ══════════════════════════════════════════════════════════════
    GPS
@@ -858,7 +881,181 @@ ttsBtn.addEventListener('click',()=>{
   speaking=true; ttsBtn.classList.add('on'); document.getElementById('tts-label').textContent='Stop';
 });
 
+/* ══════════════════════════════════════════════════════════════
+   THE ZOO — a live 3-D simulation map (three.js, lazy-loaded)
+   Falls back to the ink field-sketch if three.js can't load.
+   ══════════════════════════════════════════════════════════════ */
+const zooPageIndex = 3 + sites.findIndex(s=>s.id==='zoo');
+let zoo=null;  // null=untouched, 'loading', 'failed', or the instance
+function syncZoo(){
+  const onZoo = currentPage===zooPageIndex && !document.hidden;
+  if(onZoo){
+    if(zoo===null) startZoo();
+    else if(zoo && zoo.setActive) zoo.setActive(true);
+  } else if(zoo && zoo.setActive){ zoo.setActive(false); }
+}
+document.addEventListener('visibilitychange', syncZoo);
+function loadThree(){
+  if(window.THREE) return Promise.resolve();
+  const urls=[
+    'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js',
+    'https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js',
+    'https://unpkg.com/three@0.128.0/build/three.min.js'
+  ];
+  return new Promise((res,rej)=>{
+    let i=0;
+    (function tryNext(){
+      if(window.THREE) return res();
+      if(i>=urls.length) return rej(new Error('three unavailable'));
+      const s=document.createElement('script'); s.src=urls[i++];
+      s.onload=()=>window.THREE?res():tryNext(); s.onerror=tryNext;
+      document.head.appendChild(s);
+    })();
+  });
+}
+function startZoo(){
+  const holder=document.getElementById('zoo3d'); if(!holder) return;
+  zoo='loading';
+  const badge=holder.querySelector('.zoo3d-badge'); if(badge) badge.textContent='loading the map…';
+  loadThree().then(()=>{
+    try{ zoo=initZoo3D(holder); holder.classList.add('ready'); if(badge) badge.textContent='drag to explore'; zoo.setActive(true); }
+    catch(e){ zoo='failed'; if(badge) badge.textContent=''; }
+  }).catch(()=>{ zoo='failed'; if(badge) badge.textContent=''; });
+}
+
+function initZoo3D(holder){
+  const T=window.THREE;
+  const W=()=>Math.max(200,holder.clientWidth||300), H=()=>Math.round(W()*0.82);
+  const renderer=new T.WebGLRenderer({antialias:true,alpha:true});
+  renderer.setPixelRatio(Math.min(2,window.devicePixelRatio||1));
+  renderer.setSize(W(),H(),false);
+  if('outputEncoding' in renderer) renderer.outputEncoding=T.sRGBEncoding;
+  const cv=renderer.domElement; cv.style.width='100%'; cv.style.height='auto'; holder.appendChild(cv);
+
+  const scene=new T.Scene();
+  scene.background=new T.Color(0xe9dec0);
+  scene.fog=new T.Fog(0xe9dec0, 78, 150);
+  const camera=new T.PerspectiveCamera(42, W()/H(), 0.1, 500);
+  scene.add(new T.HemisphereLight(0xfff2d6, 0x6c7a52, 1.0));
+  const dir=new T.DirectionalLight(0xffe7bd, 0.7); dir.position.set(34,54,24); scene.add(dir);
+
+  const CL={grass:0x6f8a4f,grassDk:0x577138,water:0x2f7f92,path:0xd9c58c,ink:0x2a3a42,brick:0xb8442a,
+    gold:0xd0a24a,sav:0xcdb87e,white:0xf2e9cf,grey:0x8b9088,pink:0xd97f86,brown:0x976a3d,rust:0xc0603a};
+  const mat=(c,o)=>new T.MeshStandardMaterial(Object.assign({color:c,roughness:.92,metalness:0},o||{}));
+  const grp=(x,y,z)=>{const g=new T.Group(); if(x!==undefined)g.position.set(x,y||0,z||0); return g;};
+  const box=(w,h,d,c,x,y,z)=>{const m=new T.Mesh(new T.BoxGeometry(w,h,d),c.isMaterial?c:mat(c));m.position.set(x||0,y||0,z||0);return m;};
+  const cyl=(rt,rb,h,c,x,y,z)=>{const m=new T.Mesh(new T.CylinderGeometry(rt,rb,h,14),c.isMaterial?c:mat(c));m.position.set(x||0,y||0,z||0);return m;};
+  const disc=(r,c,x,z,y)=>{const m=new T.Mesh(new T.CircleGeometry(r,40),mat(c));m.rotation.x=-Math.PI/2;m.position.set(x||0,y||0.02,z||0);scene.add(m);return m;};
+
+  // park ground + themed patches
+  disc(48, CL.grass, 0,0,0);
+  disc(13,CL.sav,-17,-11); disc(12,CL.grassDk,16,-13); disc(11,0x7e9b63,17,15); disc(9,CL.path,0,32);
+  // lake + ripples
+  disc(9,CL.water,-3,11,0.12).material.roughness=.4;
+  const rings=[]; for(let i=0;i<3;i++){ const r=new T.Mesh(new T.RingGeometry(1,1.5,32),new T.MeshBasicMaterial({color:0xcfe8ec,transparent:true,opacity:.5,side:T.DoubleSide})); r.rotation.x=-Math.PI/2; r.position.set(-3,0.16,11); scene.add(r); rings.push({m:r,ph:i*0.8}); }
+
+  // train track + train
+  const trackR=32;
+  const track=new T.Mesh(new T.TorusGeometry(trackR,0.45,7,90),mat(CL.ink)); track.rotation.x=-Math.PI/2; track.position.y=0.3; scene.add(track);
+  const train=grp(); const carCols=[CL.brick,CL.gold,CL.water,CL.rust];
+  train.add(box(3,1.7,1.8,CL.brick,0,1.1,0)); train.add(box(1,1.1,1.4,CL.ink,-0.9,2.1,0));
+  for(let i=1;i<=3;i++) train.add(box(2.1,1.2,1.6,carCols[i],-i*2.8,0.95,0));
+  scene.add(train);
+
+  // sky-safari cable + gondolas
+  const A=new T.Vector3(-22,0,22), B=new T.Vector3(20,0,-18);
+  scene.add(cyl(0.25,0.3,12,CL.ink,A.x,6,A.z), cyl(0.25,0.3,12,CL.ink,B.x,6,B.z));
+  const top=11; scene.add(new T.Mesh(new T.TubeGeometry(new T.LineCurve3(new T.Vector3(A.x,top,A.z),new T.Vector3(B.x,top,B.z)),1,0.05,5),mat(CL.ink)));
+  const gond=[]; for(let i=0;i<3;i++){ const g=grp(); g.add(box(1.3,0.2,1.1,CL.ink,0,0,0)); g.add(box(1.1,0.9,0.9,CL.gold,0,-0.6,0)); scene.add(g); gond.push({g,ph:i/3}); }
+
+  // trees
+  function tree(x,z,s){ const g=grp(x,0,z); g.add(cyl(0.32,0.42,2*s,CL.brown,0,s,0)); const c=new T.Mesh(new T.ConeGeometry(1.7*s,3.2*s,8),mat(CL.grassDk)); c.position.y=2*s+1.5*s; g.add(c); scene.add(g); }
+  [[-30,5,1.2],[-26,-19,1],[24,22,1.1],[30,-7,1],[7,28,1.2],[-9,-26,1],[33,9,.9],[-34,-6,1.1]].forEach(t=>tree(t[0],t[1],t[2]));
+
+  // text-sprite signs
+  function sign(text,x,z){
+    const cc=document.createElement('canvas'); cc.width=256; cc.height=64; const g=cc.getContext('2d');
+    g.fillStyle='rgba(38,52,59,.9)'; g.strokeStyle='#d0a24a'; g.lineWidth=4;
+    const rr=(x0,y0,w,h,r)=>{g.beginPath();g.moveTo(x0+r,y0);g.arcTo(x0+w,y0,x0+w,y0+h,r);g.arcTo(x0+w,y0+h,x0,y0+h,r);g.arcTo(x0,y0+h,x0,y0,r);g.arcTo(x0,y0,x0+w,y0,r);g.closePath();};
+    rr(6,10,244,44,10); g.fill(); g.stroke();
+    g.fillStyle='#f2e9cf'; g.font='bold 26px Oswald, Arial, sans-serif'; g.textAlign='center'; g.textBaseline='middle';
+    g.fillText(text,128,34);
+    const sp=new T.Sprite(new T.SpriteMaterial({map:new T.CanvasTexture(cc),transparent:true,depthTest:true}));
+    sp.position.set(x,6.4,z); sp.scale.set(9,2.25,1); scene.add(sp);
+    scene.add(cyl(0.12,0.12,5.4,CL.ink,x,2.7,z));
+  }
+  sign('AFRICAN JOURNEY',-17,-11); sign('ASIAN TREK',16,-13); sign('AUSTRALIAN',17,15);
+
+  // entrance arch
+  (function(){ const zg=grp(0,0,40); zg.add(cyl(0.4,0.5,7,CL.brick,-6,3.5,0)); zg.add(cyl(0.4,0.5,7,CL.brick,6,3.5,0)); zg.add(box(14,1.4,1.2,CL.brick,0,7,0)); scene.add(zg); sign('ZOO',0,36.5); })();
+
+  // ── animals ──────────────────────────────────────────────────
+  const critters=[];
+  function giraffe(x,z){ const g=grp(x,0,z); const M=mat(CL.gold);
+    g.add(box(1.6,1.8,3.4,M,0,3.2,0)); const neck=box(0.9,3.8,0.9,M,1.3,5.2,0); neck.rotation.z=-0.28; g.add(neck);
+    const head=box(1,0.8,0.9,M,2.35,6.9,0); g.add(head);
+    [[-1,-1.4],[-1,1.4],[1,-1.4],[1,1.4]].forEach(p=>g.add(cyl(0.24,0.24,3.2,M,p[0],1.6,p[1])));
+    // spots
+    for(let i=0;i<7;i++){ const s=box(0.5,0.05,0.5,CL.rust,(Math.random()-.5)*1.4,3.2+(Math.random()-.5)*1.4,1.72); g.add(s); }
+    g.scale.setScalar(1.15); scene.add(g); const by=g.position.y; critters.push(t=>{ g.rotation.y=Math.sin(t*0.4)*0.15; neck.rotation.z=-0.28+Math.sin(t*0.8)*0.06; });
+    return g; }
+  function elephant(x,z){ const g=grp(x,0,z); const M=mat(CL.grey);
+    g.add(box(3.2,2.2,4.4,M,0,2.6,0)); g.add(box(2,2,2,M,0,3.2,2.6)); // head
+    const trunk=box(0.6,2.2,0.6,M,0,2.2,3.7); trunk.rotation.x=0.5; g.add(trunk);
+    g.add(box(1.4,0.05,1.8,M,1.4,3.4,2.6)); g.add(box(1.4,0.05,1.8,M,-1.4,3.4,2.6)); // ears
+    [[-1.1,-1.6],[-1.1,1.6],[1.1,-1.6],[1.1,1.6]].forEach(p=>g.add(cyl(0.5,0.5,2.4,M,p[0],1.2,p[1])));
+    scene.add(g); critters.push(t=>{ trunk.rotation.x=0.5+Math.sin(t*1.3)*0.25; }); return g; }
+  function lion(x,z){ const g=grp(x,0,z); const M=mat(CL.sav);
+    g.add(box(1.6,1.3,2.6,M,0,1.5,0)); const mane=new T.Mesh(new T.SphereGeometry(1.1,12,10),mat(CL.rust)); mane.position.set(0,2,1.5); g.add(mane);
+    g.add(box(1,0.9,0.9,M,0,2,2.1));
+    [[-0.6,-0.9],[-0.6,0.9],[0.6,-0.9],[0.6,0.9]].forEach(p=>g.add(cyl(0.24,0.24,1.4,M,p[0],0.7,p[1])));
+    scene.add(g); return g; }
+  function kangaroo(x,z){ const g=grp(x,0,z); const M=mat(CL.rust);
+    g.add(box(1,1.6,1,M,0,2,0)); g.add(box(0.7,0.9,0.7,M,0,3.1,0.2));
+    const tail=box(0.5,0.5,2,M,0,1.1,-1.2); tail.rotation.x=0.4; g.add(tail);
+    g.add(cyl(0.25,0.3,1.6,M,-0.4,0.9,0.2)); g.add(cyl(0.25,0.3,1.6,M,0.4,0.9,0.2));
+    scene.add(g); const bx=g.position.x; critters.push(t=>{ const hop=Math.max(0,Math.sin(t*2.2)); g.position.y=hop*1.6; g.position.z=z+((t*2.2/Math.PI)%6-3)*0.0; g.rotation.x=-hop*0.15; }); return g; }
+  function flamingo(x,z){ const g=grp(x,0,z); const M=mat(CL.pink);
+    g.add(cyl(0.5,0.6,0.7,M,0,1.4,0)); g.add(cyl(0.07,0.07,1.4,M,0,0.7,0)); g.add(box(0.5,0.4,0.9,M,0,1.9,0.2));
+    scene.add(g); critters.push(t=>{ g.rotation.z=Math.sin(t*1.1+x)*0.08; }); return g; }
+  function orangutan(x,z){ const g=grp(x,0,z); g.add(cyl(0.4,0.5,4,CL.brown,0,2,0));
+    const c=new T.Mesh(new T.ConeGeometry(2,3.4,8),mat(CL.grassDk)); c.position.y=5.2; g.add(c);
+    const o=new T.Mesh(new T.SphereGeometry(0.8,10,8),mat(CL.rust)); o.position.set(1.2,3.4,0.6); g.add(o);
+    scene.add(g); critters.push(t=>{ o.position.y=3.4+Math.sin(t*1.6)*0.3; }); return g; }
+
+  giraffe(-18,-9); giraffe(-14,-14); elephant(-22,-13); lion(15,-11); kangaroo(16,16); kangaroo(19,13);
+  flamingo(-5,13); flamingo(-1,13.5); flamingo(-3,9); orangutan(15,-16);
+
+  // ── camera orbit (custom, pointer + touch + wheel) ───────────
+  const now=()=> (window.performance&&performance.now)?performance.now():0;
+  const target=new T.Vector3(0,3,0);
+  let theta=0.85, phi=0.98, radius=58, drag=false, lx=0, ly=0, pinch=0, lastAct=now();
+  function setCam(){ const sp=Math.sin(phi); camera.position.set(target.x+radius*sp*Math.cos(theta), target.y+radius*Math.cos(phi), target.z+radius*sp*Math.sin(theta)); camera.lookAt(target); }
+  setCam();
+  cv.addEventListener('pointerdown',e=>{ drag=true; lx=e.clientX; ly=e.clientY; lastAct=now(); try{cv.setPointerCapture(e.pointerId);}catch(_){}});
+  cv.addEventListener('pointermove',e=>{ if(!drag)return; theta-=(e.clientX-lx)*0.008; phi=Math.max(0.22,Math.min(1.4,phi-(e.clientY-ly)*0.006)); lx=e.clientX; ly=e.clientY; lastAct=now(); setCam(); });
+  const stop=()=>{drag=false;lastAct=now();};
+  cv.addEventListener('pointerup',stop); cv.addEventListener('pointercancel',stop); cv.addEventListener('pointerleave',()=>{drag=false;});
+  cv.addEventListener('wheel',e=>{ e.preventDefault(); radius=Math.max(28,Math.min(100,radius*(1+e.deltaY*0.001))); lastAct=now(); setCam(); },{passive:false});
+  cv.addEventListener('touchmove',e=>{ if(e.touches.length===2){ const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY); if(pinch) radius=Math.max(28,Math.min(100,radius*(pinch/d))); pinch=d; lastAct=now(); setCam(); } },{passive:true});
+  cv.addEventListener('touchend',()=>{pinch=0;});
+
+  window.addEventListener('resize',()=>{ renderer.setSize(W(),H(),false); cv.style.width='100%'; cv.style.height='auto'; camera.aspect=W()/H(); camera.updateProjectionMatrix(); });
+
+  const clock=new T.Clock(); let active=false, raf=0;
+  function frame(){ if(!active) return; raf=requestAnimationFrame(frame); const t=clock.getElapsedTime();
+    const a=t*0.16; train.position.set(Math.cos(a)*trackR,0,Math.sin(a)*trackR); train.rotation.y=-a-Math.PI/2;
+    gond.forEach(o=>{ const p=(t*0.045+o.ph)%1; o.g.position.set(A.x+(B.x-A.x)*p, top-0.7-Math.sin(p*Math.PI)*0.5, A.z+(B.z-A.z)*p); });
+    rings.forEach(r=>{ const k=(t*0.5+r.ph)%2; const s=1+k*3.2; r.m.scale.set(s,s,s); r.m.material.opacity=Math.max(0,0.5-k*0.25); });
+    for(const c of critters) c(t);
+    if(now()-lastAct>3200){ theta+=0.0015; setCam(); }
+    renderer.render(scene,camera);
+  }
+  return { setActive(v){ if(v&&!active){ active=true; renderer.setSize(W(),H(),false); camera.aspect=W()/H(); camera.updateProjectionMatrix(); frame(); } else if(!v&&active){ active=false; cancelAnimationFrame(raf); } } };
+}
+
 buildAll();
+syncZoo();
 </script>
 </body>
 </html>
