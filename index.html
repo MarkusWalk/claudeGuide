@@ -379,6 +379,26 @@
   }
   .guide-card:hover .fan-mark { transform: scale(1.06); }
 
+  /* Fort Wayne: a WPA travel-poster block — the three rivers braid into
+     one under a low summit sun. Flat teal + gold, the way it was silkscreened. */
+  .card-gradient.fortwayne {
+    background: linear-gradient(180deg, #0f3742 0%, #134b58 45%, #16606f 100%);
+    position: relative;
+    overflow: hidden;
+  }
+  .card-gradient.fortwayne::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(circle at 50% 46%, rgba(224, 166, 58, 0.30) 0%, transparent 46%);
+  }
+  .river-mark {
+    position: relative;
+    width: 150px; height: 150px;
+    filter: drop-shadow(0 3px 10px rgba(0,0,0,0.4));
+    transition: transform 0.7s cubic-bezier(0.23, 1, 0.32, 1);
+  }
+  .guide-card:hover .river-mark { transform: scale(1.06); }
+
   .card-icon {
     font-size: 4rem;
     opacity: 0.4;
@@ -688,6 +708,57 @@
               <circle cx="12" cy="10" r="3"/>
             </svg>
             Karlsruhe
+          </span>
+        </div>
+        <div class="card-arrow">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </div>
+      </div>
+    </a>
+
+    <!-- Fort Wayne Guide -->
+    <a href="fortwayne.html" class="guide-card">
+      <div class="card-image">
+        <div class="card-gradient fortwayne">
+          <svg class="river-mark" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- low summit sun -->
+            <circle cx="60" cy="52" r="16" fill="#e0a63a"/>
+            <g stroke="#e0a63a" stroke-width="1" opacity="0.5" stroke-linecap="round">
+              <path d="M60 52 L60 8 M60 52 L92 16 M60 52 L28 16 M60 52 L100 40 M60 52 L20 40"/>
+            </g>
+            <!-- three rivers braiding into the Maumee -->
+            <g fill="none" stroke="#f5edd6" stroke-width="5" stroke-linecap="round" opacity="0.92">
+              <path d="M24 58 C 44 78, 50 84, 60 96"/>
+              <path d="M96 58 C 76 78, 70 84, 60 96"/>
+            </g>
+            <path d="M60 96 C 60 104, 56 110, 48 116 L 72 116 C 64 110, 60 104, 60 96 Z" fill="#1c6b7d"/>
+            <path d="M60 96 C 59 106, 56 112, 52 116" fill="none" stroke="#f5edd6" stroke-width="5" stroke-linecap="round" opacity="0.92"/>
+          </svg>
+        </div>
+      </div>
+      <div class="card-content">
+        <div class="card-region">Indiana, USA</div>
+        <h2 class="card-title">See Fort Wayne</h2>
+        <p class="card-description">
+          A Federal-Art-Project travel portfolio of the Summit City — the old fort, the
+          three-rivers confluence, a 1928 marquee, and the coney-dog counter. Poster-flip your way through.
+        </p>
+        <div class="card-meta">
+          <span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M12 6v6l4 2"/>
+            </svg>
+            Full day · 8 stops
+          </span>
+          <span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 1118 0z"/>
+              <circle cx="12" cy="10" r="3"/>
+            </svg>
+            Fort Wayne
           </span>
         </div>
         <div class="card-arrow">
