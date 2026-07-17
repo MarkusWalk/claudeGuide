@@ -588,7 +588,7 @@ function illustrationSVG(type){
       <!-- Chapman: coat, staff, tin-pot hat -->
       <g fill="${INK.ink}">
         <path d="M96 248 L88 190 Q100 176 118 190 L110 248 Z"/>
-        <rect x="99" y="150 " width="8" height="44"/>
+        <rect x="99" y="150" width="8" height="44"/>
         <circle cx="103" cy="150" r="14" fill="${INK.brickDk}"/>
       </g>
       <!-- tin pot hat -->
@@ -676,7 +676,7 @@ function illustrationSVG(type){
     const sky=skyRays({top:'#0f3742',mid:'#15586a',low:'#1c6b7d',sun:INK.gold,ray:'#2a8296'});
     return open+`
       ${sky}
-      <rect x="0" y="150" width="320" height="170" fill="${INK.tealDk}"/>
+      <rect x="0" y="116" width="320" height="204" fill="${INK.tealDk}"/>
       <!-- compass rose -->
       <g transform="translate(160,200)">
         <circle r="70" fill="none" stroke="${INK.cream}" stroke-width="2" opacity="0.7"/>
@@ -981,7 +981,7 @@ function goTo(target){
   });
   currentPage=target;
   updateChrome();
-  setTimeout(()=>{ const sh=pageEls[currentPage].querySelector('.sheet, .plate'); if(sh)sh.scrollTop=0; const rf=pageEls[currentPage].querySelector('.rule-frame'); },90);
+  setTimeout(()=>{ const sh=pageEls[currentPage].querySelector('.plate'); if(sh)sh.scrollTop=0; },90);
 }
 function updateChrome(){
   document.getElementById('progress').textContent=String(currentPage+1).padStart(2,'0')+' / '+String(totalPages).padStart(2,'0');
@@ -1054,7 +1054,6 @@ function updateDistances(){
     sp.textContent=fmt(haversine(pos.lat,pos.lng,s.lat,s.lng));
   });
 }
-function updateChromeDistances(){ updateDistances(); }
 
 /* ══════════════════════════════════════════════════════════════
    TTS
