@@ -124,25 +124,28 @@
   }
   .spine::before{ top:24px; } .spine::after{ bottom:24px; }
 
-  #pages{ position:absolute; inset:0; perspective:2000px; }
+  #pages{ position:absolute; inset:0; perspective:1800px; }
 
+  /* The leaf is the flip surface only — it never scrolls. Scrolling lives on
+     .leaf-inner (a plain, un-transformed child), which keeps mobile WebKit
+     from blanking a 3D-transformed scroll container. Non-current pages are
+     hidden outright, so nothing can pile up and the current page always shows
+     even if 3D transforms misbehave. */
   .page{
-    position:absolute; inset:0; z-index:1;
-    transform-origin:left center;
+    position:absolute; inset:0; z-index:1; overflow:hidden;
+    transform-origin:left center; transform:rotateY(0deg);
     backface-visibility:hidden;
-    transition:transform .82s cubic-bezier(.36,.02,.22,1);
+    opacity:0; visibility:hidden; pointer-events:none;
+    transition:transform .7s cubic-bezier(.36,.02,.22,1), opacity .42s ease;
     background:
       linear-gradient(90deg, rgba(0,0,0,.10) 0, rgba(0,0,0,0) 5%),
       linear-gradient(180deg, var(--paper-hi), var(--paper) 60%, var(--paper-2));
     border-radius:2px 4px 4px 2px;
     box-shadow:inset 6px 0 14px rgba(90,66,30,.10);
-    overflow-y:auto; overflow-x:hidden;
-    -webkit-overflow-scrolling:touch; overscroll-behavior:contain; scrollbar-width:none;
   }
-  .page::-webkit-scrollbar{ display:none; }
-  .page.is-current{ z-index:20; }
-  .page.flipping{ z-index:30; }
-  .page.turned{ transform:rotateY(-178deg); }
+  .page.is-current{ opacity:1; visibility:visible; pointer-events:auto; z-index:20; transform:rotateY(0deg); }
+  .page.turn-out{ opacity:0; visibility:visible; z-index:30; transform:rotateY(-156deg); }
+  .page.turn-in{ opacity:0; visibility:visible; z-index:30; transform:rotateY(-156deg); }
   /* paper texture + foxing */
   .page::after{
     content:''; position:absolute; inset:0; pointer-events:none; z-index:0;
@@ -153,7 +156,13 @@
       url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.7' numOctaves='2' seed='9'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23p)' opacity='.35'/%3E%3C/svg%3E");
   }
 
-  .leaf-inner{ position:relative; z-index:1; padding:20px 20px 96px; min-height:100%; }
+  .leaf-inner{
+    position:absolute; inset:0; z-index:1;
+    overflow-y:auto; overflow-x:hidden;
+    -webkit-overflow-scrolling:touch; overscroll-behavior:contain; scrollbar-width:none;
+    padding:20px 20px 96px;
+  }
+  .leaf-inner::-webkit-scrollbar{ display:none; }
 
   /* ── the pasted-in ink plate ─────────────────────────────────── */
   .plate{ margin:2px 0 6px; }
@@ -280,9 +289,10 @@
 
   .nav{ position:fixed; z-index:12; left:0; right:0; bottom:max(16px,env(safe-area-inset-bottom)); display:flex; align-items:center; justify-content:center; gap:16px; pointer-events:none; }
   .nav button{
-    pointer-events:auto; cursor:pointer; width:50px; height:50px; border-radius:50%;
-    border:1px solid var(--gold); background:rgba(10,18,22,.82); color:var(--gold-lt);
-    display:flex; align-items:center; justify-content:center; backdrop-filter:blur(4px);
+    pointer-events:auto; cursor:pointer; width:52px; height:52px; border-radius:50%;
+    border:1.5px solid var(--gold); background:#111c22; color:var(--gold-lt);
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 3px 10px rgba(0,0,0,.5);
     transition:transform .15s, opacity .2s;
   }
   .nav button:active{ transform:scale(.9); }
@@ -765,34 +775,35 @@ function goTo(target){
   const fwd=target>currentPage;
   const out=pageEls[currentPage], inc=pageEls[target];
   animating=true;
-  out.classList.remove('is-current'); inc.classList.remove('is-current');
+  // clear transient state everywhere except the two players
+  pageEls.forEach(p=>{ if(p!==out&&p!==inc) p.classList.remove('is-current','turn-out','turn-in'); });
 
   if(reduce){
-    pageEls.forEach(p=>p.classList.remove('flipping','turned'));
-    inc.classList.add('is-current'); inc.style.zIndex=20;
-    finish(target); return;
+    out.classList.remove('is-current','turn-out','turn-in');
+    inc.classList.remove('turn-out','turn-in'); inc.classList.add('is-current');
+    currentPage=target; endTurn(inc); return;
   }
 
   if(fwd){
-    inc.style.transform='rotateY(0deg)'; inc.classList.remove('turned'); inc.style.zIndex=20; inc.classList.add('is-current');
-    out.classList.add('flipping'); out.style.zIndex=30;
-    requestAnimationFrame(()=>{ out.classList.add('turned'); });
-    setTimeout(()=>{ out.classList.remove('flipping'); out.style.zIndex=1; out.style.transform=''; out.classList.remove('turned'); finish(target); },820);
+    // old leaf flips away toward the binding; new leaf is revealed beneath
+    out.classList.remove('is-current');
+    inc.classList.remove('turn-out','turn-in'); inc.classList.add('is-current');
+    out.classList.add('turn-out');
   }else{
-    // the earlier page swings back in from the binding
-    inc.classList.add('flipping','turned'); inc.style.zIndex=30; inc.style.transition='none';
-    // force the turned state, then animate open
-    void inc.offsetWidth;
-    inc.style.transition='';
-    requestAnimationFrame(()=>{ inc.classList.remove('turned'); inc.classList.add('is-current'); });
-    out.style.zIndex=20;
-    setTimeout(()=>{ inc.classList.remove('flipping'); inc.style.zIndex=20; out.style.zIndex=1; finish(target); },820);
+    // the earlier leaf swings back in from the binding
+    out.classList.remove('is-current');
+    inc.classList.remove('is-current','turn-out'); inc.classList.add('turn-in');
+    void inc.offsetWidth;                       // apply the start state before animating
+    requestAnimationFrame(()=>{ inc.classList.remove('turn-in'); inc.classList.add('is-current'); });
   }
   currentPage=target; updateChrome();
+  window.setTimeout(()=>endTurn(inc), 740);
 }
-function finish(target){
-  currentPage=target; animating=false; updateChrome();
-  const inner=pageEls[currentPage]; if(inner) inner.scrollTop=0;
+function endTurn(inc){
+  animating=false;
+  pageEls.forEach(p=>{ if(p!==inc) p.classList.remove('turn-out','turn-in'); });
+  const sc=inc.querySelector('.leaf-inner'); if(sc) sc.scrollTop=0;
+  updateChrome();
 }
 function updateChrome(){
   document.getElementById('progress').textContent=String(currentPage+1).padStart(2,'0')+' / '+String(totalPages).padStart(2,'0');
