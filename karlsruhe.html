@@ -1,0 +1,1876 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Logbuch einer Excursion nach Carlsruhe — XVIII. Julii MMXXVI</title>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=IM+Fell+English:ital@0;1&family=UnifrakturMaguntia&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:        #34281c;
+    --ink-soft:   #5d4b36;
+    --ink-faint:  #7a664a;
+    --ink-pale:   #9c8663;
+    --carmine:    #8f2d20;
+    --carmine-lt: #b4553f;
+    --paper-1:    #efe4c8;
+    --paper-2:    #e2d3ad;
+    --paper-3:    #cdb98d;
+    --leather-1:  #5b3520;
+    --leather-2:  #3a2013;
+    --leather-3:  #22110a;
+    --gold:       #b8945a;
+    --gold-lt:    #e3c88a;
+    --felt:       #1d2a24;
+  }
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  html,body{ height:100%; }
+  body{
+    background:
+      radial-gradient(ellipse 90% 70% at 50% 40%, #2f4239 0%, #1b2721 45%, #0d1310 100%),
+      #0d1310;
+    font-family:'EB Garamond', Garamond, serif;
+    color:var(--ink);
+    overflow:hidden;
+    display:flex; align-items:center; justify-content:center;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* ── lamp glow + desk vignette ───────────────────────────── */
+  .lamp{
+    position:fixed; inset:0; pointer-events:none; z-index:60;
+    background:
+      radial-gradient(ellipse 55% 50% at 50% 34%, rgba(255,226,168,.16) 0%, rgba(255,214,150,.05) 45%, transparent 72%),
+      radial-gradient(ellipse 120% 110% at 50% 50%, transparent 42%, rgba(0,0,0,.55) 88%, rgba(0,0,0,.8) 100%);
+    mix-blend-mode:normal;
+    animation:flicker 7s ease-in-out infinite;
+  }
+  @keyframes flicker{
+    0%,100%{ opacity:1 } 43%{ opacity:.93 } 47%{ opacity:1 } 62%{ opacity:.96 } 66%{ opacity:1 }
+  }
+  .grain{
+    position:fixed; inset:-50%; pointer-events:none; z-index:61; opacity:.16;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='3'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)'/%3E%3C/svg%3E");
+    animation:grainmove .9s steps(3) infinite;
+  }
+  @keyframes grainmove{
+    0%{transform:translate(0,0)} 33%{transform:translate(-7px,4px)} 66%{transform:translate(5px,-6px)} 100%{transform:translate(0,0)}
+  }
+  .motes{ position:fixed; inset:0; pointer-events:none; z-index:59; overflow:hidden; }
+  .mote{
+    position:absolute; border-radius:50%;
+    background:radial-gradient(circle, rgba(255,235,190,.9) 0%, rgba(255,225,170,.25) 45%, transparent 70%);
+    animation:drift linear infinite;
+  }
+  @keyframes drift{
+    0%{ transform:translate3d(0,0,0) scale(.7); opacity:0 }
+    12%{ opacity:.7 }
+    88%{ opacity:.5 }
+    100%{ transform:translate3d(var(--dx), var(--dy), 0) scale(1.15); opacity:0 }
+  }
+
+  /* ── stage ───────────────────────────────────────────────── */
+  #stage{ perspective:3000px; perspective-origin:50% 42%; }
+  /* NB: #book must NOT be preserve-3d — it supplies the perspective for the
+     leaves and stays flat itself, so plain z-index ordering keeps working. */
+  #book{
+    position:relative; width:1200px; height:800px;
+    perspective:2600px; perspective-origin:50% 46%;
+    transition:transform 1.1s cubic-bezier(.4,.05,.2,1);
+  }
+  #book.closed{ transform:translateX(-300px) rotateX(6deg) rotateZ(-.4deg); }
+  #book.open  { transform:translateX(0)      rotateX(5deg) rotateZ(0); }
+
+  /* desk shadow under book */
+  .deskshadow{
+    position:absolute; left:-70px; right:-70px; top:34px; bottom:-46px;
+    background:radial-gradient(ellipse 50% 52% at 50% 60%, rgba(0,0,0,.75) 0%, rgba(0,0,0,.45) 55%, transparent 78%);
+    filter:blur(22px); z-index:-2;
+    transition:left .9s ease, right .9s ease, opacity .9s ease;
+  }
+  #book.closed .deskshadow{ left:540px; right:-56px; }
+  /* when shut, the left board would stick out beside the cover — fold it away */
+  .board.left{ transition:opacity .5s ease; }
+  #book.closed .board.left{ opacity:0; }
+
+  /* the fixed left/right base boards (the covers seen from inside) */
+  .board{
+    position:absolute; top:0; width:600px; height:800px;
+    background:
+      linear-gradient(90deg, rgba(0,0,0,.34), transparent 16%),
+      radial-gradient(ellipse 130% 100% at 50% 50%, #7d5a3d 0%, #5b3520 46%, #351d10 100%);
+    box-shadow:0 26px 60px rgba(0,0,0,.7);
+  }
+  .board.left { left:0;  border-radius:5px 0 0 5px; }
+  .board.right{ left:600px; border-radius:0 5px 5px 0;
+    background:
+      linear-gradient(270deg, rgba(0,0,0,.34), transparent 16%),
+      radial-gradient(ellipse 130% 100% at 50% 50%, #7d5a3d 0%, #5b3520 46%, #351d10 100%);
+  }
+  .board::after{ /* marbled paste-down */
+    content:''; position:absolute; inset:16px;
+    background-image:var(--marble); background-size:cover;
+    opacity:.95; border-radius:2px;
+    box-shadow:inset 0 0 34px rgba(0,0,0,.5);
+  }
+
+  /* spine */
+  /* the sewn spine: a dark leather trough, not a shiny rod */
+  .spine{
+    position:absolute; left:582px; top:-3px; width:36px; height:806px; z-index:40;
+    background:
+      linear-gradient(90deg,
+        rgba(24,12,6,.0)   0%,
+        rgba(24,12,6,.55) 16%,
+        rgba(14,7,3,.86)  46%,
+        rgba(14,7,3,.86)  54%,
+        rgba(24,12,6,.55) 84%,
+        rgba(24,12,6,.0) 100%);
+    pointer-events:none;
+  }
+  .spine .band{
+    position:absolute; left:5px; right:5px; height:12px;
+    background:linear-gradient(180deg, rgba(150,110,66,.30), rgba(90,60,32,.12) 55%, rgba(0,0,0,.42));
+    border-radius:3px;
+    box-shadow:0 1px 2px rgba(0,0,0,.5);
+  }
+
+  /* ── leaves ──────────────────────────────────────────────── */
+  .leaf{
+    position:absolute; left:600px; top:0; width:600px; height:800px;
+    transform-origin:left center; transform-style:preserve-3d;
+    transition:transform 1.25s cubic-bezier(.42,.02,.22,1);
+    cursor:pointer;
+  }
+  .leaf.flipped{ transform:rotateY(-179.6deg); }
+  .face{
+    position:absolute; inset:0; backface-visibility:hidden; overflow:hidden;
+    border-radius:0 4px 4px 0;
+  }
+  .face.back{ transform:rotateY(180deg); border-radius:4px 0 0 4px; }
+
+  /* paper — NB: must not set `position`, that would override .face's absolute */
+  .paper{
+    background:
+      radial-gradient(ellipse 60% 45% at 78% 12%, rgba(160,120,60,.10), transparent 60%),
+      radial-gradient(ellipse 50% 40% at 20% 88%, rgba(150,110,55,.12), transparent 62%),
+      linear-gradient(160deg, var(--paper-1) 0%, var(--paper-2) 58%, var(--paper-3) 100%);
+  }
+  .paper::before{ /* fibre grain */
+    content:''; position:absolute; inset:0; pointer-events:none; opacity:.5; mix-blend-mode:multiply;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.6 .04' numOctaves='4' seed='7'/%3E%3CfeColorMatrix values='0 0 0 0 .42 0 0 0 0 .32 0 0 0 0 .18 0 0 0 .26 0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23p)'/%3E%3C/svg%3E");
+  }
+  .paper::after{ /* gutter shade + edge darkening */
+    content:''; position:absolute; inset:0; pointer-events:none;
+    box-shadow:inset 0 0 44px rgba(120,88,44,.28);
+  }
+  .face.front .gutter{
+    position:absolute; left:0; top:0; bottom:0; width:64px; z-index:3; pointer-events:none;
+    background:linear-gradient(90deg, rgba(70,44,18,.42) 0%, rgba(70,44,18,.13) 46%, transparent 100%);
+  }
+  .face.back .gutter{
+    position:absolute; right:0; top:0; bottom:0; width:64px; z-index:3; pointer-events:none;
+    background:linear-gradient(270deg, rgba(70,44,18,.42) 0%, rgba(70,44,18,.13) 46%, transparent 100%);
+  }
+  .foxing{ position:absolute; inset:0; pointer-events:none; z-index:2; opacity:.55; }
+
+  .pad{ position:absolute; inset:0; padding:52px 54px 46px 74px; z-index:4; display:flex; flex-direction:column; }
+  .face.back .pad{ padding:52px 74px 46px 54px; }
+
+  /* ── typography ──────────────────────────────────────────── */
+  .rule{ height:1px; background:linear-gradient(90deg, transparent, var(--ink-pale) 12%, var(--ink-pale) 88%, transparent); opacity:.8; }
+  .rule.thin{ opacity:.45; }
+  .kicker{
+    font-family:'Cormorant Garamond',serif; font-size:11.5px; letter-spacing:.42em;
+    text-transform:uppercase; color:var(--ink-soft); text-align:center;
+  }
+  h1.book{
+    font-family:'IM Fell English', 'EB Garamond', serif;
+    font-size:44px; line-height:1.04; text-align:center; letter-spacing:.02em;
+  }
+  h2.chap{
+    font-family:'IM Fell English', serif; font-size:27px; text-align:center; letter-spacing:.03em;
+    color:var(--ink);
+  }
+  h3.stat{
+    font-family:'IM Fell English', serif; font-size:20.5px; letter-spacing:.01em; margin-bottom:1px;
+  }
+  p, li{ font-size:15.4px; line-height:1.62; color:var(--ink); text-align:justify; hyphens:auto; }
+  .small{ font-size:13.2px; line-height:1.55; color:var(--ink-soft); }
+  .tiny{ font-size:11.4px; line-height:1.5; color:var(--ink-soft); letter-spacing:.02em; }
+  em{ font-style:italic; }
+  .sc{ font-variant:small-caps; letter-spacing:.06em; }
+  .folio{
+    position:absolute; bottom:22px; font-family:'Cormorant Garamond',serif; font-size:12px;
+    color:var(--ink-soft); letter-spacing:.28em; z-index:5;
+  }
+  .face.front .folio{ right:56px; } .face.back .folio{ left:56px; }
+  .drop{ float:left; font-family:'UnifrakturMaguntia', serif; font-size:52px; line-height:.82;
+         padding:6px 8px 0 0; color:var(--carmine); }
+  .marg{ font-family:'Cormorant Garamond',serif; font-style:italic; font-size:12px; color:var(--carmine);
+         letter-spacing:.04em; }
+
+  /* ── ink drawing animation ───────────────────────────────── */
+  .ink [data-draw]{
+    stroke-dasharray:var(--len,900); stroke-dashoffset:var(--len,900);
+  }
+  .visible .ink [data-draw]{ animation:draw var(--dur,2.1s) cubic-bezier(.5,0,.2,1) forwards; animation-delay:var(--del,0s); }
+  @keyframes draw{ to{ stroke-dashoffset:0 } }
+  .visible .fade{ animation:fadein 1.4s ease forwards; opacity:0; animation-delay:var(--del,.5s); }
+  @keyframes fadein{ to{ opacity:1 } }
+  .visible .rise{ animation:rise .9s cubic-bezier(.2,.7,.2,1) forwards; opacity:0; transform:translateY(9px); animation-delay:var(--del,.15s); }
+  @keyframes rise{ to{ opacity:1; transform:translateY(0) } }
+
+  /* ── cover ───────────────────────────────────────────────── */
+  .cover{
+    background:
+      radial-gradient(ellipse 70% 60% at 34% 26%, rgba(255,200,140,.13), transparent 62%),
+      linear-gradient(140deg, #6a4028 0%, #4a2a19 40%, #2d180e 100%);
+  }
+  .cover::before{
+    content:''; position:absolute; inset:0; opacity:.5; mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='l'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' seed='3'/%3E%3CfeDiffuseLighting lighting-color='%23fff' surfaceScale='2.4'%3E%3CfeDistantLight azimuth='120' elevation='58'/%3E%3C/feDiffuseLighting%3E%3C/filter%3E%3Crect width='260' height='260' filter='url(%23l)'/%3E%3C/svg%3E");
+  }
+  .cover::after{
+    content:''; position:absolute; inset:0; pointer-events:none;
+    box-shadow:inset 0 0 70px rgba(0,0,0,.62), inset -3px 0 12px rgba(0,0,0,.5);
+  }
+  .goldframe{
+    position:absolute; inset:34px; border:1.6px solid rgba(184,148,90,.72); border-radius:2px;
+    box-shadow:0 0 0 5px rgba(0,0,0,.18), inset 0 0 0 5px rgba(0,0,0,.18), inset 0 0 0 6.5px rgba(184,148,90,.42);
+  }
+  .goldframe.inner{ inset:48px; border-width:.8px; box-shadow:none; border-color:rgba(184,148,90,.42); }
+  .covertext{ position:absolute; inset:0; display:flex; flex-direction:column; align-items:center;
+              justify-content:center; text-align:center; z-index:3; padding:70px 60px; }
+  .gilt{
+    color:var(--gold-lt);
+    text-shadow:0 1px 0 rgba(0,0,0,.75), 0 -1px 0 rgba(255,240,200,.28), 0 0 16px rgba(200,160,90,.35);
+  }
+  .cornerorn{ position:absolute; width:56px; height:56px; opacity:.75; }
+
+  /* ── nav ─────────────────────────────────────────────────── */
+  .nav{
+    position:fixed; bottom:22px; left:50%; transform:translateX(-50%);
+    display:flex; gap:14px; align-items:center; z-index:70;
+  }
+  .btn{
+    font-family:'Cormorant Garamond',serif; font-size:12.5px; letter-spacing:.26em; text-transform:uppercase;
+    padding:9px 20px; color:#e6d3a8; cursor:pointer; user-select:none; white-space:nowrap;
+    background:linear-gradient(180deg, rgba(120,90,50,.55), rgba(35,22,12,.75));
+    border:1px solid rgba(184,148,90,.5); border-radius:2px;
+    box-shadow:0 2px 10px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,225,170,.18);
+    transition:.25s; backdrop-filter:blur(3px);
+  }
+  .btn:hover{ color:#fff0d0; border-color:rgba(220,185,120,.85); box-shadow:0 2px 18px rgba(190,150,80,.35), inset 0 1px 0 rgba(255,235,190,.3); }
+  .btn[disabled]{ opacity:.3; pointer-events:none; }
+  .pagemark{ font-family:'Cormorant Garamond',serif; color:#b8945a; font-size:12px; letter-spacing:.2em; min-width:96px; text-align:center; }
+  .hint{
+    position:fixed; top:20px; left:50%; transform:translateX(-50%); z-index:70;
+    font-family:'Cormorant Garamond',serif; font-style:italic; color:rgba(200,170,120,.5);
+    font-size:12.5px; letter-spacing:.16em; transition:opacity .8s; pointer-events:none;
+  }
+
+  /* ── station blocks ──────────────────────────────────────── */
+  .st{ display:flex; gap:14px; margin:0 0 17px; }
+  .st .num{
+    flex:0 0 34px; height:34px; border-radius:50%; border:1.1px solid var(--carmine);
+    display:flex; align-items:center; justify-content:center; color:var(--carmine);
+    font-family:'IM Fell English',serif; font-size:16px; margin-top:2px;
+    box-shadow:inset 0 0 0 2.6px rgba(143,45,32,.10);
+  }
+  .st .when{ font-family:'Cormorant Garamond',serif; font-size:12px; letter-spacing:.18em;
+             color:var(--carmine); text-transform:uppercase; }
+  .st p{ font-size:14.4px; line-height:1.55; margin-top:3px; }
+  .meta{ font-size:11.6px; color:var(--ink-soft); font-style:italic; margin-top:4px; letter-spacing:.02em; }
+
+  /* min-height:0 lets a flex:1 plate actually shrink instead of overflowing the page */
+  .plate{ border:1px solid rgba(90,70,40,.32); padding:9px; position:relative; background:rgba(255,248,225,.16); min-height:0; }
+  .ink{ min-height:0; }
+  .plate::after{ content:''; position:absolute; inset:3px; border:.6px solid rgba(90,70,40,.22); pointer-events:none; }
+  .caption{ font-family:'Cormorant Garamond',serif; font-style:italic; font-size:11.6px; color:var(--ink-soft);
+            text-align:center; margin-top:5px; letter-spacing:.03em; }
+
+  .tbl{ width:100%; border-collapse:collapse; }
+  .tbl td{ padding:5.5px 4px; font-size:13.6px; vertical-align:top; border-bottom:.6px dotted rgba(90,70,40,.42); }
+  .tbl td:first-child{ width:88px; color:var(--carmine); font-family:'Cormorant Garamond',serif;
+                       letter-spacing:.1em; font-size:12.2px; white-space:nowrap; padding-top:7px; }
+  .tbl td:last-child{ width:52px; text-align:right; color:var(--ink-soft); font-size:11.6px; font-style:italic; }
+
+  .warn{ border-left:2px solid var(--carmine); padding:2px 0 2px 12px; margin:10px 0; }
+  .warn b{ font-variant:small-caps; letter-spacing:.05em; }
+
+  .stamp{
+    position:absolute; right:44px; top:64px; width:120px; height:120px; z-index:5;
+    opacity:.42; transform:rotate(-13deg);
+  }
+  .ribbon{
+    /* must clear the right page's text column (ends at 1160) — it is drawn over the paper */
+    position:absolute; left:1168px; top:-12px; width:15px; height:0; z-index:35;
+    background:linear-gradient(90deg,#5c1a16,#963026 42%,#5c1a16);
+    box-shadow:2px 0 6px rgba(0,0,0,.5);
+    border-radius:0 0 2px 2px; pointer-events:none;
+    transition:height 1.4s cubic-bezier(.2,.8,.2,1), opacity .5s ease;
+  }
+  #book.closed .ribbon{ opacity:0; }
+  .ribbon::after{ content:''; position:absolute; bottom:-9px; left:0; width:15px; height:10px;
+    background:inherit; clip-path:polygon(0 0,100% 0,100% 100%,50% 55%,0 100%); }
+
+  /* ═══════════════════════════════════════════════════════════════
+     MOBILE (≤860px) — one page at a time.
+     The page is NOT scaled down: .face simply becomes as wide as the
+     viewport and the type keeps its real px size. Scaling the 600×800
+     spread into 390px would drop body text to ~4px, which is exactly
+     the device you'd be holding in Karlsruhe.
+     ═══════════════════════════════════════════════════════════════ */
+  @media (max-width:860px){
+    body{ display:block; overflow-y:auto; overflow-x:hidden; }
+    .lamp{ background:radial-gradient(ellipse 120% 90% at 50% 40%, transparent 55%, rgba(0,0,0,.42) 100%); }
+    .grain{ opacity:.1; }
+    .motes{ display:none; }
+
+    #stage{ perspective:none; width:100%; transform:none !important; }
+    #book{
+      position:relative; width:100%; height:auto;
+      perspective:none; transform:none !important; transition:none;
+    }
+    .deskshadow, .board, .spine, .ribbon, .face .gutter{ display:none; }
+
+    .leaf{
+      position:relative; left:0; top:0; width:100%; height:auto;
+      transform:none !important; transform-style:flat; transition:none;
+      cursor:auto; display:none; z-index:auto !important;
+    }
+    .leaf.m-show{ display:block; }
+
+    .face{
+      position:relative; inset:auto; width:100%; height:auto;
+      min-height:100svh; border-radius:0; overflow:visible;
+      backface-visibility:visible; transform:none !important;
+      display:none;
+      box-shadow:0 0 30px rgba(0,0,0,.55);
+    }
+    .face.m-show{ display:block; }
+
+    /* !important: the Charte page carries its padding as an inline style */
+    .pad, .face.back .pad{
+      position:relative; inset:auto; min-height:100svh;
+      padding:34px 22px 78px !important;
+    }
+    .face .folio{ left:22px; right:auto; bottom:44px; }
+
+    /* SVGs that relied on height:100% of a flex parent need an explicit ratio
+       once the page height becomes auto, or they collapse to 0. */
+    .fit-svg{ width:100%; height:auto !important; flex:none !important; aspect-ratio:var(--ar); }
+
+    .tl-rail{ display:none; }                       /* Marsch-Tafel: Zeiten tragen die Reihenfolge */
+    .herb-grid{ grid-template-columns:1fr !important; grid-template-rows:none !important; gap:10px !important; }
+    .fauna-row{ flex-direction:column; align-items:stretch; gap:8px !important; }
+    .fauna-row .plate{ flex:0 0 auto !important; }
+    .kit-cols{ flex-direction:column; gap:0 !important; }
+    .stamp{ width:86px; height:86px; right:18px; top:44px; }
+
+    /* Anhang-Tabelle: Zeilen stapeln statt drei Spalten quetschen */
+    .tbl, .tbl tbody, .tbl tr, .tbl td{ display:block; width:auto !important; }
+    .tbl tr{ border-bottom:.6px dotted rgba(90,70,40,.42); padding:8px 0; }
+    .tbl td{ border:none; padding:1px 0; }
+    .tbl td:first-child{ padding-top:0; }
+    .tbl td:last-child{ text-align:left; }
+
+    /* Display-Typo war für 600px Seitenbreite gesetzt */
+    .c-kicker{ font-size:9px !important; letter-spacing:.3em !important; }
+    .c-logbuch{ font-size:44px !important; }
+    .c-sub{ font-size:15px !important; }
+    .c-city{ font-size:26px !important; letter-spacing:.1em !important; }
+    .c-sub2, .c-note{ font-size:12px !important; }
+    .c-date{ font-size:13px !important; }
+    .covertext{ padding:60px 24px !important; }
+    .goldframe{ inset:20px; } .goldframe.inner{ inset:30px; }
+    .cornerorn{ width:38px; height:38px; }
+    h1.book{ font-size:31px; }
+    h2.chap{ font-size:22px; }
+    .kicker{ font-size:10px; letter-spacing:.3em; }
+
+    /* the nav now sits over pale paper, not the dark desk — give it a plinth */
+    .nav{
+      left:0; right:0; bottom:0; transform:none; width:100%; justify-content:center;
+      padding:12px 12px calc(12px + env(safe-area-inset-bottom, 0px));
+      background:linear-gradient(180deg, rgba(18,11,5,0) 0%, rgba(18,11,5,.8) 50%, rgba(18,11,5,.96) 100%);
+    }
+    .btn{ padding:12px 18px; }   /* ≥44px Tap-Target */
+    .pagemark{ min-width:0; font-size:11px; }
+    .hint{ font-size:11px; top:12px; padding:0 16px; text-align:center; }
+  }
+</style>
+</head>
+<body>
+
+<div class="lamp"></div>
+<div class="grain"></div>
+<div class="motes" id="motes"></div>
+
+<div id="stage">
+  <div id="book" class="closed">
+    <div class="deskshadow"></div>
+    <div class="board left"></div>
+    <div class="board right"></div>
+    <div class="ribbon" id="ribbon"></div>
+
+    <!-- ═══════════ LEAF 0 : COVER / FRONTISPIZ ═══════════ -->
+    <div class="leaf" data-i="0">
+      <div class="face front cover">
+        <div class="goldframe"></div>
+        <div class="goldframe inner"></div>
+        <svg class="cornerorn" style="left:44px;top:44px" viewBox="0 0 60 60"><g fill="none" stroke="rgba(184,148,90,.8)" stroke-width="1"><path d="M2 24C2 12 12 2 24 2"/><path d="M8 26c0-10 8-18 18-18"/><path d="M4 40c8 0 14-6 14-14 0-6 4-10 10-10 5 0 8 3 8 7 0 3-2 5-5 5-2 0-3-1-3-3"/><circle cx="30" cy="30" r="1.6" fill="rgba(184,148,90,.8)" stroke="none"/></g></svg>
+        <svg class="cornerorn" style="right:44px;top:44px;transform:scaleX(-1)" viewBox="0 0 60 60"><g fill="none" stroke="rgba(184,148,90,.8)" stroke-width="1"><path d="M2 24C2 12 12 2 24 2"/><path d="M8 26c0-10 8-18 18-18"/><path d="M4 40c8 0 14-6 14-14 0-6 4-10 10-10 5 0 8 3 8 7 0 3-2 5-5 5-2 0-3-1-3-3"/><circle cx="30" cy="30" r="1.6" fill="rgba(184,148,90,.8)" stroke="none"/></g></svg>
+        <svg class="cornerorn" style="left:44px;bottom:44px;transform:scaleY(-1)" viewBox="0 0 60 60"><g fill="none" stroke="rgba(184,148,90,.8)" stroke-width="1"><path d="M2 24C2 12 12 2 24 2"/><path d="M8 26c0-10 8-18 18-18"/><path d="M4 40c8 0 14-6 14-14 0-6 4-10 10-10 5 0 8 3 8 7 0 3-2 5-5 5-2 0-3-1-3-3"/><circle cx="30" cy="30" r="1.6" fill="rgba(184,148,90,.8)" stroke="none"/></g></svg>
+        <svg class="cornerorn" style="right:44px;bottom:44px;transform:scale(-1,-1)" viewBox="0 0 60 60"><g fill="none" stroke="rgba(184,148,90,.8)" stroke-width="1"><path d="M2 24C2 12 12 2 24 2"/><path d="M8 26c0-10 8-18 18-18"/><path d="M4 40c8 0 14-6 14-14 0-6 4-10 10-10 5 0 8 3 8 7 0 3-2 5-5 5-2 0-3-1-3-3"/><circle cx="30" cy="30" r="1.6" fill="rgba(184,148,90,.8)" stroke="none"/></g></svg>
+
+        <div class="covertext">
+          <div class="gilt c-kicker" style="font-family:'Cormorant Garamond';font-size:11px;letter-spacing:.5em;text-transform:uppercase">Cabinet für Landes- &amp; Gartenkunde</div>
+          <div style="width:62%;height:1px;background:rgba(184,148,90,.5);margin:16px 0 26px"></div>
+          <div class="gilt c-logbuch" style="font-family:'UnifrakturMaguntia';font-size:60px;line-height:1;letter-spacing:.02em">Logbuch</div>
+          <div class="gilt c-sub" style="font-family:'IM Fell English';font-style:italic;font-size:19px;margin-top:14px;opacity:.92">einer halbtägigen Excursion</div>
+          <div class="gilt c-city" style="font-family:'IM Fell English';font-size:38px;letter-spacing:.14em;margin-top:12px">CARLSRUHE</div>
+          <div class="gilt c-sub2" style="font-family:'Cormorant Garamond';font-style:italic;font-size:14.5px;margin-top:8px;opacity:.85">im Fächer der oberen Rheinebene</div>
+
+          <svg width="200" height="52" viewBox="0 0 200 52" style="margin:22px 0 4px">
+            <g fill="none" stroke="rgba(184,148,90,.85)" stroke-width=".9" stroke-linecap="round">
+              <path d="M100 8v36"/>
+              <path d="M100 44c-10-6-24-4-34 4M100 44c10-6 24-4 34 4"/>
+              <path d="M100 30c-9-6-22-5-30 2M100 30c9-6 22-5 30 2"/>
+              <path d="M100 17c-7-5-17-4-24 2M100 17c7-5 17-4 24 2"/>
+              <circle cx="100" cy="6" r="2.4"/>
+              <path d="M14 26h56M130 26h56"/>
+              <path d="M70 26l6-4v8zM130 26l-6-4v8z" fill="rgba(184,148,90,.85)"/>
+            </g>
+          </svg>
+
+          <div style="width:44%;height:1px;background:rgba(184,148,90,.42);margin:14px 0 16px"></div>
+          <div class="gilt c-date" style="font-family:'IM Fell English';font-size:15px;letter-spacing:.06em">Sonnabend, den XVIII. Julii MMXXVI</div>
+          <div class="gilt c-note" style="font-family:'Cormorant Garamond';font-style:italic;font-size:13px;margin-top:6px;opacity:.7">aufgezeichnet für zwo Personen · vier und eine halbe Stunde zu Fuße</div>
+        </div>
+      </div>
+
+      <!-- back of cover: frontispiece -->
+      <div class="face back paper" data-page="frontispiz">
+        <div class="foxing"></div><div class="gutter"></div>
+        <div class="pad" style="align-items:center;justify-content:center">
+          <div class="kicker rise" style="--del:.2s">Frontispiz</div>
+          <div class="rule rise" style="width:70%;margin:14px 0 22px;--del:.25s"></div>
+
+          <div class="ink" style="margin:6px 0 6px">
+            <svg width="330" height="300" viewBox="-150 -190 300 260">
+              <g fill="none" stroke="var(--ink)" stroke-width="1.15" stroke-linecap="round" stroke-linejoin="round">
+                <!-- Karlsruher Pyramide -->
+                <path data-draw style="--dur:2.4s;--del:.4s" d="M0 -150 L-58 26 L6 46 L60 18 Z"/>
+                <path data-draw style="--dur:1.2s;--del:1.6s" d="M0 -150 L6 46"/>
+                <!-- courses of stone, left face -->
+                <g stroke-width=".55" opacity=".85">
+                  <path data-draw style="--dur:.9s;--del:1.9s" d="M-12 -114 L-16 -111"/>
+                  <path data-draw style="--dur:.9s;--del:2.0s" d="M-20 -86 L2 -80"/>
+                  <path data-draw style="--dur:.9s;--del:2.1s" d="M-29 -58 L3 -50"/>
+                  <path data-draw style="--dur:.9s;--del:2.2s" d="M-38 -30 L4 -21"/>
+                  <path data-draw style="--dur:.9s;--del:2.3s" d="M-47 -2 L5 8"/>
+                  <path data-draw style="--dur:.9s;--del:2.4s" d="M6 -80 L34 -74"/>
+                  <path data-draw style="--dur:.9s;--del:2.5s" d="M6 -50 L42 -42"/>
+                  <path data-draw style="--dur:.9s;--del:2.6s" d="M6 -21 L50 -12"/>
+                  <path data-draw style="--dur:.9s;--del:2.7s" d="M6 8 L57 17"/>
+                </g>
+                <!-- hatching, right face -->
+                <g class="hatch-r" stroke-width=".45" opacity=".5"></g>
+                <!-- base plinth -->
+                <path data-draw style="--dur:1.1s;--del:2.9s" d="M-74 32 L-58 26 L6 46 L60 18 L76 24 L8 56 Z"/>
+                <path data-draw style="--dur:1.1s;--del:3.05s" d="M-74 32 L-74 44 L8 68 L76 36 L76 24"/>
+                <path data-draw style="--dur:.8s;--del:3.2s" d="M8 56 L8 68"/>
+                <!-- ground line + tufts -->
+                <path data-draw style="--dur:1.4s;--del:3.3s" d="M-142 62 C -110 56 -92 60 -78 58 M84 46 C 108 52 124 50 142 56" stroke-width=".8" opacity=".7"/>
+                <g stroke-width=".55" opacity=".6">
+                  <path data-draw style="--dur:.6s;--del:3.5s" d="M-118 58 l-3 -9 M-114 58 l1 -11 M-110 58 l4 -8"/>
+                  <path data-draw style="--dur:.6s;--del:3.6s" d="M110 50 l-3 -9 M114 50 l1 -11 M118 50 l4 -8"/>
+                </g>
+              </g>
+              <!-- swifts over the pyramid -->
+              <g class="fade" style="--del:3.6s" fill="none" stroke="var(--ink-soft)" stroke-width=".85" stroke-linecap="round">
+                <path d="M-96 -150 c 5 -5 9 -5 12 -1 c 3 -4 7 -4 12 1"/>
+                <path d="M-70 -168 c 4 -4 7 -4 9 -1 c 2 -3 5 -3 9 1"/>
+                <path d="M74 -158 c 5 -5 9 -5 12 -1 c 3 -4 7 -4 12 1"/>
+                <path d="M96 -176 c 3 -3 6 -3 8 -1 c 2 -3 4 -3 8 1"/>
+              </g>
+            </svg>
+          </div>
+
+          <div class="caption fade" style="--del:3.8s;max-width:340px">Die Pyramide auf dem Marktplatze, über der Gruft des Stadtgründers.<br>Nach der Natur gezeichnet, Julii MMXXVI.</div>
+
+          <div class="rule thin rise" style="width:46%;margin:26px 0 12px;--del:.4s"></div>
+          <div class="tiny fade" style="--del:4s;text-align:center;letter-spacing:.3em;text-transform:uppercase">Ex Libris · M. Schmitz</div>
+        </div>
+        <div class="folio">i</div>
+      </div>
+    </div>
+
+    <!-- ═══════════ LEAF 1 : TITEL / VORBEMERKUNG ═══════════ -->
+    <div class="leaf" data-i="1">
+      <div class="face front paper" data-page="titel">
+        <div class="foxing"></div><div class="gutter"></div>
+        <div class="pad" style="align-items:center;text-align:center;justify-content:center">
+          <div class="kicker rise" style="--del:.15s">Erstes Buch</div>
+          <div class="rule rise" style="width:56%;margin:16px 0 30px;--del:.2s"></div>
+
+          <h1 class="book rise" style="--del:.3s">Anleitung zu einem<br>schönen Ausfluge<br>nach <span style="font-variant:small-caps;color:var(--carmine)">Carlsruhe</span></h1>
+
+          <div class="rise" style="--del:.45s;margin:26px 0 22px;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:16px;color:var(--ink-soft);line-height:1.6;max-width:400px">
+            worinnen die Kunstkammern, die Gärten und die<br>Straßen des Fächers beschrieben werden,<br>nebst einer <span class="sc">Charte</span>, einer <span class="sc">Marschtafel</span><br>und einem <span class="sc">Herbarium</span>
+          </div>
+
+          <svg class="ink" width="150" height="60" viewBox="-75 -30 150 60" style="margin:8px 0 20px">
+            <g fill="none" stroke="var(--carmine)" stroke-width=".9" stroke-linecap="round">
+              <path data-draw style="--dur:1.6s;--del:.6s" d="M-66 0 C -40 -14 -20 -14 0 -4 C 20 -14 40 -14 66 0 C 40 14 20 14 0 4 C -20 14 -40 14 -66 0 Z"/>
+              <path data-draw style="--dur:1s;--del:1.4s" d="M-16 0 h32"/>
+              <circle class="fade" style="--del:1.8s" cx="0" cy="0" r="2.6" fill="var(--carmine)" stroke="none"/>
+            </g>
+          </svg>
+
+          <div class="rule thin rise" style="width:70%;margin:6px 0 18px;--del:.5s"></div>
+          <div class="small rise" style="--del:.55s;text-align:center">Zween Reisende · zu Fuße · ohne Eile<br>Zeitmaaß: vier und eine halbe Stunde</div>
+          <div class="rule thin rise" style="width:70%;margin:18px 0 22px;--del:.6s"></div>
+
+          <div class="tiny rise" style="--del:.65s;letter-spacing:.24em;text-transform:uppercase">Gedruckt im Jahre MMXXVI</div>
+          <div class="tiny rise" style="--del:.7s;margin-top:4px;font-style:italic;letter-spacing:.04em;text-transform:none">Zu finden bei dem Verfasser, im Fächer, nahe dem Schlossthurme</div>
+        </div>
+        <div class="folio">ii</div>
+      </div>
+
+      <div class="face back paper" data-page="vorbemerkung">
+        <div class="foxing"></div><div class="gutter"></div>
+        <div class="pad">
+          <div class="kicker rise">Vorbemerkung · Von der Witterung</div>
+          <div class="rule rise" style="margin:12px 0 18px;--del:.15s"></div>
+
+          <p class="rise" style="--del:.2s"><span class="drop">C</span>arlsruhe ist keine gewachsene, sondern eine <em>gedachte</em> Stadt. Im Jahre 1715 setzte ein Markgraf seinen Thurm mitten in den Hardtwald und ließ zwo und dreißig Straßen von ihm ausgehen wie die Strahlen einer Sonne. Wer heute dort spaziert, geht also nicht durch eine Stadt, sondern durch einen <em>Gedanken</em> — und das merkt man an jeder Kreuzung, denn man kann sich hier kaum verlaufen: man schaue nur, wohin der Fächer zeigt.</p>
+
+          <p class="rise" style="--del:.3s;margin-top:9px">Der gegenwärtige Plan ist auf <b>viereinhalb Stunden</b> gerechnet und führt <em>nordwärts durch den Fächer</em> — vom Marktplatze über die Kaiserstraße hinauf zu den Kunstkammern, den Gewächshäusern und dem Schlossgarten. Alles zu Fuße; keine Station liegt weiter als zehn Minuten von der nächsten.</p>
+
+          <div class="rule thin rise" style="--del:.35s;margin:16px 0 12px"></div>
+          <div class="kicker rise" style="--del:.4s;text-align:left;letter-spacing:.3em">Witterungs-Beobachtung</div>
+
+          <div style="display:flex;gap:14px;align-items:center;margin-top:12px">
+            <div class="ink" style="flex:0 0 118px">
+              <svg width="118" height="118" viewBox="-60 -60 120 120">
+                <g fill="none" stroke="var(--ink)" stroke-width="1.05" stroke-linecap="round">
+                  <circle data-draw style="--len:120;--dur:1.6s;--del:.5s" cx="-10" cy="-18" r="19"/>
+                  <g stroke-width=".8" opacity=".8">
+                    <path data-draw style="--len:20;--dur:.4s;--del:1.2s" d="M-10 -46 v-8"/>
+                    <path data-draw style="--len:20;--dur:.4s;--del:1.28s" d="M10 -38 l6 -6"/>
+                    <path data-draw style="--len:20;--dur:.4s;--del:1.36s" d="M18 -18 h8"/>
+                    <path data-draw style="--len:20;--dur:.4s;--del:1.44s" d="M-38 -18 h-8"/>
+                    <path data-draw style="--len:20;--dur:.4s;--del:1.52s" d="M-30 -38 l-6 -6"/>
+                  </g>
+                  <!-- cloud -->
+                  <path data-draw style="--len:200;--dur:2s;--del:1.1s" d="M-40 12 c -12 0 -16 -14 -4 -18 c 0 -14 18 -20 28 -10 c 8 -8 24 -4 24 8 c 12 -2 16 14 2 20 Z" fill="rgba(245,238,215,.55)"/>
+                  <!-- rain -->
+                  <g stroke-width=".9" stroke-linecap="round" opacity=".8">
+                    <path data-draw style="--len:16;--dur:.35s;--del:2.4s" d="M-26 20 l-5 12"/>
+                    <path data-draw style="--len:16;--dur:.35s;--del:2.5s" d="M-10 20 l-5 12"/>
+                    <path data-draw style="--len:16;--dur:.35s;--del:2.6s" d="M6 20 l-5 12"/>
+                    <path data-draw style="--len:16;--dur:.35s;--del:2.7s" d="M22 20 l-5 12"/>
+                  </g>
+                  <!-- swallow low = rain -->
+                  <path class="fade" style="--del:3s" d="M28 42 c 5 -5 9 -5 12 -1 c 3 -4 7 -4 12 1" stroke="var(--ink-soft)" stroke-width=".8"/>
+                </g>
+              </svg>
+            </div>
+            <div style="flex:1">
+              <table class="tbl">
+                <tr><td>Wärme</td><td><b>bis 28 °C</b> — sehr warm; nachts 17 °C</td><td></td></tr>
+                <tr><td>Himmel</td><td>Morgens einige <b>Schauer</b>, danach theils sonnig; gegen 10 Stunden Sonnenschein</td><td></td></tr>
+                <tr><td>Regen</td><td>Wahrscheinlichkeit 60 %, doch nur ca. 0,7 mm — ein kurzer Guss, kein Landregen</td><td></td></tr>
+                <tr><td>Wind</td><td>Schwach, 2 Bft aus WNW; Böen bis 5 Bft (15–32 km/h)</td><td></td></tr>
+              </table>
+            </div>
+          </div>
+
+          <div class="warn rise" style="--del:.6s;margin-top:14px">
+            <p class="small"><b>Schluss des Beobachters.</b> Der Regen fällt am Vormittage. Man beginne daher <em>nicht</em> vor elf Uhr und lege die Kunstkammer in die Mitte des Tages — so hat man ein Dach über dem Kopfe, wenn der Himmel es sich noch einmal anders überlegt. Ein leichter Schirm gehört ins Gepäck; ein Mantel nicht.</p>
+          </div>
+
+          <div style="flex:1"></div>
+          <div class="marg rise" style="--del:.7s;text-align:right">→ Man wende das Blatt zur <span class="sc">Charte</span></div>
+        </div>
+        <div class="folio">iii</div>
+      </div>
+    </div>
+
+    <!-- ═══════════ LEAF 2 : CHARTE / MARSCHTAFEL ═══════════ -->
+    <div class="leaf" data-i="2">
+      <div class="face front paper" data-page="charte">
+        <div class="foxing"></div><div class="gutter"></div>
+        <div class="pad" style="padding:34px 40px 40px 66px">
+          <div class="kicker rise" style="letter-spacing:.34em">Charte des Fächers · Tafel I</div>
+          <div class="rule rise" style="margin:9px 0 6px;--del:.15s"></div>
+
+          <div class="ink" style="flex:1;display:flex;align-items:center;justify-content:center">
+            <svg id="map" class="fit-svg" style="width:100%;height:100%;--ar:920/1200" viewBox="-60 -50 920 1200" preserveAspectRatio="xMidYMid meet">
+              <defs>
+                <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+                  <path d="M0 0 L10 5 L0 10 z" fill="var(--carmine)"/>
+                </marker>
+                <radialGradient id="waldwash">
+                  <stop offset="0%" stop-color="rgba(90,110,70,.16)"/>
+                  <stop offset="100%" stop-color="rgba(90,110,70,0)"/>
+                </radialGradient>
+              </defs>
+
+              <!-- Hardtwald wash -->
+              <ellipse class="fade" style="--del:.2s" cx="640" cy="60" rx="520" ry="300" fill="url(#waldwash)"/>
+              <!-- Schlossgarten wash -->
+              <path class="fade" style="--del:.3s" d="M652 480 C 480 470 400 380 420 240 C 440 90 540 20 652 20 C 764 20 864 90 884 240 C 904 380 824 470 652 480 Z"
+                    fill="rgba(110,130,80,.12)" stroke="rgba(90,110,70,.5)" stroke-width=".9" stroke-dasharray="4 4"/>
+
+              <!-- generated below; the stroke MUST live on the group, inkPath() inherits it -->
+              <g id="fan" fill="none" stroke="var(--ink)" stroke-linecap="round"></g>
+              <g id="wald" fill="none"></g>
+
+              <!-- Kaiserstrasse -->
+              <g fill="none" stroke="var(--ink)" stroke-linecap="round">
+                <path data-draw style="--len:960;--dur:2.2s;--del:1.4s" d="M-52 983 H 860" stroke-width="3.2" opacity=".78"/>
+                <path data-draw style="--len:960;--dur:2.2s;--del:1.5s" d="M-52 1052 H 860" stroke-width="1.1" opacity=".4"/>
+                <path data-draw style="--len:960;--dur:2.2s;--del:1.55s" d="M-52 900 H 860" stroke-width="1.1" opacity=".4"/>
+                <!-- Zirkel arc -->
+                <path data-draw style="--len:560;--dur:1.6s;--del:1.2s" d="M 472 562 A 200 200 0 0 0 832 562" stroke-width="1.5" opacity=".65"/>
+                <!-- Schlossplatz -->
+                <path data-draw style="--len:620;--dur:1.4s;--del:1.3s" d="M562 506 H 742 V 566 H 562 Z" stroke-width=".9" opacity=".5"/>
+              </g>
+
+              <!-- Schloss -->
+              <g class="fade" style="--del:1.9s">
+                <path d="M596 430 h112 v34 h-112 z M540 448 h56 v22 h-56 z M708 448 h56 v22 h-56 z" fill="rgba(52,40,28,.16)" stroke="var(--ink)" stroke-width="1.1"/>
+                <path d="M640 410 h24 v22 h-24 z" fill="rgba(52,40,28,.3)" stroke="var(--ink)" stroke-width="1.1"/>
+                <path d="M652 396 l-12 14 h24 z" fill="var(--ink)"/>
+              </g>
+
+              <!-- Marktplatz + Pyramide -->
+              <g class="fade" style="--del:2s">
+                <rect x="572" y="944" width="72" height="78" fill="none" stroke="var(--ink)" stroke-width=".9" opacity=".55"/>
+                <path d="M608 962 l-13 26 h26 z" fill="none" stroke="var(--carmine)" stroke-width="1.3"/>
+                <path d="M608 962 v26" stroke="var(--carmine)" stroke-width=".6" opacity=".7"/>
+              </g>
+
+              <!-- ROUTE -->
+              <g id="route" fill="none" stroke="var(--carmine)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity=".9">
+                <path data-draw style="--len:2600;--dur:4.4s;--del:2.2s" stroke-dasharray="none"
+                      d="M608 983
+                         C 520 990, 420 992, 330 986
+                         C 250 981, 175 986, 128 994
+                         C 122 950, 118 860, 116 760
+                         C 115 726, 116 700, 119 672
+                         C 190 640, 330 570, 425 527
+                         C 500 500, 580 486, 652 472
+                         C 652 420, 652 300, 652 210" marker-end="url(#arrow)"/>
+              </g>
+              <g id="pins"></g>
+
+              <!-- labels. NB: the whole plate is drawn at ~0.43×, so type must be
+                   set roughly twice as large as it "looks" in the viewBox. -->
+              <g class="fade" style="--del:3.2s" font-family="'Cormorant Garamond',serif" fill="var(--ink-soft)">
+                <text x="652" y="182" font-size="30" letter-spacing="10" text-anchor="middle" font-style="italic">HARDTWALD</text>
+                <text x="652" y="306" font-size="22" letter-spacing="5" text-anchor="middle" font-style="italic" fill="var(--ink)">SCHLOSSGARTEN</text>
+                <text x="512" y="444" font-size="20" letter-spacing="4" text-anchor="end" fill="var(--ink)">SCHLOSS</text>
+                <text x="584" y="546" font-size="16" letter-spacing="1.5" text-anchor="middle" font-style="italic">Schlossplatz</text>
+                <text x="788" y="648" font-size="16" letter-spacing="1.5" font-style="italic">Zirkel</text>
+                <text x="16" y="962" font-size="22" letter-spacing="4" fill="var(--ink)">KAISERSTRASSE</text>
+                <text x="608" y="1052" font-size="19" letter-spacing="2.5" text-anchor="middle" fill="var(--ink)">MARKTPLATZ</text>
+                <text x="119" y="1042" font-size="18" letter-spacing="2" text-anchor="middle" fill="var(--ink)">LUDWIGSPLATZ</text>
+                <text x="16" y="712" font-size="18" letter-spacing="2" fill="var(--ink)">HANS-THOMA-STR.</text>
+                <text x="852" y="1104" font-size="17" font-style="italic" text-anchor="end">→ Durlacher Thor · Messplatz</text>
+              </g>
+
+              <!-- compass rose -->
+              <g class="fade" style="--del:3.4s" transform="translate(778,856)">
+                <circle r="62" fill="rgba(250,244,222,.5)" stroke="var(--ink-soft)" stroke-width=".9" opacity=".85"/>
+                <circle r="46" fill="none" stroke="var(--ink-soft)" stroke-width=".5" opacity=".5"/>
+                <path d="M0 -58 L12 0 L0 58 L-12 0 Z" fill="rgba(52,40,28,.1)" stroke="var(--ink)" stroke-width="1"/>
+                <path d="M0 -58 L12 0 L0 0 Z" fill="var(--ink)"/>
+                <path d="M-58 0 L0 -12 L58 0 L0 12 Z" fill="none" stroke="var(--ink-soft)" stroke-width=".7"/>
+                <text y="-70" font-size="21" text-anchor="middle" font-family="'IM Fell English',serif" fill="var(--ink)">N</text>
+              </g>
+
+              <!-- scale bar -->
+              <g class="fade" style="--del:3.5s" transform="translate(24,1112)">
+                <path d="M0 0 h219" stroke="var(--ink)" stroke-width="1.2"/>
+                <path d="M0 -7 v14 M73 -7 v14 M146 -7 v14 M219 -7 v14" stroke="var(--ink)" stroke-width="1.2"/>
+                <rect x="0" y="-5" width="73" height="10" fill="var(--ink)" opacity=".85"/>
+                <rect x="146" y="-5" width="73" height="10" fill="var(--ink)" opacity=".85"/>
+                <text x="0" y="30" font-size="16" font-family="'Cormorant Garamond',serif" fill="var(--ink-soft)" text-anchor="middle">0</text>
+                <text x="219" y="30" font-size="16" font-family="'Cormorant Garamond',serif" fill="var(--ink-soft)" text-anchor="middle">300</text>
+                <text x="290" y="30" font-size="16" font-family="'Cormorant Garamond',serif" font-style="italic" fill="var(--ink-soft)">Schritt ≈ Meter</text>
+              </g>
+
+              <!-- cartouche -->
+              <g class="fade" style="--del:3.6s" transform="translate(18,16)">
+                <path d="M0 0 h336 v132 h-336 z" fill="rgba(249,243,221,.94)" stroke="var(--ink)" stroke-width="1.1"/>
+                <path d="M7 7 h322 v118 h-322 z" fill="none" stroke="var(--ink-soft)" stroke-width=".5"/>
+                <text x="168" y="44" font-size="27" text-anchor="middle" font-family="'IM Fell English',serif" fill="var(--ink)">GRUND-RISS</text>
+                <text x="168" y="72" font-size="17" text-anchor="middle" font-family="'Cormorant Garamond',serif" font-style="italic" fill="var(--ink-soft)">der Residenz Carlsruhe, sammt</text>
+                <text x="168" y="94" font-size="17" text-anchor="middle" font-family="'Cormorant Garamond',serif" font-style="italic" fill="var(--ink-soft)">eingezeichnetem Marsch-Wege</text>
+                <text x="168" y="118" font-size="15" text-anchor="middle" font-family="'Cormorant Garamond',serif" letter-spacing="3" fill="var(--carmine)">XVIII · JULII · MMXXVI</text>
+              </g>
+            </svg>
+          </div>
+          <div class="caption fade" style="--del:4s">Die rothe Linie bezeichnet den Weg; die Ziffern die Stationen. Gesammt-Länge ohne Umwege: etwa 3,4 km.</div>
+        </div>
+        <div class="folio">iv</div>
+      </div>
+
+      <div class="face back paper" data-page="marsch">
+        <div class="foxing"></div><div class="gutter"></div>
+        <div class="pad">
+          <div class="kicker rise">Marsch-Tafel · Der Tag in Stunden</div>
+          <div class="rule rise" style="margin:12px 0 16px;--del:.15s"></div>
+
+          <div style="display:flex;gap:16px;flex:1">
+            <!-- timeline -->
+            <div class="ink tl-rail" style="flex:0 0 44px;position:relative">
+              <svg width="44" height="100%" viewBox="0 0 44 560" preserveAspectRatio="none">
+                <path data-draw style="--len:560;--dur:2.6s;--del:.4s" d="M22 8 V 552" stroke="var(--carmine)" stroke-width="1.6" fill="none" opacity=".55"/>
+              </svg>
+              <div id="tlnodes"></div>
+            </div>
+
+            <div style="flex:1">
+              <div class="st rise" style="--del:.5s;margin-bottom:12px">
+                <div style="flex:1"><div class="when">11.00 — 11.20 Uhr</div><h3 class="stat">Marktplatz &amp; Pyramide</h3><p>Ankunft, Orientierung, erster Blick den Fächer hinauf.</p></div>
+              </div>
+              <div class="st rise" style="--del:.58s;margin-bottom:12px">
+                <div style="flex:1"><div class="when">11.20 — 12.05 Uhr</div><h3 class="stat">Stadtbummel westwärts</h3><p>Kaiserstraße bis zum Ludwigsplatz; Läden, Passagen, Cafés.</p></div>
+              </div>
+              <div class="st rise" style="--del:.66s;margin-bottom:12px">
+                <div style="flex:1"><div class="when">12.05 — 12.50 Uhr</div><h3 class="stat">Mittags-Rast</h3><p>Am Ludwigsplatz, im Schatten der Platanen.</p></div>
+              </div>
+              <div class="st rise" style="--del:.74s;margin-bottom:12px">
+                <div style="flex:1"><div class="when">12.50 — 13.50 Uhr</div><h3 class="stat">Kunsthalle · Orangerie</h3><p><em>Purposeful wandering</em> — die Ausstellung des Sommers.</p></div>
+              </div>
+              <div class="st rise" style="--del:.82s;margin-bottom:12px">
+                <div style="flex:1"><div class="when">13.50 — 14.35 Uhr</div><h3 class="stat">Botanischer Garten</h3><p>Die Schauhäuser: Palmen, Cacteen, Tropen.</p></div>
+              </div>
+              <div class="st rise" style="--del:.9s;margin-bottom:12px">
+                <div style="flex:1"><div class="when">14.35 — 15.10 Uhr</div><h3 class="stat">Schlossgarten</h3><p>Grünes Rund hinter dem Schlosse; Eichhörnchen, Schatten.</p></div>
+              </div>
+              <div class="st rise" style="--del:.98s">
+                <div style="flex:1"><div class="when">15.10 — 15.30 Uhr</div><h3 class="stat">Ausklang</h3><p>Rückweg über den Zirkel — oder man bleibt einfach sitzen.</p></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="rule thin rise" style="--del:1s;margin:8px 0 10px"></div>
+          <div style="display:flex;gap:20px">
+            <div class="tiny" style="flex:1"><b class="sc">Summa</b> 4 Std. 30 Min. · davon 55 Min. Gehzeit · 3,4 km · keine Steigung</div>
+            <div class="tiny" style="flex:0 0 auto;font-style:italic;color:var(--carmine)">Alles zu Fuße erreichbar</div>
+          </div>
+        </div>
+        <div class="folio">v</div>
+      </div>
+    </div>
+
+    <!-- ═══════════ LEAF 3 : STATIONEN I / II ═══════════ -->
+    <div class="leaf" data-i="3">
+      <div class="face front paper" data-page="st12">
+        <div class="foxing"></div><div class="gutter"></div>
+        <div class="pad">
+          <div class="kicker rise">Zweites Buch · Die Stationen</div>
+          <div class="rule rise" style="margin:12px 0 18px;--del:.15s"></div>
+
+          <div class="st rise" style="--del:.2s">
+            <div class="num">1</div>
+            <div style="flex:1">
+              <div class="when">11.00 Uhr · 20 Minuten</div>
+              <h3 class="stat">Der Marktplatz und die Pyramide</h3>
+              <p>Man beginne dort, wo die Stadt sich selbst erklärt. Auf dem Marktplatze steht eine <em>Pyramide</em> aus rothem Sandstein — kein Denkmal, sondern ein Grabmal: darunter ruht Carl Wilhelm, der die Stadt erfand. Man stelle sich davor und blicke nordwärts: die Achse, die man sieht, endet am Schlossthurme. Von ihm aus wurde alles gezogen.</p>
+              <p class="meta">Heute überdies: <em>Lounge 76</em> — den ganzen Tag Cocktails und Musique auf dem Marktplatze. Eine gute Stelle, um später wiederzukehren.</p>
+            </div>
+          </div>
+
+          <div class="plate rise" style="--del:.35s;margin:6px 0 16px">
+            <div class="ink" style="display:flex;justify-content:center">
+              <svg width="100%" height="150" viewBox="-230 -78 460 152">
+                <g fill="none" stroke="var(--ink)" stroke-width=".85" stroke-linecap="round" stroke-linejoin="round">
+                  <!-- horizon -->
+                  <path data-draw style="--len:460;--dur:2s;--del:.6s" d="M-224 42 H 224" opacity=".45"/>
+                  <!-- left: Rathaus -->
+                  <path data-draw style="--len:420;--dur:2s;--del:.7s" d="M-224 42 V -18 H -128 V 42 M-224 -18 l48 -22 l48 22"/>
+                  <g stroke-width=".45" opacity=".65">
+                    <path data-draw style="--len:300;--dur:1s;--del:1.6s" d="M-210 -4 h14 v18 h-14 z M-186 -4 h14 v18 h-14 z M-162 -4 h14 v18 h-14 z M-138 -4 h14 v18 h-14 z"/>
+                    <path data-draw style="--len:280;--dur:1s;--del:1.7s" d="M-210 22 h14 v16 h-14 z M-186 22 h14 v16 h-14 z M-162 22 h14 v16 h-14 z M-138 22 h14 v16 h-14 z"/>
+                  </g>
+                  <!-- centre: pyramid -->
+                  <path data-draw style="--len:220;--dur:1.8s;--del:.9s" d="M0 -56 L-26 40 L4 46 L28 38 Z" stroke-width="1.2"/>
+                  <path data-draw style="--len:110;--dur:1s;--del:1.9s" d="M0 -56 L4 46" stroke-width=".6"/>
+                  <path data-draw style="--len:120;--dur:1s;--del:2s" d="M-34 44 L-26 40 L4 46 L28 38 L36 42 L5 54 Z" stroke-width=".7"/>
+                  <!-- right: Stadtkirche portico -->
+                  <path data-draw style="--len:420;--dur:2s;--del:1.1s" d="M112 42 V -14 H 224 V 42 M108 -14 l58 -28 l58 28"/>
+                  <g stroke-width=".55" opacity=".7">
+                    <path data-draw style="--len:380;--dur:1.2s;--del:2s" d="M124 42 V -12 M142 42 V -12 M160 42 V -12 M178 42 V -12 M196 42 V -12 M214 42 V -12"/>
+                  </g>
+                  <!-- figures -->
+                  <g stroke-width=".7" opacity=".8">
+                    <path data-draw style="--len:40;--dur:.6s;--del:2.4s" d="M-64 42 v-14 M-64 30 l-5 -6 M-64 30 l5 -6 M-64 28 v-6"/>
+                    <circle class="fade" style="--del:2.6s" cx="-64" cy="20" r="2.4"/>
+                    <path data-draw style="--len:40;--dur:.6s;--del:2.5s" d="M-54 42 v-13 M-54 31 l-5 -5 M-54 31 l5 -5 M-54 29 v-6"/>
+                    <circle class="fade" style="--del:2.7s" cx="-54" cy="21" r="2.2"/>
+                    <path data-draw style="--len:40;--dur:.6s;--del:2.6s" d="M72 42 v-14 M72 30 l-5 -6 M72 30 l5 -6 M72 28 v-6"/>
+                    <circle class="fade" style="--del:2.8s" cx="72" cy="20" r="2.4"/>
+                  </g>
+                </g>
+              </svg>
+            </div>
+            <div class="caption">Prospect des Marktplatzes gegen Mitternacht: Rathaus, Pyramide, Stadtkirche.</div>
+          </div>
+
+          <div style="flex:1"></div>
+          <div class="tiny fade" style="--del:1s;font-style:italic">Merke: die Pyramide steht nicht in der Mitte des Platzes, sondern in der Mitte der <em>Achse</em>. Das ist der ganze Witz.</div>
+        </div>
+        <div class="folio">1</div>
+      </div>
+
+      <div class="face back paper" data-page="st34">
+        <div class="foxing"></div><div class="gutter"></div>
+        <div class="pad">
+          <div class="st rise" style="--del:.15s">
+            <div class="num">2</div>
+            <div style="flex:1">
+              <div class="when">11.20 Uhr · 45 Minuten</div>
+              <h3 class="stat">Kaiserstraße &amp; Ludwigsplatz</h3>
+              <p>Die Kaiserstraße durchschneidet den Fächer quer — eine gerade Meile Stadt. Seit die Bahnen unter die Erde gelegt wurden, gehört sie wieder den Fußgängern. Man bummle westwärts, verliere sich in einer der Passagen und lande am <em>Ludwigsplatz</em>, wo unter alten Platanen die Cafés stehen und die Stadt am wenigsten nach Verwaltung aussieht.</p>
+              <p class="meta">Wer lieber wühlt: der <em>Großflohmarkt</em> auf dem Messplatze, 8 bis 15 Uhr — Kleider, Möbel, Trödel. Liegt jedoch östlich außerhalb des Weges; nur für Entschlossene.</p>
+            </div>
+          </div>
+
+          <div class="st rise" style="--del:.3s">
+            <div class="num">3</div>
+            <div style="flex:1">
+              <div class="when">12.05 Uhr · 45 Minuten</div>
+              <h3 class="stat">Mittags-Rast</h3>
+              <p>Am Ludwigsplatz oder in den Gassen dahinter. Bei 28 Grad wähle man den Schatten und nicht die Aussicht. Badische Küche, italienische Küche oder schlicht ein Eis — der Plan schreibt nichts vor, außer: <em>sitzen bleiben, bis es kühler wird</em>.</p>
+              <p class="meta">Zeitpuffer: hier lässt sich der ganze Tag um eine Viertelstunde dehnen oder stauchen, ohne dass etwas zerbricht.</p>
+            </div>
+          </div>
+
+          <div class="plate rise" style="--del:.45s;margin:8px 0 0">
+            <div class="ink" style="display:flex;justify-content:center;align-items:flex-end;gap:6px">
+              <svg width="100%" height="200" viewBox="-230 -110 460 210">
+                <!-- plane tree (Platane) -->
+                <g fill="none" stroke="var(--ink)" stroke-width=".9" stroke-linecap="round" stroke-linejoin="round">
+                  <path data-draw style="--len:300;--dur:2.2s;--del:.5s" d="M-120 88 C -122 50 -128 24 -134 2 M-120 88 C -116 46 -108 18 -100 -6 M-118 40 C -128 32 -136 22 -140 8 M-114 26 C -104 16 -96 4 -92 -10"/>
+                  <path data-draw style="--len:200;--dur:1.6s;--del:1.2s" d="M-134 2 C -140 -14 -150 -24 -162 -30 M-100 -6 C -92 -22 -80 -32 -66 -36 M-121 12 C -124 -8 -122 -26 -114 -42"/>
+                  <g class="fade" style="--del:1.8s" opacity=".9"></g>
+                  <g class="foliage" data-cx="-116" data-cy="-52"></g>
+                  <!-- trunk hatching -->
+                  <g stroke-width=".35" opacity=".5">
+                    <path data-draw style="--len:60;--dur:.8s;--del:2.2s" d="M-126 78 c 4 -10 3 -22 -1 -32 M-116 76 c 4 -12 4 -24 1 -34"/>
+                  </g>
+                  <!-- ground -->
+                  <path data-draw style="--len:460;--dur:2s;--del:2.2s" d="M-224 90 H 224" opacity=".4"/>
+                  <!-- café table & two chairs -->
+                  <path data-draw style="--len:200;--dur:1.6s;--del:2.4s" d="M28 90 V 40 M-2 40 H 58 M2 40 c -2 -6 4 -10 26 -10 c 22 0 28 4 26 10"/>
+                  <path data-draw style="--len:180;--dur:1.4s;--del:2.6s" d="M-16 90 V 58 H -46 V 90 M-46 58 V 26 M-16 58 V 40"/>
+                  <path data-draw style="--len:180;--dur:1.4s;--del:2.7s" d="M72 90 V 58 H 102 V 90 M102 58 V 26 M72 58 V 40"/>
+                  <!-- two cups -->
+                  <path data-draw style="--len:130;--dur:.8s;--del:3s" d="M12 30 h12 v-8 h-12 z M24 26 c 5 -1 5 5 0 5 M36 30 h12 v-8 h-12 z M48 26 c 5 -1 5 5 0 5" stroke-width=".7"/>
+                  <!-- awning stripes far right -->
+                  <path data-draw style="--len:380;--dur:1.8s;--del:2.8s" d="M140 -6 h84 v-22 h-84 z M140 -6 l10 12 l10 -12 l10 12 l10 -12 l10 12 l10 -12 l10 12 l10 -12" stroke-width=".7" opacity=".75"/>
+                </g>
+              </svg>
+            </div>
+            <div class="caption">Platanus × hispanica über einem Kaffeetische am Ludwigsplatze. — Der Baum ist älter als die Karte.</div>
+          </div>
+        </div>
+        <div class="folio">2</div>
+      </div>
+    </div>
+
+    <!-- ═══════════ LEAF 4 : STATIONEN III / NOTABENE ═══════════ -->
+    <div class="leaf" data-i="4">
+      <div class="face front paper" data-page="st56">
+        <div class="foxing"></div><div class="gutter"></div>
+        <div class="pad">
+          <div class="st rise" style="--del:.15s">
+            <div class="num">4</div>
+            <div style="flex:1">
+              <div class="when">12.50 Uhr · 60 Minuten</div>
+              <h3 class="stat">Staatliche Kunsthalle · Orangerie</h3>
+              <p>Das Hauptgebäude der Kunsthalle ist wegen Sanierung <b>geschlossen</b> — die Kunst aber ist ausgewandert. In der <em>Orangerie</em> läuft <em>„Purposeful wandering“</em> (23. Mai – 16. August). Ein Titel, der zufällig auch die Überschrift dieses ganzen Tages sein könnte: zielgerichtetes Umherstreifen. Ein Haus aus Licht und Glas; genau richtig, wenn draußen 28 Grad stehen.</p>
+              <p class="meta">Geöffnet Sa 11–18 Uhr · Hans-Thoma-Straße · Alternative: die Sammlungspräsentation <em>Kunsthalle im ZKM</em>, Sa 11–18 Uhr, jedoch 25 Min. südwestlich — nur bei größerem Zeitbudget.</p>
+            </div>
+          </div>
+
+          <div class="st rise" style="--del:.3s">
+            <div class="num">5</div>
+            <div style="flex:1">
+              <div class="when">13.50 Uhr · 45 Minuten</div>
+              <h3 class="stat">Botanischer Garten &amp; Schauhäuser</h3>
+              <p>Nur wenige Schritte weiter: der Botanische Garten, angelegt als fürstliche Gärtnerei, heute ein stilles Rechteck mitten in der Stadt. Die <em>Schauhäuser</em> (Sa 10–17.45 Uhr) bergen Palmen, Cacteen und Tropengewächse. Die Außenanlage ist frei zugänglich — falls die Häuser zu voll sind, genügt der Schatten des Ginkgo.</p>
+              <p class="meta">Merkwürdigkeit: Der Ginkgo biloba ist ein lebendes Fossil — dieselbe Blattform seit 200 Millionen Jahren. Goethe schrieb 1815 ein Gedicht darüber. Er hatte recht.</p>
+            </div>
+          </div>
+
+          <div class="plate rise" style="--del:.45s;margin:6px 0 0;flex:1;display:flex;flex-direction:column">
+            <div class="ink" style="flex:1;display:flex;justify-content:center;align-items:center">
+              <svg class="fit-svg" style="--ar:460/220" width="100%" height="100%" viewBox="-230 -110 460 220" preserveAspectRatio="xMidYMid meet">
+                <g fill="none" stroke="var(--ink)" stroke-width=".9" stroke-linecap="round" stroke-linejoin="round">
+                  <!-- glasshouse -->
+                  <path data-draw style="--len:600;--dur:2.6s;--del:.5s" d="M-200 82 V -14 C -200 -58 -160 -84 -110 -84 C -60 -84 -20 -58 -20 -14 V 82 Z" stroke-width="1.2"/>
+                  <g stroke-width=".4" opacity=".6">
+                    <path data-draw style="--len:800;--dur:2s;--del:1.4s" d="M-110 -84 V 82 M-155 -70 V 82 M-65 -70 V 82 M-180 -44 V 82 M-40 -44 V 82"/>
+                    <path data-draw style="--len:800;--dur:2s;--del:1.6s" d="M-200 -14 H -20 M-197 -36 C -160 -60 -60 -60 -23 -36 M-200 20 H -20 M-200 52 H -20"/>
+                  </g>
+                  <!-- palm inside -->
+                  <g class="palm" data-x="-112" data-y="78"></g>
+                  <!-- ginkgo branch, right -->
+                  <g class="ginkgobranch" data-x="90" data-y="60"></g>
+                  <path data-draw style="--len:460;--dur:2s;--del:.6s" d="M-224 88 H 224" opacity=".4"/>
+                </g>
+              </svg>
+            </div>
+            <div class="caption">Links: Schauhaus mit Palmarium. Rechts: <em>Ginkgo biloba</em> L., Zweig mit Blättern — nach Natur.</div>
+          </div>
+        </div>
+        <div class="folio">3</div>
+      </div>
+
+      <div class="face back paper" data-page="st7">
+        <div class="foxing"></div><div class="gutter"></div>
+        <div class="pad">
+          <div class="st rise" style="--del:.15s">
+            <div class="num">6</div>
+            <div style="flex:1">
+              <div class="when">14.35 Uhr · 35 Minuten</div>
+              <h3 class="stat">Schlossgarten &amp; Schlossplatz</h3>
+              <p>Hinter dem Schlosse öffnet sich der Garten und geht ohne Zaun in den <em>Hardtwald</em> über — Stadt und Wald ohne Naht. Man setze sich auf den Rasen vor der Fassade, blicke auf den Thurm und rechne nach, wie viele Straßen von ihm ausgehen. (Es sind zwei und dreißig. Neun davon sind Stadt, der Rest ist Wald.)</p>
+              <p class="meta">Die Eichhörnchen hier sind unverschämt zutraulich. Füttern verboten, Anschauen erlaubt.</p>
+            </div>
+          </div>
+
+          <div class="warn rise" style="--del:.28s;margin:4px 0 14px">
+            <p class="small"><b>Nota bene · Was verschlossen ist.</b> Das <em>Schloss</em> selbst samt dem <em>Badischen Landesmuseum</em>, dem <em>Schlossthurm</em> und dem Schloss-Café ist wegen Sanierung <b>geschlossen</b>. Man plane keinen Aufstieg zur Aussicht. Wer das Museum sucht: das <em>Museum beim Markt</em> hat auf (Sa 11–18 Uhr) und liegt bequem am Rückwege.</p>
+          </div>
+
+          <div class="st rise" style="--del:.4s">
+            <div class="num">7</div>
+            <div style="flex:1">
+              <div class="when">15.10 Uhr · nach Belieben</div>
+              <h3 class="stat">Ausklang</h3>
+              <p>Zurück über den <em>Zirkel</em> zum Marktplatze — oder man bleibt schlicht im Garten sitzen. Wer noch Lust hat: heute beginnt <em>„Karlsruhe klingt“</em>, ein Festival mit über 40 Concerten an ungewöhnlichen Orten, vom Dache des Staatstheaters bis in den Hof der alten Münze. Die meisten Open-Air-Auftritte sind <b>frei</b>. Ein sehr guter Grund, den halben Tag zu einem ganzen werden zu lassen.</p>
+            </div>
+          </div>
+
+          <div class="plate rise" style="--del:.55s;margin-top:4px;flex:1;display:flex;flex-direction:column">
+            <div class="ink" style="flex:1;display:flex;justify-content:center;align-items:center">
+              <svg class="fit-svg" style="--ar:460/190" width="100%" height="100%" viewBox="-230 -100 460 190" preserveAspectRatio="xMidYMid meet">
+                <g fill="none" stroke="var(--ink)" stroke-width=".9" stroke-linecap="round" stroke-linejoin="round">
+                  <!-- Schloss facade -->
+                  <path data-draw style="--len:640;--dur:3s;--del:.5s"
+                        d="M-210 62 V 12 H -140 V -4 H -96 V -34 H -84 V -58 L -70 -78 L -56 -58 V -34 H -44 V -4 H 0 V 12 H 70 V 62"/>
+                  <path data-draw style="--len:160;--dur:1.2s;--del:2.2s" d="M-70 -78 v-14 M-76 -92 h12 M-70 -92 l-4 -8 h8 z"/>
+                  <g stroke-width=".45" opacity=".65">
+                    <path data-draw style="--len:540;--dur:1.6s;--del:2.4s" d="M-196 52 h12 v-28 h-12 z M-176 52 h12 v-28 h-12 z M-156 52 h12 v-28 h-12 z M14 52 h12 v-28 h-12 z M34 52 h12 v-28 h-12 z M54 52 h12 v-28 h-12 z"/>
+                    <path data-draw style="--len:200;--dur:1.4s;--del:2.6s" d="M-84 44 h14 v-30 c 0 -8 -14 -8 -14 0 z M-52 44 h14 v-30 c 0 -8 -14 -8 -14 0 z"/>
+                    <path data-draw style="--len:120;--dur:1s;--del:2.8s" d="M-78 -20 h16 M-78 -46 h16"/>
+                  </g>
+                  <!-- lawn -->
+                  <path data-draw style="--len:460;--dur:2.2s;--del:.6s" d="M-224 70 C -140 62 -40 66 40 70 C 120 74 190 70 224 66" opacity=".45"/>
+                  <!-- squirrel -->
+                  <g class="squirrel" data-x="128" data-y="66" data-s="1.15"></g>
+                  <!-- blackbird -->
+                  <g class="bird" data-x="-160" data-y="76" data-s=".85"></g>
+                  <!-- grass tufts -->
+                  <g class="tufts" stroke-width=".5" opacity=".55"></g>
+                </g>
+              </svg>
+            </div>
+            <div class="caption">Fassade des Schlosses (z. Z. in Sanierung) mit <em>Sciurus vulgaris</em> und <em>Turdus merula</em> auf dem Rasen.</div>
+          </div>
+        </div>
+        <div class="folio">4</div>
+      </div>
+    </div>
+
+    <!-- ═══════════ LEAF 5 : HERBARIUM / FAUNA ═══════════ -->
+    <div class="leaf" data-i="5">
+      <div class="face front paper" data-page="herbarium">
+        <div class="foxing"></div><div class="gutter"></div>
+        <svg class="stamp" viewBox="-60 -60 120 120">
+          <g fill="none" stroke="var(--carmine)" stroke-width="2">
+            <circle r="54"/><circle r="46"/>
+          </g>
+          <path id="arc1" d="M0 0 m -36 0 a 36 36 0 1 1 72 0" fill="none"/>
+          <text font-family="'Cormorant Garamond',serif" font-size="9.5" letter-spacing="2.6" fill="var(--carmine)">
+            <textPath href="#arc1" startOffset="50%" text-anchor="middle">HORTUS BOTANICUS</textPath>
+          </text>
+          <text y="6" font-size="12" text-anchor="middle" font-family="'IM Fell English',serif" fill="var(--carmine)" letter-spacing="1.5">CARLSRUHE</text>
+          <text y="22" font-size="8" text-anchor="middle" font-family="'Cormorant Garamond',serif" fill="var(--carmine)" letter-spacing="2">MMXXVI</text>
+        </svg>
+
+        <div class="pad">
+          <div class="kicker rise">Drittes Buch · Herbarium</div>
+          <div class="rule rise" style="margin:12px 0 6px;--del:.15s"></div>
+          <p class="small rise" style="--del:.2s;text-align:center;font-style:italic;margin-bottom:10px">Was auf diesem Wege wächst — vier Blätter, nach der Natur gezeichnet</p>
+
+          <div class="ink herb-grid" style="flex:1;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:6px">
+            <div class="plate" style="display:flex;flex-direction:column">
+              <svg class="fit-svg" style="flex:1;--ar:140/130" viewBox="-70 -100 140 130" preserveAspectRatio="xMidYMid meet">
+                <g class="ginkgoplate" fill="none" stroke="var(--ink)" stroke-width=".9" stroke-linecap="round" stroke-linejoin="round"></g>
+              </svg>
+              <div class="caption" style="font-size:10.2px">I. <em>Ginkgo biloba</em><br>Botan. Garten</div>
+            </div>
+            <div class="plate" style="display:flex;flex-direction:column">
+              <svg class="fit-svg" style="flex:1;--ar:140/130" viewBox="-70 -100 140 130" preserveAspectRatio="xMidYMid meet">
+                <g class="fernplate" fill="none" stroke="var(--ink)" stroke-width=".85" stroke-linecap="round" stroke-linejoin="round"></g>
+              </svg>
+              <div class="caption" style="font-size:10.2px">II. <em>Dryopteris filix-mas</em><br>Schlossgarten, Schattenlage</div>
+            </div>
+            <div class="plate" style="display:flex;flex-direction:column">
+              <svg class="fit-svg" style="flex:1;--ar:140/130" viewBox="-70 -100 140 130" preserveAspectRatio="xMidYMid meet">
+                <g class="tulipplate" fill="none" stroke="var(--ink)" stroke-width=".9" stroke-linecap="round" stroke-linejoin="round"></g>
+              </svg>
+              <div class="caption" style="font-size:10.2px">III. <em>Liriodendron tulipifera</em><br>Tulpenbaum, Schlossgarten</div>
+            </div>
+            <div class="plate" style="display:flex;flex-direction:column">
+              <svg class="fit-svg" style="flex:1;--ar:140/130" viewBox="-70 -100 140 130" preserveAspectRatio="xMidYMid meet">
+                <g class="planeplate" fill="none" stroke="var(--ink)" stroke-width=".9" stroke-linecap="round" stroke-linejoin="round"></g>
+              </svg>
+              <div class="caption" style="font-size:10.2px">IV. <em>Platanus × hispanica</em><br>Ludwigsplatz, Allee</div>
+            </div>
+          </div>
+
+          <div class="rule thin rise" style="--del:.9s;margin:10px 0 8px"></div>
+          <p class="tiny rise" style="--del:.95s;font-style:italic">Sämmtliche Blätter am Wege zu finden, ohne einen Schritt vom Plane abzuweichen. Man pflücke nichts; das Zeichnen genügt.</p>
+        </div>
+        <div class="folio">5</div>
+      </div>
+
+      <div class="face back paper" data-page="fauna">
+        <div class="foxing"></div><div class="gutter"></div>
+        <div class="pad">
+          <div class="kicker rise">Fauna · Was uns begegnen wird</div>
+          <div class="rule rise" style="margin:12px 0 14px;--del:.15s"></div>
+
+          <div class="ink" style="flex:1;display:flex;flex-direction:column;gap:8px">
+            <div class="fauna-row" style="display:flex;gap:12px;align-items:center">
+              <div class="plate" style="flex:0 0 176px"><svg width="100%" height="112" viewBox="-60 -60 120 90"><g class="squirrelplate" fill="none" stroke="var(--ink)" stroke-width=".9" stroke-linecap="round" stroke-linejoin="round"></g></svg></div>
+              <div style="flex:1">
+                <h3 class="stat" style="font-size:17px">Das Eichhörnchen · <em style="font-size:13px;color:var(--ink-soft)">Sciurus vulgaris</em></h3>
+                <p style="font-size:13.4px;line-height:1.5">Im Schlossgarten in großer Zahl und ohne jede Scheu. Beste Beobachtungszeit: der frühe Nachmittag, wenn wir dort sind. Sitzt gern auf den Bänken und wartet — nicht auf uns, sondern auf Unachtsamkeit.</p>
+              </div>
+            </div>
+            <div class="fauna-row" style="display:flex;gap:12px;align-items:center">
+              <div class="plate" style="flex:0 0 176px"><svg width="100%" height="112" viewBox="-60 -50 120 90"><g class="birdplate" fill="none" stroke="var(--ink)" stroke-width=".9" stroke-linecap="round" stroke-linejoin="round"></g></svg></div>
+              <div style="flex:1">
+                <h3 class="stat" style="font-size:17px">Die Amsel · <em style="font-size:13px;color:var(--ink-soft)">Turdus merula</em></h3>
+                <p style="font-size:13.4px;line-height:1.5">Überall, wo Rasen an Gebüsch stößt. Nach dem Morgenregen kommt sie auf den nassen Boden — dann ist sie am leichtesten zu sehen. Der gelbe Schnabel verräth das Männchen.</p>
+              </div>
+            </div>
+            <div class="fauna-row" style="display:flex;gap:12px;align-items:center">
+              <div class="plate" style="flex:0 0 176px"><svg width="100%" height="112" viewBox="-60 -45 120 90"><g class="dragonplate" fill="none" stroke="var(--ink)" stroke-width=".85" stroke-linecap="round" stroke-linejoin="round"></g></svg></div>
+              <div style="flex:1">
+                <h3 class="stat" style="font-size:17px">Die Libelle · <em style="font-size:13px;color:var(--ink-soft)">Anisoptera</em></h3>
+                <p style="font-size:13.4px;line-height:1.5">An den Wasserbecken des Botanischen Gartens, bei 28 Grad und Sonne fast gewiss. Sie steht in der Luft, als hätte sie Zeit — was für diesen Tag ein gutes Vorbild ist.</p>
+              </div>
+            </div>
+            <div class="fauna-row" style="display:flex;gap:12px;align-items:center">
+              <div class="plate" style="flex:0 0 176px"><svg width="100%" height="112" viewBox="-60 -50 120 90"><g class="butterflyplate" fill="none" stroke="var(--ink)" stroke-width=".85" stroke-linecap="round" stroke-linejoin="round"></g></svg></div>
+              <div style="flex:1">
+                <h3 class="stat" style="font-size:17px">Der Falter · <em style="font-size:13px;color:var(--ink-soft)">Aglais io</em></h3>
+                <p style="font-size:13.4px;line-height:1.5">Das Tagpfauenauge, an den Sommerfliedern hinter der Orangerie. Vier Augen auf den Flügeln, die keine sind — Malerei zum Zwecke der Abschreckung.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="rule thin rise" style="--del:.9s;margin:8px 0 6px"></div>
+          <p class="tiny rise" style="--del:.95s;font-style:italic">Wer alle vier an einem halben Tage sieht, hat gut hingeschaut. Wer keines sieht, hat den Tag dennoch nicht verloren.</p>
+        </div>
+        <div class="folio">6</div>
+      </div>
+    </div>
+
+    <!-- ═══════════ LEAF 6 : ANHANG / KOLOPHON ═══════════ -->
+    <div class="leaf" data-i="6">
+      <div class="face front paper" data-page="anhang">
+        <div class="foxing"></div><div class="gutter"></div>
+        <div class="pad">
+          <div class="kicker rise">Anhang · Was sonst noch geschieht</div>
+          <div class="rule rise" style="margin:12px 0 16px;--del:.15s"></div>
+          <p class="small rise" style="--del:.2s;margin-bottom:12px">Am selben Sonnabend, für den Fall, dass der Plan zu eng wird:</p>
+
+          <table class="tbl rise" style="--del:.3s">
+            <tr><td>ganztags</td><td><b>Lounge 76</b> — Cocktails und DJ auf dem <em>Marktplatze</em>. Liegt genau auf Station 1 und 7.</td><td>gratis</td></tr>
+            <tr><td>8–15 Uhr</td><td><b>Großflohmarkt</b>, Messplatz — Kleider, Möbel, Decorationen, Trödel.</td><td>östl.</td></tr>
+            <tr><td>ab 18. Juli</td><td><b>„Karlsruhe klingt“</b> — über 40 Concerte an ungewöhnlichen Orten, bis 27. Juli: vom Dache des Badischen Staatstheaters bis in den Hof der alten Münze. Die meisten Open-Airs frei.</td><td>meist gratis</td></tr>
+            <tr><td>17.–19. Juli</td><td><b>Cannafestival 2026</b>, Messe Karlsruhe — Publikums- und Fachmesse mit Vorträgen.</td><td>Messe</td></tr>
+            <tr><td>Sa 11–18</td><td><b>Museum beim Markt</b> (Bad. Landesmuseum) — offen, während Schloss und Thurm saniert werden.</td><td>Station 7</td></tr>
+            <tr><td>Sa 11–18</td><td><b>Kunsthalle im ZKM</b> — Sammlungspräsentation. 25 Min. südwestlich; nur bei ganzem Tage.</td><td>optional</td></tr>
+          </table>
+
+          <div class="rule thin rise" style="--del:.5s;margin:16px 0 12px"></div>
+          <div class="kicker rise" style="--del:.55s;text-align:left;letter-spacing:.3em">Ausrüstung</div>
+          <div class="rise kit-cols" style="--del:.6s;display:flex;gap:26px;margin-top:10px">
+            <ul style="flex:1;list-style:none;font-size:13.6px;line-height:1.9">
+              <li>· Leichter Schirm <span class="tiny">(Vormittag)</span></li>
+              <li>· Wasser <span class="tiny">(28 °C)</span></li>
+              <li>· Hut oder Kappe</li>
+            </ul>
+            <ul style="flex:1;list-style:none;font-size:13.6px;line-height:1.9">
+              <li>· Bequeme Schuhe <span class="tiny">(3,4 km)</span></li>
+              <li>· Etwas Bargeld <span class="tiny">(Flohmarkt)</span></li>
+              <li>· Kein Auto <span class="tiny">(alles zu Fuß)</span></li>
+            </ul>
+          </div>
+
+          <div style="flex:1"></div>
+          <div class="ink" style="display:flex;justify-content:center;margin-bottom:6px">
+            <svg width="200" height="46" viewBox="-100 -23 200 46">
+              <g fill="none" stroke="var(--ink-soft)" stroke-width=".8" stroke-linecap="round">
+                <path data-draw style="--len:200;--dur:1.6s;--del:.6s" d="M-92 0 C -60 -16 -30 12 0 0 C 30 -12 60 16 92 0"/>
+                <circle class="fade" style="--del:1.4s" cx="0" cy="0" r="2.2" fill="var(--ink-soft)" stroke="none"/>
+                <circle class="fade" style="--del:1.5s" cx="-46" cy="-1" r="1.4" fill="var(--ink-soft)" stroke="none"/>
+                <circle class="fade" style="--del:1.6s" cx="46" cy="1" r="1.4" fill="var(--ink-soft)" stroke="none"/>
+              </g>
+            </svg>
+          </div>
+        </div>
+        <div class="folio">7</div>
+      </div>
+
+      <div class="face back paper" data-page="kolophon">
+        <div class="foxing"></div><div class="gutter"></div>
+        <div class="pad" style="align-items:center;text-align:center;justify-content:center">
+          <div class="kicker rise">Kolophon</div>
+          <div class="rule rise" style="width:60%;margin:14px 0 22px;--del:.15s"></div>
+
+          <svg class="ink" width="72" height="72" viewBox="-36 -36 72 72" style="margin-bottom:18px">
+            <g fill="none" stroke="var(--carmine)" stroke-width="1" stroke-linecap="round">
+              <circle data-draw style="--len:200;--dur:1.6s;--del:.4s" r="31"/>
+              <path data-draw style="--len:160;--dur:1.4s;--del:1s" d="M0 -31 V 31 M-31 0 H 31"/>
+              <path data-draw style="--len:140;--dur:1.2s;--del:1.4s" d="M-22 -22 L 22 22 M22 -22 L -22 22" opacity=".5"/>
+              <circle class="fade" style="--del:2s" r="4" fill="var(--carmine)" stroke="none"/>
+            </g>
+          </svg>
+
+          <p class="rise" style="--del:.3s;max-width:400px;text-align:center;font-style:italic;color:var(--ink-soft);font-size:15px;line-height:1.7">
+            „Purposeful wandering“ — so heißt die Ausstellung in der Orangerie,<br>und so heißt auch dieser Tag.<br>Man halte sich an die Stunden, aber nicht zu fest.
+          </p>
+
+          <div class="rule thin rise" style="width:44%;margin:24px 0 18px;--del:.4s"></div>
+
+          <div class="tiny rise" style="--del:.45s;text-align:center;line-height:1.9;letter-spacing:.03em">
+            <b class="sc" style="font-size:12px">Quellen &amp; Gewährsmänner</b><br>
+            Witterung: 14-tage-wettervorhersage.de · wetter.com<br>
+            Kunsthalle: kunsthalle-karlsruhe.de <span style="opacity:.7">(Hauptgebäude in Sanierung)</span><br>
+            Botan. Garten: botanischer-garten-karlsruhe.de <span style="opacity:.7">(Schauhäuser Sa 10–17.45)</span><br>
+            Schloss &amp; Landesmuseum: landesmuseum.de <span style="opacity:.7">(Schloss u. Thurm geschlossen)</span><br>
+            Veranstaltungen: ka-news.de · kalender.karlsruhe.de
+          </div>
+
+          <div class="rule thin rise" style="width:44%;margin:18px 0 16px;--del:.5s"></div>
+
+          <div class="tiny rise" style="--del:.55s;letter-spacing:.26em;text-transform:uppercase">Gesetzt aus der Fell &amp; der Garamond</div>
+          <div class="tiny rise" style="--del:.6s;margin-top:5px;font-style:italic;letter-spacing:.03em;text-transform:none">Sämmtliche Zeichnungen mit der Feder, eigens für dieses Buch.<br>Öffnungszeiten vor der Abreise noch einmal zu prüfen.</div>
+
+          <div style="margin-top:26px" class="fade"><svg width="150" height="26" viewBox="-75 -13 150 26"><path class="fade" style="--del:.8s" d="M-70 0 C -50 -9 -34 9 -14 0 C -4 -5 4 -5 14 0 C 34 9 50 -9 70 0" fill="none" stroke="var(--ink-pale)" stroke-width=".7"/></svg></div>
+        </div>
+        <div class="folio">8</div>
+      </div>
+    </div>
+
+    <div class="spine">
+      <div class="band" style="top:110px"></div><div class="band" style="top:266px"></div>
+      <div class="band" style="top:422px"></div><div class="band" style="top:578px"></div>
+    </div>
+  </div>
+</div>
+
+<div class="hint" id="hint">Klicke auf das Buch, um es zu öffnen · ← → zum Blättern</div>
+<div class="nav">
+  <div class="btn" id="prev">◀ Zurück</div>
+  <div class="pagemark" id="mark">Deckel</div>
+  <div class="btn" id="next">Weiter ▶</div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   1. Procedural pen-and-ink illustration generators
+   ═══════════════════════════════════════════════════════════════ */
+const NS = 'http://www.w3.org/2000/svg';
+function el(tag, attrs = {}) {
+  const n = document.createElementNS(NS, tag);
+  for (const k in attrs) n.setAttribute(k, attrs[k]);
+  return n;
+}
+function inkPath(d, o = {}) {
+  const p = el('path', { d });
+  p.setAttribute('data-draw', '');
+  p.style.setProperty('--len', o.len ?? 400);
+  p.style.setProperty('--dur', (o.dur ?? 1.4) + 's');
+  p.style.setProperty('--del', (o.del ?? 0) + 's');
+  if (o.w)  p.setAttribute('stroke-width', o.w);
+  if (o.op) p.setAttribute('opacity', o.op);
+  if (o.fill) p.setAttribute('fill', o.fill);
+  if (o.stroke) p.setAttribute('stroke', o.stroke);
+  return p;
+}
+
+/* ── Ginkgo leaf: a broad flat fan with a shallow central notch.
+      (A deep notch + round lobes reads as a heart, not a ginkgo.) ── */
+function ginkgoLeaf(scale = 1, rot = 0, del = 0) {
+  const g = el('g', { transform: `rotate(${rot}) scale(${scale})` });
+  g.appendChild(inkPath('M0 0 L0 -13', { len: 14, dur: .3, del, w: 1.1 }));
+  g.appendChild(inkPath(
+    'M0 -13 C -8 -27 -22 -38 -31 -48 C -35 -52 -33 -57.5 -27 -58.5 ' +
+    'C -18 -60 -8 -57 -2 -50 L 0 -45.5 L 2 -50 ' +
+    'C 8 -57 18 -60 27 -58.5 C 33 -57.5 35 -52 31 -48 C 22 -38 8 -27 0 -13 Z',
+    { len: 190, dur: 1.5, del: del + .25, w: 1 }));
+  for (let i = -4; i <= 4; i++) {
+    if (i === 0) continue;
+    const t = i / 4;                       // -1 … 1 across the fan
+    const x = t * 29, y = -50 - Math.pow(Math.abs(t), 1.6) * 7.5;
+    g.appendChild(inkPath(`M0 -13 Q ${(x * .5).toFixed(1)} ${((y - 13) * .5).toFixed(1)} ${x.toFixed(1)} ${y.toFixed(1)}`,
+      { len: 52, dur: .5, del: del + 1.1 + Math.abs(i) * .05, w: .3, op: .7 }));
+  }
+  return g;
+}
+
+/* ── Fern frond ── */
+function fernFrond(len = 92, del = 0) {
+  const g = el('g');
+  g.appendChild(inkPath(`M0 0 C 4 ${-len * .35} 6 ${-len * .7} 2 ${-len}`, { len: len + 20, dur: 1.4, del, w: 1 }));
+  const N = 16;
+  for (let i = 1; i <= N; i++) {
+    const t = i / (N + 1);
+    const y = -t * len, x = 4 * Math.sin(t * Math.PI * .7) + 2 * t;
+    const sz = 30 * Math.sin(Math.PI * Math.pow(t, .62)) * (1 - t * .18);
+    const droop = 5 + t * 5;
+    for (const s of [-1, 1]) {
+      const d = `M${x} ${y} C ${x + s * sz * .4} ${y - droop * .5} ${x + s * sz * .78} ${y - droop * .3} ${x + s * sz} ${y + droop * .55}` +
+                ` C ${x + s * sz * .7} ${y + droop * .2} ${x + s * sz * .35} ${y + droop * .6} ${x} ${y + 2.4}`;
+      g.appendChild(inkPath(d, { len: sz * 2.6, dur: .5, del: del + .5 + i * .055, w: .55, op: .95 }));
+      // midrib of pinna
+      g.appendChild(inkPath(`M${x} ${y} Q ${x + s * sz * .55} ${y - droop * .3} ${x + s * sz} ${y + droop * .5}`,
+        { len: sz * 1.3, dur: .4, del: del + .8 + i * .055, w: .25, op: .5 }));
+    }
+  }
+  return g;
+}
+
+/* ── Palm. Fronds are placed by angle-from-vertical (±84°) and given a droop
+      that grows toward the outside, so the crown falls to both sides. ── */
+function palm(del = 0) {
+  const g = el('g');
+  g.appendChild(inkPath('M0 0 C -3 -22 -2 -46 -1 -66', { len: 70, dur: 1, del, w: 1.4 }));
+  const N = 9, MAX = 84 * Math.PI / 180;
+  for (let i = 0; i < N; i++) {
+    const ang = (-84 + i * (168 / (N - 1))) * Math.PI / 180;
+    const L = 34 + (i % 2 ? 7 : 0);
+    const dx = Math.sin(ang), dy = -Math.cos(ang);
+    const droop = Math.pow(Math.abs(ang) / MAX, 1.7) * 26;
+    const ex = -1 + dx * L, ey = -66 + dy * L + droop;
+    const mx = -1 + dx * L * .55, my = -66 + dy * L * .55 + droop * .16 - 4;
+    g.appendChild(inkPath(`M-1 -66 Q ${mx.toFixed(1)} ${my.toFixed(1)} ${ex.toFixed(1)} ${ey.toFixed(1)}`,
+      { len: L + 18, dur: .6, del: del + .7 + i * .08, w: .85 }));
+    const side = dx >= 0 ? 1 : -1;
+    for (let j = 1; j <= 7; j++) {
+      const t = j / 8;
+      const px = -1 + 2 * (1 - t) * t * (mx + 1) + t * t * (ex + 1);
+      const py = -66 + 2 * (1 - t) * t * (my + 66) + t * t * (ey + 66);
+      const ln = 8 * (1 - t * .45);
+      g.appendChild(inkPath(`M${px.toFixed(1)} ${py.toFixed(1)} l ${(side * ln * .55).toFixed(1)} ${ln.toFixed(1)}`,
+        { len: 14, dur: .3, del: del + 1.1 + i * .08 + j * .02, w: .3, op: .7 }));
+      g.appendChild(inkPath(`M${px.toFixed(1)} ${py.toFixed(1)} l ${(-side * ln * .3).toFixed(1)} ${(ln * .9).toFixed(1)}`,
+        { len: 14, dur: .3, del: del + 1.15 + i * .08 + j * .02, w: .3, op: .5 }));
+    }
+  }
+  // trunk rings
+  for (let i = 0; i < 5; i++)
+    g.appendChild(inkPath(`M-4 ${-8 - i * 12} q 3 -3 6 0`, { len: 9, dur: .25, del: del + .3 + i * .05, w: .35, op: .6 }));
+  return g;
+}
+
+/* ── Ginkgo branch with several leaves ── */
+function ginkgoBranch(del = 0) {
+  const g = el('g');
+  g.appendChild(inkPath('M0 0 C -6 -22 -4 -46 4 -68', { len: 74, dur: 1.2, del, w: 1.2 }));
+  const spots = [[-3, -22, -62, .52], [1, -36, 48, .46], [-1, -50, -44, .5], [3, -62, 26, .44], [2, -14, 70, .4]];
+  spots.forEach((s, i) => {
+    const leaf = ginkgoLeaf(s[3], s[2], del + .6 + i * .22);
+    leaf.setAttribute('transform', `translate(${s[0]},${s[1]}) rotate(${s[2]}) scale(${s[3]})`);
+    g.appendChild(leaf);
+  });
+  return g;
+}
+
+/* ── Tulip-tree (Liriodendron) blossom + leaf ── */
+function tulipPlate(del = 0) {
+  const g = el('g');
+  // stem
+  g.appendChild(inkPath('M4 16 C 0 -6 2 -26 5 -42', { len: 62, dur: 1, del, w: 1.1 }));
+  // tulip-shaped flower: an urn of three visible petals
+  g.appendChild(inkPath(
+    'M-13 -44 C -19 -56 -19 -70 -15 -80 C -11 -73 -7 -71 -3 -73 ' +
+    'C -3 -83 1 -91 5 -93 C 9 -91 13 -83 13 -73 ' +
+    'C 17 -71 21 -73 25 -80 C 29 -70 29 -56 23 -44 ' +
+    'C 13 -38 -3 -38 -13 -44 Z',
+    { len: 230, dur: 1.9, del: del + .5, w: 1 }));
+  g.appendChild(inkPath('M-3 -73 C -2 -60 0 -50 2 -44 M13 -73 C 12 -60 10 -50 8 -44',
+    { len: 70, dur: 1.2, del: del + 1.6, w: .35, op: .55 }));
+  g.appendChild(inkPath('M5 -54 l-4 -11 M5 -54 l0 -13 M5 -54 l4 -11', { len: 40, dur: .5, del: del + 2, w: .35, op: .55 }));
+  // characteristic 4-lobed leaf
+  const lf = el('g', { transform: 'translate(-28,-4) rotate(-22) scale(.68)' });
+  lf.appendChild(inkPath('M0 0 L2 -14', { len: 15, dur: .3, del: del + 1.2, w: .9 }));
+  lf.appendChild(inkPath('M2 -14 C -12 -16 -24 -24 -26 -38 C -26 -46 -20 -48 -16 -44 C -18 -54 -12 -60 -6 -58 C -6 -52 -2 -50 0 -52 L 4 -52 C 6 -50 10 -52 10 -58 C 16 -60 22 -54 20 -44 C 24 -48 30 -46 30 -38 C 28 -24 16 -16 2 -14 Z',
+    { len: 230, dur: 1.7, del: del + 1.4, w: .85 }));
+  lf.appendChild(inkPath('M2 -14 L 2 -50 M2 -30 L -20 -40 M2 -30 L 24 -40 M2 -22 L -14 -26 M2 -22 L 18 -26',
+    { len: 130, dur: 1.2, del: del + 2.4, w: .28, op: .6 }));
+  g.appendChild(lf);
+  return g;
+}
+
+/* ── Plane-tree leaf + bobble fruit ── */
+function planePlate(del = 0) {
+  const g = el('g');
+  g.appendChild(inkPath('M0 18 L 0 -6', { len: 26, dur: .4, del, w: 1 }));
+  g.appendChild(inkPath(
+    'M0 -6 C -10 -8 -14 -14 -18 -18 C -26 -16 -34 -20 -34 -28 C -28 -28 -24 -30 -22 -34 C -32 -40 -34 -50 -28 -58 C -24 -52 -18 -50 -14 -52 C -18 -62 -14 -72 -4 -76 C -4 -68 -2 -62 0 -60 C 2 -62 4 -68 4 -76 C 14 -72 18 -62 14 -52 C 18 -50 24 -52 28 -58 C 34 -50 32 -40 22 -34 C 24 -30 28 -28 34 -28 C 34 -20 26 -16 18 -18 C 14 -14 10 -8 0 -6 Z',
+    { len: 300, dur: 2.2, del: del + .3, w: .95 }));
+  g.appendChild(inkPath('M0 -6 L0 -62 M0 -32 L -26 -50 M0 -32 L 26 -50 M0 -20 L -22 -26 M0 -20 L 22 -26',
+    { len: 160, dur: 1.4, del: del + 1.8, w: .3, op: .6 }));
+  // two bobbles on a thread
+  g.appendChild(inkPath('M28 -74 C 36 -60 38 -42 34 -26', { len: 54, dur: .8, del: del + 1.2, w: .7, op: .8 }));
+  [[34, -22, 8], [40, 2, 7]].forEach((b, i) => {
+    const c = el('circle', { cx: b[0], cy: b[1], r: b[2], fill: 'none' });
+    c.setAttribute('data-draw', ''); c.style.setProperty('--len', 60);
+    c.style.setProperty('--dur', '.8s'); c.style.setProperty('--del', (del + 2 + i * .2) + 's');
+    c.setAttribute('stroke-width', '.8');
+    g.appendChild(c);
+    for (let k = 0; k < 12; k++) {
+      const a = k * 30 * Math.PI / 180;
+      g.appendChild(inkPath(`M${b[0] + Math.cos(a) * b[2] * .45} ${b[1] + Math.sin(a) * b[2] * .45} l ${Math.cos(a) * b[2] * .6} ${Math.sin(a) * b[2] * .6}`,
+        { len: 10, dur: .25, del: del + 2.4 + i * .2 + k * .015, w: .25, op: .55 }));
+    }
+  });
+  g.appendChild(inkPath('M34 -14 C 38 -10 38 -6 40 -5', { len: 12, dur: .3, del: del + 2.3, w: .6, op: .7 }));
+  return g;
+}
+
+/* ── Squirrel: sitting upright, facing left, feet on the ground line at y=0,
+      bushy tail sweeping up behind. Drawn as one body contour + one tail. ── */
+function squirrel(del = 0) {
+  const g = el('g');
+  g.appendChild(inkPath(
+    'M-34 -38 C -40 -40 -40 -33 -34 -32 ' +      // nose & mouth
+    'C -28 -31 -26 -38 -26 -44 ' +               // muzzle up into the cheek
+    'C -26 -50 -24 -54 -21 -55 ' +               // forehead
+    'C -21 -62 -17 -66.5 -14 -62 ' +             // ear
+    'C -12.5 -58 -12.5 -55 -13 -53 ' +
+    'C -6 -50 -1 -42 2 -33 ' +                   // nape → back
+    'C 6 -25 8 -16 5 -9 ' +                      // rump
+    'C 2 -3 -5 -1 -12 -2 ' +                     // hind foot
+    'C -18 -3 -20 -8 -19 -14 ' +                 // belly
+    'C -21 -22 -24 -29 -28 -34 Z',               // chest back to the snout
+    { len: 250, dur: 2.2, del, w: .95, fill: 'rgba(52,40,28,.05)' }));
+  g.appendChild(inkPath(
+    'M6 -10 C 26 -12 34 -30 30 -48 C 27 -62 16 -70 8 -66 ' +
+    'C 14 -60 18 -50 17 -38 C 16 -26 12 -16 6 -10 Z',
+    { len: 200, dur: 2, del: del + .9, w: .95, fill: 'rgba(52,40,28,.05)' }));
+  const eye = el('circle', { cx: -24, cy: -46, r: 1.9, fill: 'var(--ink)', stroke: 'none' });
+  eye.setAttribute('class', 'fade'); eye.style.setProperty('--del', (del + 2.2) + 's');
+  g.appendChild(eye);
+  g.appendChild(inkPath('M-34 -35 h 4', { len: 5, dur: .2, del: del + 2.2, w: .45, op: .7 }));   // mouth
+  g.appendChild(inkPath('M-19 -26 C -24 -24 -25 -18 -22 -15', { len: 22, dur: .5, del: del + 2, w: .7 })); // foreleg
+  g.appendChild(inkPath('M-12 -2 C -16 -1 -19 -2 -20 -4', { len: 12, dur: .3, del: del + 2.1, w: .6 }));   // hind foot
+  // tail hair, combed along the outside of the tail curve
+  for (let i = 0; i < 10; i++) {
+    const t = i / 9, a = (-72 + t * 150) * Math.PI / 180;
+    const cx = 14, cy = -38;
+    const x = cx + Math.cos(a) * 15, y = cy + Math.sin(a) * 24;
+    g.appendChild(inkPath(`M${x.toFixed(1)} ${y.toFixed(1)} l ${(Math.cos(a) * 5).toFixed(1)} ${(Math.sin(a) * 7).toFixed(1)}`,
+      { len: 12, dur: .3, del: del + 2.3 + i * .04, w: .28, op: .5 }));
+  }
+  // chest hatching
+  for (let i = 0; i < 5; i++)
+    g.appendChild(inkPath(`M${-22 + i * 2.4} ${-30 + i * 4} l 4 3`, { len: 7, dur: .2, del: del + 2.5 + i * .04, w: .25, op: .4 }));
+  // acorn in the paws
+  g.appendChild(inkPath('M-24 -16 C -29 -21 -22 -27 -18 -22 C -15 -19 -19 -13 -23 -15 Z', { len: 28, dur: .4, del: del + 2.6, w: .6, op: .85 }));
+  return g;
+}
+
+/* ── Blackbird ── */
+function bird(del = 0) {
+  const g = el('g');
+  g.appendChild(inkPath(
+    'M-34 -20 C -41 -24 -39 -32 -31 -33 C -24 -34 -20 -29 -19 -24 C -6 -28 8 -24 19 -14 C 27 -7 36 0 44 6 L 26 5 C 13 10 -2 10 -14 4 C -24 -1 -31 -9 -34 -18 Z',
+    { len: 260, dur: 2.1, del, w: .95, fill: 'rgba(52,40,28,.06)' }));
+  g.appendChild(inkPath('M-38 -27 L -52 -23 L -38 -19', { len: 34, dur: .5, del: del + 1.2, w: .8, stroke: 'var(--carmine)' }));
+  const eye = el('circle', { cx: -30, cy: -27, r: 1.7, fill: 'var(--ink)', stroke: 'none' });
+  eye.setAttribute('class', 'fade'); eye.style.setProperty('--del', (del + 1.6) + 's');
+  g.appendChild(eye);
+  const ring = el('circle', { cx: -30, cy: -27, r: 3.4, fill: 'none', stroke: 'var(--carmine)', 'stroke-width': .5 });
+  ring.setAttribute('class', 'fade'); ring.style.setProperty('--del', (del + 1.8) + 's');
+  g.appendChild(ring);
+  // wing
+  g.appendChild(inkPath('M-8 -18 C 4 -22 16 -18 24 -8 C 16 -4 2 -4 -8 -10 Z', { len: 90, dur: 1, del: del + 1.4, w: .7 }));
+  for (let i = 0; i < 5; i++)
+    g.appendChild(inkPath(`M${-6 + i * 6} ${-16 + i * 1.2} C ${2 + i * 6} ${-14 + i} ${10 + i * 5} ${-9 + i} ${16 + i * 3} ${-6 + i * .6}`,
+      { len: 26, dur: .4, del: del + 2 + i * .06, w: .3, op: .6 }));
+  // legs
+  g.appendChild(inkPath('M-8 8 v 10 M-8 18 l -5 3 M-8 18 l 5 3 M4 8 v 10 M4 18 l -5 3 M4 18 l 5 3',
+    { len: 50, dur: .6, del: del + 2.2, w: .65 }));
+  // tail feathers
+  g.appendChild(inkPath('M30 2 L 46 8 M32 4 L 45 11', { len: 34, dur: .4, del: del + 2.2, w: .3, op: .6 }));
+  return g;
+}
+
+/* ── Dragonfly ── */
+function dragonfly(del = 0) {
+  const g = el('g');
+  g.appendChild(inkPath('M-30 0 C -22 -3 -14 -3 -6 0 C 6 3 24 3 40 0', { len: 76, dur: 1.1, del, w: 1.3 }));
+  for (let i = 0; i < 7; i++)
+    g.appendChild(inkPath(`M${2 + i * 5.2} -2.6 q 0 5.2 0 5.2`, { len: 6, dur: .2, del: del + .9 + i * .04, w: .4, op: .7 }));
+  g.appendChild(inkPath('M-30 0 C -36 -4 -36 4 -30 0 Z', { len: 18, dur: .3, del: del + .3, w: .9 }));
+  const head = el('circle', { cx: -33, cy: 0, r: 4.6, fill: 'rgba(52,40,28,.1)' });
+  head.setAttribute('data-draw', ''); head.style.setProperty('--len', 32);
+  head.style.setProperty('--dur', '.6s'); head.style.setProperty('--del', (del + .2) + 's');
+  head.setAttribute('stroke-width', '.9'); g.appendChild(head);
+  // 4 wings
+  const wings = [[-10, -1, -34, 1], [-10, 1, -34, -1], [-4, -1, 30, 1], [-4, 1, 30, -1]];
+  wings.forEach((w, i) => {
+    const [x0, sy, dx, cur] = w;
+    const d = `M${x0} ${sy * 1.5} C ${x0 + dx * .35} ${sy * 22 * cur * .9} ${x0 + dx * .75} ${sy * 24 * cur} ${x0 + dx} ${sy * 8 * cur}` +
+              ` C ${x0 + dx * .7} ${sy * 3 * cur} ${x0 + dx * .3} ${sy * 2} ${x0} ${sy * 1.5} Z`;
+    g.appendChild(inkPath(d, { len: 120, dur: 1.2, del: del + .6 + i * .12, w: .55, fill: 'rgba(240,232,205,.35)' }));
+    for (let k = 1; k <= 5; k++) {
+      const t = k / 6;
+      g.appendChild(inkPath(`M${x0 + dx * t * .5} ${sy * 2} L ${x0 + dx * t} ${sy * (12 + k) * cur * .8}`,
+        { len: 24, dur: .3, del: del + 1.6 + i * .1 + k * .03, w: .2, op: .5 }));
+    }
+  });
+  return g;
+}
+
+/* ── Butterfly (peacock) ── */
+function butterfly(del = 0) {
+  const g = el('g');
+  g.appendChild(inkPath('M0 -18 C -3 -6 -3 8 0 20 C 3 8 3 -6 0 -18 Z', { len: 60, dur: .8, del, w: .9, fill: 'rgba(52,40,28,.14)' }));
+  g.appendChild(inkPath('M0 -18 C -4 -26 -10 -30 -14 -32 M0 -18 C 4 -26 10 -30 14 -32', { len: 40, dur: .5, del: del + .6, w: .6 }));
+  const wings = [[-1, 'M0 -12 C -16 -34 -44 -34 -46 -14 C -47 -2 -30 4 -14 -2 C -6 -5 -2 -8 0 -12 Z', 'M0 4 C -14 6 -34 12 -32 26 C -30 36 -12 34 -4 20 C -1 14 0 8 0 4 Z'],
+                [ 1, 'M0 -12 C 16 -34 44 -34 46 -14 C 47 -2 30 4 14 -2 C 6 -5 2 -8 0 -12 Z', 'M0 4 C 14 6 34 12 32 26 C 30 36 12 34 4 20 C 1 14 0 8 0 4 Z']];
+  wings.forEach((w, i) => {
+    g.appendChild(inkPath(w[1], { len: 160, dur: 1.5, del: del + .3 + i * .2, w: .85, fill: 'rgba(240,232,205,.4)' }));
+    g.appendChild(inkPath(w[2], { len: 130, dur: 1.3, del: del + .6 + i * .2, w: .85, fill: 'rgba(240,232,205,.4)' }));
+    // eyespots
+    const spots = [[w[0] * 30, -22, 7], [w[0] * 20, 24, 5]];
+    spots.forEach((s, k) => {
+      [s[2], s[2] * .58, s[2] * .24].forEach((r, j) => {
+        const c = el('circle', { cx: s[0], cy: s[1], r, fill: j === 2 ? 'var(--ink)' : 'none' });
+        c.setAttribute('data-draw', ''); c.style.setProperty('--len', r * 7);
+        c.style.setProperty('--dur', '.6s'); c.style.setProperty('--del', (del + 1.8 + i * .1 + k * .15 + j * .1) + 's');
+        c.setAttribute('stroke-width', j === 0 ? .7 : .5);
+        c.setAttribute('stroke', j === 1 ? 'var(--carmine)' : 'var(--ink)');
+        g.appendChild(c);
+      });
+    });
+    // veins
+    for (let k = 0; k < 5; k++)
+      g.appendChild(inkPath(`M0 -10 C ${w[0] * (10 + k * 6)} ${-16 - k * 2} ${w[0] * (26 + k * 3)} ${-24 + k * 4} ${w[0] * (40 - k * 2)} ${-16 + k * 5}`,
+        { len: 60, dur: .5, del: del + 2.4 + k * .05, w: .22, op: .45 }));
+  });
+  return g;
+}
+
+/* ── foliage cloud (for the plane tree) ── */
+function foliage(cx, cy, del = 0) {
+  const g = el('g');
+  let d = '';
+  const N = 26, R = 60;
+  for (let i = 0; i <= N; i++) {
+    const a = (i / N) * Math.PI * 2;
+    const r = R * (0.72 + 0.28 * Math.abs(Math.sin(a * 3.1 + 1.2))) * (a > Math.PI * .2 && a < Math.PI * .8 ? .78 : 1);
+    const x = cx + Math.cos(a) * r * 1.28, y = cy + Math.sin(a) * r * .72;
+    d += (i === 0 ? `M${x.toFixed(1)} ${y.toFixed(1)}` : ` Q ${(x + Math.cos(a + .1) * 12).toFixed(1)} ${(y + Math.sin(a + .1) * 8).toFixed(1)} ${x.toFixed(1)} ${y.toFixed(1)}`);
+  }
+  g.appendChild(inkPath(d + ' Z', { len: 520, dur: 2.6, del, w: .8, op: .9 }));
+  // interior clumps
+  for (let i = 0; i < 9; i++) {
+    const a = i * 40 * Math.PI / 180, r = 20 + (i % 3) * 12;
+    const x = cx + Math.cos(a) * r * 1.35, y = cy + Math.sin(a) * r * .7;
+    g.appendChild(inkPath(`M${x - 12} ${y} q 6 -9 12 0 q 6 -8 12 0`, { len: 34, dur: .5, del: del + 1.2 + i * .08, w: .4, op: .55 }));
+  }
+  return g;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   2. Mount all the illustrations
+   ═══════════════════════════════════════════════════════════════ */
+document.querySelectorAll('.ginkgoplate').forEach(n => {
+  const g = el('g', { transform: 'translate(4,26)' });
+  g.appendChild(ginkgoBranch(.2));
+  n.appendChild(g);
+});
+document.querySelectorAll('.fernplate').forEach(n => {
+  const g = el('g', { transform: 'translate(0,22)' });
+  g.appendChild(fernFrond(96, .2));
+  n.appendChild(g);
+});
+document.querySelectorAll('.tulipplate').forEach(n => {
+  const g = el('g', { transform: 'translate(2,14)' });
+  g.appendChild(tulipPlate(.2));
+  n.appendChild(g);
+});
+document.querySelectorAll('.planeplate').forEach(n => {
+  const g = el('g', { transform: 'translate(-6,10)' });
+  g.appendChild(planePlate(.2));
+  n.appendChild(g);
+});
+document.querySelectorAll('.squirrelplate').forEach(n => {
+  const g = el('g', { transform: 'translate(4,12) scale(1.05)' });
+  g.appendChild(squirrel(.2));
+  n.appendChild(g);
+});
+document.querySelectorAll('.birdplate').forEach(n => {
+  const g = el('g', { transform: 'translate(4,4) scale(1)' });
+  g.appendChild(bird(.2));
+  n.appendChild(g);
+});
+document.querySelectorAll('.dragonplate').forEach(n => {
+  const g = el('g', { transform: 'translate(-2,0) scale(1.05)' });
+  g.appendChild(dragonfly(.2));
+  n.appendChild(g);
+});
+document.querySelectorAll('.butterflyplate').forEach(n => {
+  const g = el('g', { transform: 'translate(0,0) scale(.95)' });
+  g.appendChild(butterfly(.2));
+  n.appendChild(g);
+});
+document.querySelectorAll('.palm').forEach(n => {
+  const g = el('g', { transform: `translate(${n.dataset.x},${n.dataset.y}) scale(1.45)` });
+  g.appendChild(palm(1.4));
+  n.appendChild(g);
+});
+document.querySelectorAll('.ginkgobranch').forEach(n => {
+  const g = el('g', { transform: `translate(${n.dataset.x},${n.dataset.y}) scale(1.35)` });
+  g.appendChild(ginkgoBranch(1.6));
+  n.appendChild(g);
+});
+document.querySelectorAll('.squirrel').forEach(n => {
+  const g = el('g', { transform: `translate(${n.dataset.x},${n.dataset.y}) scale(${n.dataset.s})` });
+  g.appendChild(squirrel(2.4));
+  n.appendChild(g);
+});
+document.querySelectorAll('.bird').forEach(n => {
+  const g = el('g', { transform: `translate(${n.dataset.x},${n.dataset.y}) scale(${n.dataset.s})` });
+  g.appendChild(bird(2.8));
+  n.appendChild(g);
+});
+document.querySelectorAll('.foliage').forEach(n => n.appendChild(foliage(+n.dataset.cx, +n.dataset.cy, .8)));
+document.querySelectorAll('.tufts').forEach(n => {
+  for (let i = 0; i < 22; i++) {
+    const x = -216 + Math.random() * 432, y = 66 + Math.random() * 14;
+    n.appendChild(inkPath(`M${x.toFixed(0)} ${y.toFixed(0)} l -2 -6 M${x.toFixed(0)} ${y.toFixed(0)} l 1 -8 M${x.toFixed(0)} ${y.toFixed(0)} l 3 -5`,
+      { len: 22, dur: .3, del: 3 + i * .03, w: .4, op: .5 }));
+  }
+});
+document.querySelectorAll('.hatch-r').forEach(n => {
+  for (let i = 0; i < 16; i++) {
+    const t = i / 15;
+    const x1 = 6 + t * 52, y1 = 46 - t * 24;
+    const x2 = 6 + t * 52 * .18, y2 = -150 + t * 190;
+    n.appendChild(inkPath(`M${x2.toFixed(1)} ${y2.toFixed(1)} L ${x1.toFixed(1)} ${y1.toFixed(1)}`,
+      { len: 210, dur: .5, del: 2.6 + i * .04, w: .35, op: .45 }));
+  }
+});
+
+/* ═══════════════════════════════════════════════════════════════
+   3. The map: radial fan, forest, pins
+   ═══════════════════════════════════════════════════════════════ */
+(function buildMap() {
+  const fan = document.getElementById('fan');
+  if (!fan) return;
+  const cx = 652, cy = 472;
+  for (let i = 0; i < 32; i++) {
+    const a = i * 11.25;
+    const rad = a * Math.PI / 180;
+    const dx = Math.sin(rad), dy = -Math.cos(rad);
+    const south = a > 95 && a < 265;
+    const r = south ? 640 : 1000;
+    const major = (i % 4 === 0);
+    fan.appendChild(inkPath(
+      `M${(cx + dx * 26).toFixed(1)} ${(cy + dy * 26).toFixed(1)} L ${(cx + dx * r).toFixed(1)} ${(cy + dy * r).toFixed(1)}`,
+      { len: r, dur: 1.6, del: .3 + i * .028, w: major ? 1.5 : .75, op: south ? (major ? .72 : .42) : (major ? .5 : .26) }));
+  }
+  // forest stipple — only inside the Hardtwald wash, clear of the Schloss and the cartouche
+  const wald = document.getElementById('wald');
+  for (let i = 0; i < 220; i++) {
+    const x = -40 + Math.random() * 900, y = -40 + Math.random() * 420;
+    const inWald = Math.pow((x - 640) / 500, 2) + Math.pow((y - 60) / 290, 2) < 1;
+    if (!inWald) continue;
+    if (x < 400 && y < 175) continue;                 // cartouche
+    if (Math.hypot(x - cx, y - cy) < 300) continue;   // palace & garden lawn
+    const s = .8 + Math.random() * .7;
+    const t = el('path', {
+      d: `M0 0 c -5 0 -7 -5 -3 -7 c -1 -6 7 -8 9 -3 c 5 -2 8 4 3 7 z M0 0 v 5`,
+      transform: `translate(${x.toFixed(0)},${y.toFixed(0)}) scale(${s.toFixed(2)})`,
+      fill: 'none', stroke: 'rgba(70,90,55,.55)', 'stroke-width': .9
+    });
+    t.setAttribute('class', 'fade');
+    t.style.setProperty('--del', (2.2 + Math.random() * 1.4) + 's');
+    wald.appendChild(t);
+  }
+  // station pins
+  const pins = document.getElementById('pins');
+  const P = [
+    [608, 983, '1', 'end', -14, 4],
+    [330, 986, '2', 'start', 0, -22],
+    [128, 994, '3', 'start', 16, 6],
+    [119, 672, '4', 'start', 16, 5],
+    [425, 527, '5', 'start', 14, 20],
+    [652, 472, '6', 'start', 22, -8],
+    [652, 240, '7', 'start', 20, 4]
+  ];
+  P.forEach((p, i) => {
+    const g = el('g', { class: 'fade' });
+    g.style.setProperty('--del', (4.2 + i * .18) + 's');
+    g.appendChild(el('circle', { cx: p[0], cy: p[1], r: 23, fill: 'rgba(247,241,220,.95)', stroke: 'var(--carmine)', 'stroke-width': 2.6 }));
+    g.appendChild(el('circle', { cx: p[0], cy: p[1], r: 18, fill: 'none', stroke: 'var(--carmine)', 'stroke-width': .8, opacity: .55 }));
+    const t = el('text', {
+      x: p[0], y: p[1] + 8.5, 'text-anchor': 'middle', 'font-size': 23,
+      'font-family': "'IM Fell English',serif", fill: 'var(--carmine)'
+    });
+    t.textContent = p[2];
+    g.appendChild(t);
+    pins.appendChild(g);
+  });
+})();
+
+/* ── timeline nodes on the Marsch-Tafel ── */
+(function timeline() {
+  const box = document.getElementById('tlnodes');
+  if (!box) return;
+  for (let i = 0; i < 7; i++) {
+    const d = document.createElement('div');
+    d.style.cssText = `position:absolute;left:11px;top:calc(${4 + i * 14.6}% + 14px);width:22px;height:22px;border-radius:50%;
+      border:1.1px solid var(--carmine);background:rgba(247,241,220,.9);color:var(--carmine);
+      display:flex;align-items:center;justify-content:center;font-family:'IM Fell English',serif;font-size:12px;`;
+    d.className = 'fade'; d.style.setProperty('--del', (.8 + i * .12) + 's');
+    d.textContent = i + 1;
+    box.appendChild(d);
+  }
+})();
+
+/* ═══════════════════════════════════════════════════════════════
+   4. Paper: foxing spots + marbled endpapers
+   ═══════════════════════════════════════════════════════════════ */
+document.querySelectorAll('.foxing').forEach(f => {
+  let html = '';
+  const n = 7 + Math.floor(Math.random() * 6);
+  for (let i = 0; i < n; i++) {
+    const x = Math.random() * 100, y = Math.random() * 100;
+    const r = 6 + Math.random() * 26;
+    const o = .05 + Math.random() * .11;
+    html += `<div style="position:absolute;left:${x}%;top:${y}%;width:${r}px;height:${r * (.6 + Math.random() * .7)}px;
+      border-radius:50%;background:radial-gradient(circle,rgba(150,105,45,${o.toFixed(3)}) 0%,rgba(150,105,45,${(o * .4).toFixed(3)}) 55%,transparent 75%);
+      transform:rotate(${Math.random() * 180}deg)"></div>`;
+  }
+  f.innerHTML = html;
+});
+/* Antique comb-marbled endpaper ("Kammmarmor"): fine dark veins pulled through
+   a pale size, in the sober indigo/burgundy/ochre of a 19th-c. library binding.
+   Thin bands + high-frequency displacement — coarse bands read as camouflage. */
+(function marble() {
+  const cols = ['%231d3440', '%23612630', '%238a6434', '%23243a33', '%23402a3c'];
+  const bands = Array.from({ length: 66 }, (_, i) =>
+    `<rect y='${i * 12.4}' width='600' height='${i % 3 === 0 ? 4.6 : 2.4}' fill='${cols[i % 5]}' opacity='${i % 3 === 0 ? .82 : .6}'/>`
+  ).join('');
+  const veins = Array.from({ length: 22 }, (_, i) =>
+    `<rect y='${6 + i * 37}' width='600' height='0.9' fill='%23f2e8cc' opacity='0.5'/>`
+  ).join('');
+  const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='600' height='800'>
+    <defs>
+      <filter id='m' x='-10%25' y='-10%25' width='120%25' height='120%25'>
+        <feTurbulence type='fractalNoise' baseFrequency='0.016 0.11' numOctaves='5' seed='19' result='t'/>
+        <feDisplacementMap in='SourceGraphic' in2='t' scale='30' xChannelSelector='R' yChannelSelector='G'/>
+      </filter>
+      <filter id='g'>
+        <feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' seed='5'/>
+        <feColorMatrix values='0 0 0 0 .32  0 0 0 0 .24  0 0 0 0 .14  0 0 0 .12 0'/>
+      </filter>
+    </defs>
+    <rect width='600' height='800' fill='%23ddcfae'/>
+    <g filter='url(%23m)'>${bands}${veins}</g>
+    <rect width='600' height='800' filter='url(%23g)'/>
+  </svg>`;
+  document.documentElement.style.setProperty('--marble', `url("data:image/svg+xml,${svg.replace(/\n\s*/g, '')}")`);
+})();
+
+/* ── dust motes ── */
+(function motes() {
+  const box = document.getElementById('motes');
+  for (let i = 0; i < 34; i++) {
+    const d = document.createElement('div');
+    d.className = 'mote';
+    const s = 1 + Math.random() * 3.4;
+    d.style.width = d.style.height = s + 'px';
+    d.style.left = Math.random() * 100 + '%';
+    d.style.top = (30 + Math.random() * 70) + '%';
+    d.style.setProperty('--dx', (Math.random() * 200 - 100).toFixed(0) + 'px');
+    d.style.setProperty('--dy', (-140 - Math.random() * 260).toFixed(0) + 'px');
+    d.style.animationDuration = (14 + Math.random() * 22) + 's';
+    d.style.animationDelay = (-Math.random() * 30) + 's';
+    box.appendChild(d);
+  }
+})();
+
+/* ═══════════════════════════════════════════════════════════════
+   5. Book mechanics
+   ═══════════════════════════════════════════════════════════════ */
+const book   = document.getElementById('book');
+const leaves = [...document.querySelectorAll('.leaf')];
+const N      = leaves.length;
+const marks  = ['Deckel', 'Titel', 'Charte', 'Stationen I', 'Stationen II', 'Herbarium', 'Fauna', 'Anhang'];
+
+// Every face in reading order: leaf0.front, leaf0.back, leaf1.front, …
+const faces = [];
+leaves.forEach(lf => faces.push(lf.querySelector('.face.front'), lf.querySelector('.face.back')));
+const LAST = faces.length - 1;                 // 13
+
+let spread = 0;        // desktop: 0 = closed, N = fully read
+let linear = 0;        // mobile: index into `faces`
+let mobile = null;
+
+const isMobile = () => window.matchMedia('(max-width:860px)').matches;
+// desktop spread s shows faces[2s-1] (left) and faces[2s] (right)
+const spreadToLinear = s => Math.min(LAST, s === 0 ? 0 : s * 2);
+const linearToSpread = l => Math.ceil(l / 2);
+
+function zorder() {
+  leaves.forEach((lf, i) => {
+    lf.style.zIndex = (i < spread) ? (10 + i) : (10 + (N - i));
+  });
+}
+function markVisible() {
+  document.querySelectorAll('.face').forEach(f => f.classList.remove('visible'));
+  const right = leaves[spread]?.querySelector('.face.front');
+  const left  = leaves[spread - 1]?.querySelector('.face.back');
+  [right, left].forEach(f => f && f.classList.add('visible'));
+}
+
+function renderDesktop() {
+  book.classList.toggle('closed', spread === 0);
+  book.classList.toggle('open',  spread > 0);
+  leaves.forEach((lf, i) => {
+    lf.classList.remove('m-show');
+    lf.classList.toggle('flipped', i < spread);
+  });
+  faces.forEach(f => f.classList.remove('m-show'));
+  zorder();
+  document.getElementById('mark').textContent = marks[Math.min(spread, marks.length - 1)];
+  document.getElementById('prev').toggleAttribute('disabled', spread === 0);
+  document.getElementById('next').toggleAttribute('disabled', spread === N);
+  document.getElementById('ribbon').style.height = spread === 0 ? '0px' : (120 + spread * 76) + 'px';
+  document.getElementById('hint').style.opacity = spread === 0 ? '1' : '0';
+  setTimeout(markVisible, spread === 0 ? 0 : 380);
+}
+
+function renderMobile() {
+  book.classList.remove('closed', 'open');
+  leaves.forEach((lf, i) => {
+    lf.classList.remove('flipped');
+    lf.style.zIndex = '';
+    lf.classList.toggle('m-show', i === Math.floor(linear / 2));
+  });
+  document.querySelectorAll('.face').forEach(f => f.classList.remove('visible'));
+  faces.forEach((f, i) => f.classList.toggle('m-show', i === linear));
+  faces[linear].classList.add('visible');
+  document.getElementById('mark').textContent = marks[Math.min(linearToSpread(linear), marks.length - 1)];
+  document.getElementById('prev').toggleAttribute('disabled', linear === 0);
+  document.getElementById('next').toggleAttribute('disabled', linear === LAST);
+  document.getElementById('hint').style.opacity = linear === 0 ? '1' : '0';
+  window.scrollTo(0, 0);
+}
+
+const render = () => (mobile ? renderMobile() : renderDesktop());
+
+function go(d) {
+  if (mobile) {
+    const t = Math.min(LAST, Math.max(0, linear + d));
+    if (t === linear) return;
+    linear = t;
+    renderMobile();
+    return;
+  }
+  const t = Math.min(N, Math.max(0, spread + d));
+  if (t === spread) return;
+  const turning = leaves[d > 0 ? spread : t];   // the leaf actually in motion
+  spread = t;
+  renderDesktop();
+  // hold the turning leaf above the stack for the length of the transition,
+  // otherwise it dives behind the other pages mid-flip
+  turning.style.zIndex = 30;
+  clearTimeout(turning._t);
+  turning._t = setTimeout(zorder, 1300);
+}
+
+document.getElementById('next').onclick = e => { e.stopPropagation(); go(1); };
+document.getElementById('prev').onclick = e => { e.stopPropagation(); go(-1); };
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); go(1); }
+  if (e.key === 'ArrowLeft') { e.preventDefault(); go(-1); }
+});
+book.addEventListener('click', e => {
+  if (mobile) return;                 // on a phone you're reading/scrolling, not flipping
+  const r = book.getBoundingClientRect();
+  const x = (e.clientX - r.left) / r.width;
+  if (spread === 0) { go(1); return; }
+  go(x > 0.52 ? 1 : -1);
+});
+
+// swipe (mobile only). The 1.5× ratio keeps vertical scrolling from flipping pages.
+let tsX = 0, tsY = 0;
+document.addEventListener('touchstart', e => {
+  tsX = e.touches[0].clientX; tsY = e.touches[0].clientY;
+}, { passive: true });
+document.addEventListener('touchend', e => {
+  if (!mobile) return;
+  const dx = e.changedTouches[0].clientX - tsX;
+  const dy = e.changedTouches[0].clientY - tsY;
+  if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) go(dx < 0 ? 1 : -1);
+}, { passive: true });
+
+/* fit to viewport (desktop only — on mobile the page is fluid, never scaled) */
+function fit() {
+  const stage = document.getElementById('stage');
+  if (isMobile()) { stage.style.transform = 'none'; return; }
+  const s = Math.min((window.innerWidth - 70) / 1200, (window.innerHeight - 120) / 800, 1);
+  stage.style.transform = `scale(${s})`;
+}
+
+function applyMode() {
+  const m = isMobile();
+  if (m === mobile) { fit(); return; }
+  if (mobile === null)      { /* first run: state comes from the hash */ }
+  else if (m)               { linear = spreadToLinear(spread); }
+  else                      { spread = linearToSpread(linear); }
+  mobile = m;
+  document.getElementById('hint').textContent = m
+    ? 'Wischen zum Blättern'
+    : 'Klicke auf das Buch, um es zu öffnen · ← → zum Blättern';
+  fit();
+  render();
+}
+window.addEventListener('resize', applyMode);
+
+// deep link: …/karlsruhe.html#3 opens straight at that spread
+const hash = parseInt(location.hash.slice(1), 10);
+if (!isNaN(hash)) {
+  spread = Math.min(N, Math.max(0, hash));
+  linear = spreadToLinear(spread);
+}
+applyMode();
+</script>
+</body>
+</html>

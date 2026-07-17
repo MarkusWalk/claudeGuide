@@ -356,6 +356,29 @@
     50% { transform: translate(-40%, -55%) rotate(-22deg); }
   }
 
+  /* Karlsruhe: tooled leather, and the Fächer — the 32 streets drawn out
+     from the palace tower in 1715. The city's own diagram is its best mark. */
+  .card-gradient.karlsruhe {
+    background: linear-gradient(160deg, #6a4028 0%, #4a2a19 45%, #2d180e 100%);
+    position: relative;
+    overflow: hidden;
+  }
+  .card-gradient.karlsruhe::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% 92%, rgba(232, 212, 138, 0.28) 0%, transparent 58%);
+  }
+  .fan-mark {
+    position: relative;
+    width: 190px;
+    height: 118px;
+    opacity: 0.9;
+    filter: drop-shadow(0 3px 10px rgba(0,0,0,0.45));
+    transition: transform 0.7s cubic-bezier(0.23, 1, 0.32, 1);
+  }
+  .guide-card:hover .fan-mark { transform: scale(1.06); }
+
   .card-icon {
     font-size: 4rem;
     opacity: 0.4;
@@ -614,6 +637,57 @@
               <circle cx="12" cy="10" r="3"/>
             </svg>
             Catania
+          </span>
+        </div>
+        <div class="card-arrow">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </div>
+      </div>
+    </a>
+
+    <!-- Karlsruhe Guide -->
+    <a href="karlsruhe.html" class="guide-card">
+      <div class="card-image">
+        <div class="card-gradient karlsruhe">
+          <svg class="fan-mark" viewBox="0 0 160 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <g stroke="#e8d48a" stroke-width="0.9" stroke-linecap="round" opacity="0.55">
+              <path d="M80 92 L154 92 M80 92 L152.6 77.6 M80 92 L148.4 63.7 M80 92 L141.5 50.9
+                       M80 92 L132.3 39.7 M80 92 L121.1 30.5 M80 92 L108.3 23.6 M80 92 L94.4 19.4
+                       M80 92 L65.6 19.4 M80 92 L51.7 23.6 M80 92 L38.9 30.5 M80 92 L27.7 39.7
+                       M80 92 L18.5 50.9 M80 92 L11.6 63.7 M80 92 L7.4 77.6 M80 92 L6 92"/>
+            </g>
+            <g stroke="#e8d48a" stroke-width="1.6" stroke-linecap="round" opacity="0.95">
+              <path d="M80 92 L80 18"/>
+            </g>
+            <path d="M6 92 H154" stroke="#e8d48a" stroke-width="1.2" opacity="0.7"/>
+            <circle cx="80" cy="92" r="3.6" fill="#e8d48a"/>
+            <path d="M80 12 l-4.5 6 h9 z" fill="#e8d48a"/>
+          </svg>
+        </div>
+      </div>
+      <div class="card-content">
+        <div class="card-region">Baden-Württemberg, Deutschland</div>
+        <h2 class="card-title">Carlsruhe im Fächer</h2>
+        <p class="card-description">
+          Ein Logbuch für einen halben Tag in der gedachten Stadt — 32 Straßen, aus einem
+          Turm gezogen. Kunstkammer, Gewächshäuser, Schlossgarten. Auf Deutsch.
+        </p>
+        <div class="card-meta">
+          <span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M12 6v6l4 2"/>
+            </svg>
+            Halber Tag · 3,4 km
+          </span>
+          <span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 1118 0z"/>
+              <circle cx="12" cy="10" r="3"/>
+            </svg>
+            Karlsruhe
           </span>
         </div>
         <div class="card-arrow">
