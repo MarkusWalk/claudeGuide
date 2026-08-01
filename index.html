@@ -379,6 +379,28 @@
   }
   .guide-card:hover .fan-mark { transform: scale(1.06); }
 
+  /* Königstuhl: Waldschatten und ein Lichtschacht durchs Kronendach.
+     Die Marke ist der Bestand selbst — Buche zwischen Nadelholz. */
+  .card-gradient.koenigstuhl {
+    background: linear-gradient(175deg, #2b4023 0%, #1d2f16 50%, #0f1a0b 100%);
+    position: relative;
+    overflow: hidden;
+  }
+  .card-gradient.koenigstuhl::before {
+    content: '';
+    position: absolute; inset: 0;
+    background:
+      linear-gradient(102deg, transparent 26%, rgba(238,226,160,.16) 33%, transparent 40%),
+      radial-gradient(circle at 50% 22%, rgba(238,226,160,.14) 0%, transparent 52%);
+  }
+  .forest-mark {
+    position: relative;
+    width: 168px; height: 130px;
+    filter: drop-shadow(0 3px 10px rgba(0,0,0,.45));
+    transition: transform 0.7s cubic-bezier(0.23, 1, 0.32, 1);
+  }
+  .guide-card:hover .forest-mark { transform: scale(1.06); }
+
   /* Fort Wayne: a WPA travel-poster block — the three rivers braid into
      one under a low summit sun. Flat teal + gold, the way it was silkscreened. */
   .card-gradient.fortwayne {
@@ -760,6 +782,60 @@
               <circle cx="12" cy="10" r="3"/>
             </svg>
             Fort Wayne
+          </span>
+        </div>
+        <div class="card-arrow">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </div>
+      </div>
+    </a>
+
+    <!-- Königstuhl Guide -->
+    <a href="koenigstuhl.html" class="guide-card">
+      <div class="card-image">
+        <div class="card-gradient koenigstuhl">
+          <svg class="forest-mark" viewBox="0 0 168 130" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Nadelholz links und rechts, die Buche in der Mitte -->
+            <g stroke="#c9a54f" stroke-width="1.3" stroke-linejoin="round" stroke-linecap="round" opacity="0.75">
+              <path d="M22 112 v-9 M14 105 L22 78 L30 105 Z"/>
+              <path d="M40 112 v-7 M33 106 L40 84 L47 106 Z"/>
+              <path d="M128 112 v-7 M121 106 L128 84 L135 106 Z"/>
+              <path d="M146 112 v-9 M138 105 L146 78 L154 105 Z"/>
+            </g>
+            <g stroke="#f2ead2" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round">
+              <path d="M78 112 V64 M84 112 V64"/>
+              <path d="M81 64 L58 44 M81 64 L104 44 M81 70 L64 56 M81 70 L98 56"/>
+              <path d="M81 20 C60 24, 44 38, 46 54 C48 68, 66 74, 81 72
+                       C96 74, 114 68, 116 54 C118 38, 102 24, 81 20 Z"/>
+            </g>
+            <path d="M6 112 H162" stroke="#c9a54f" stroke-width="1.2" opacity="0.65"/>
+          </svg>
+        </div>
+      </div>
+      <div class="card-content">
+        <div class="card-region">Odenwald, Baden-Württemberg</div>
+        <h2 class="card-title">Der Königstuhl</h2>
+        <p class="card-description">
+          Ein Waldjournal zur Kaltteichhütten-Runde — Federzeichnungen, die sich
+          selbst aufs Papier setzen: Aussichten über die Altstadt, der Hohle
+          Kästenbaum, der Walderlebnispfad und der Gipfel. Auf Deutsch.
+        </p>
+        <div class="card-meta">
+          <span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M12 6v6l4 2"/>
+            </svg>
+            Ein Vormittag · 4,4 km
+          </span>
+          <span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 1118 0z"/>
+              <circle cx="12" cy="10" r="3"/>
+            </svg>
+            Heidelberg
           </span>
         </div>
         <div class="card-arrow">

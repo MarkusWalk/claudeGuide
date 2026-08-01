@@ -1,0 +1,1242 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Der Königstuhl · Ein Waldjournal — Heidelberg</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=IM+Fell+English+SC&display=swap" rel="stylesheet">
+<style>
+  /* ══════════════════════════════════════════════════════════════
+     DER KÖNIGSTUHL — EIN WALDJOURNAL
+     Eine Herbarmappe aus Leinen, aufgeschlagen im Waldschatten.
+     Eisengallustinte auf Knochenpapier, aufgeklebte Tafeln, jede
+     Zeichnung entsteht als Federstrich vor den Augen. Die Farben
+     kommen vom Ort: Buchenschatten, Sandsteinocker, Mammutbaumrinde.
+     ══════════════════════════════════════════════════════════════ */
+  :root{
+    --paper:    #ece2ca;
+    --paper-2:  #e0d4b3;
+    --paper-hi: #f5eeda;
+    --ink:      #23301f;   /* Eisengallustinte, grünschwarz */
+    --ink-soft: #4b5842;
+    --ink-faint:#8c8462;
+    --sage:     #6b7a4f;
+    --sage-dk:  #46552e;
+    --ochre:    #a0782b;
+    --ochre-lt: #c9a54f;
+    --ox:       #7a2a18;   /* Oxblut — Warnung, Gift, "nicht anfassen" */
+    --ox-lt:    #9c3d24;
+    --bark:     #8a4a2c;   /* Mammutbaumrinde */
+    --bark-lt:  #b2703f;
+    --cloth:    #46552e;   /* Leinen der Mappe */
+    --cloth-dk: #2b361c;
+    --cloth-lt: #5d6f42;
+    --shadow:   rgba(8,14,8,.5);
+  }
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  html,body{ height:100%; }
+  body{
+    font-family:'Cormorant Garamond', Georgia, serif;
+    color:var(--ink);
+    background:#0a1109;
+    overflow:hidden;
+    -webkit-font-smoothing:antialiased;
+    -webkit-tap-highlight-color:transparent;
+  }
+
+  /* ── der Waldboden, das Licht durch die Kronen, der Blütenstaub ── */
+  .forest{
+    position:fixed; inset:0; z-index:0;
+    background:
+      radial-gradient(ellipse 82% 60% at 50% 18%, #2b4023 0%, #17250f 48%, #0b1207 100%),
+      #0a1109;
+  }
+  .forest::after{
+    content:''; position:absolute; inset:0; opacity:.45; mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)' opacity='.4'/%3E%3C/svg%3E");
+  }
+  /* Lichtschächte durch das Kronendach */
+  .shafts{
+    position:fixed; inset:0; z-index:6; pointer-events:none;
+    background:
+      linear-gradient(102deg, transparent 20%, rgba(238,226,160,.09) 27%, transparent 34%),
+      linear-gradient(96deg, transparent 52%, rgba(238,226,160,.06) 58%, transparent 64%),
+      radial-gradient(ellipse 120% 105% at 50% 46%, transparent 42%, rgba(0,0,0,.52) 88%, rgba(0,0,0,.72) 100%);
+    animation:sway 12s ease-in-out infinite;
+  }
+  @keyframes sway{ 0%,100%{opacity:1; transform:translateX(0)} 50%{opacity:.86; transform:translateX(-8px)} }
+  .grain{
+    position:fixed; inset:-40%; z-index:7; pointer-events:none; opacity:.09;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' seed='7'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23g)'/%3E%3C/svg%3E");
+    animation:grainmove 1s steps(3) infinite;
+  }
+  @keyframes grainmove{ 0%{transform:translate(0,0)} 33%{transform:translate(-6px,3px)} 66%{transform:translate(4px,-5px)} 100%{transform:translate(0,0)} }
+  .spores{ position:fixed; inset:0; z-index:5; pointer-events:none; overflow:hidden; }
+  .spore{
+    position:absolute; border-radius:50%;
+    background:radial-gradient(circle, rgba(244,236,200,.85) 0%, rgba(226,208,140,.22) 45%, transparent 70%);
+    animation:drift linear infinite;
+  }
+  @keyframes drift{
+    0%{ transform:translate3d(0,0,0) scale(.7); opacity:0 }
+    14%{ opacity:.65 } 86%{ opacity:.45 }
+    100%{ transform:translate3d(var(--dx),var(--dy),0) scale(1.1); opacity:0 }
+  }
+
+  /* ── die Mappe ───────────────────────────────────────────────── */
+  #stage{
+    position:fixed; inset:0; z-index:2;
+    display:flex; align-items:center; justify-content:center;
+    padding:max(14px,env(safe-area-inset-top)) 12px max(84px,calc(env(safe-area-inset-bottom) + 78px));
+  }
+  #book{ position:relative; width:min(452px,100%); height:100%; max-height:880px; }
+  .deckshadow{
+    position:absolute; left:-30px; right:-30px; top:20px; bottom:-30px; z-index:-1;
+    background:radial-gradient(ellipse 52% 54% at 50% 58%, rgba(0,0,0,.68) 0%, rgba(0,0,0,.36) 56%, transparent 80%);
+    filter:blur(20px);
+  }
+  .board{
+    position:absolute; inset:-9px -9px -9px -3px; border-radius:2px;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,.05), transparent 12%),
+      linear-gradient(155deg, var(--cloth-lt) 0%, var(--cloth) 48%, var(--cloth-dk) 100%);
+    box-shadow:0 20px 46px var(--shadow);
+  }
+  .board::after{
+    content:''; position:absolute; inset:0; border-radius:2px; opacity:.55; mix-blend-mode:multiply;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='c'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.5 .95' numOctaves='2'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23c)' opacity='.55'/%3E%3C/svg%3E");
+  }
+  /* Eckenschoner aus Pergament, wie an einer alten Mappe */
+  .corner{ position:absolute; width:34px; height:34px; z-index:4; pointer-events:none;
+    background:linear-gradient(135deg, var(--ochre) 0%, #7d5a1c 100%); opacity:.9; }
+  .corner.tl{ left:-9px; top:-9px; clip-path:polygon(0 0,100% 0,0 100%); }
+  .corner.tr{ right:-9px; top:-9px; clip-path:polygon(100% 0,100% 100%,0 0); }
+  .corner.bl{ left:-9px; bottom:-9px; clip-path:polygon(0 0,0 100%,100% 100%); }
+  .corner.br{ right:-9px; bottom:-9px; clip-path:polygon(100% 0,100% 100%,0 100%); }
+  .spine{
+    position:absolute; left:-10px; top:-9px; bottom:-9px; width:20px; z-index:3;
+    border-radius:3px 2px 2px 3px;
+    background:linear-gradient(90deg, var(--cloth-dk) 0%, var(--cloth) 55%, rgba(0,0,0,.35) 100%);
+    box-shadow:inset -3px 0 6px rgba(0,0,0,.42);
+  }
+  .spine::before,.spine::after{
+    content:''; position:absolute; left:4px; right:4px; height:2px;
+    background:linear-gradient(90deg,var(--ochre-lt),var(--ochre)); opacity:.5;
+  }
+  .spine::before{ top:26px; } .spine::after{ bottom:26px; }
+
+  #pages{ position:absolute; inset:0; perspective:1800px; }
+
+  /* Das Blatt ist nur die Wendefläche — es scrollt nie. Gescrollt wird in
+     .leaf-inner, einem gewöhnlichen, untransformierten Kind; das bewahrt
+     mobiles WebKit davor, einen 3D-transformierten Scrollcontainer weiß zu
+     rendern. Nicht aktuelle Blätter sind hart versteckt. */
+  .page{
+    position:absolute; inset:0; z-index:1; overflow:hidden;
+    transform-origin:left center; transform:rotateY(0deg);
+    backface-visibility:hidden;
+    opacity:0; visibility:hidden; pointer-events:none;
+    transition:transform .7s cubic-bezier(.36,.02,.22,1), opacity .42s ease;
+    background:
+      linear-gradient(90deg, rgba(0,0,0,.10) 0, rgba(0,0,0,0) 5%),
+      linear-gradient(178deg, var(--paper-hi), var(--paper) 58%, var(--paper-2));
+    border-radius:1px 3px 3px 1px;
+    box-shadow:inset 6px 0 14px rgba(70,80,40,.12);
+  }
+  .page.is-current{ opacity:1; visibility:visible; pointer-events:auto; z-index:20; transform:rotateY(0deg); }
+  .page.turn-out{ opacity:0; visibility:visible; z-index:30; transform:rotateY(-156deg); }
+  .page.turn-in{ opacity:0; visibility:visible; z-index:30; transform:rotateY(-156deg); }
+  /* Papierkorn, Stockflecken und die feine Linierung des Journals */
+  .page::after{
+    content:''; position:absolute; inset:0; pointer-events:none; z-index:0;
+    opacity:.5; mix-blend-mode:multiply;
+    background-image:
+      radial-gradient(circle at 84% 10%, rgba(150,120,50,.11), transparent 20%),
+      radial-gradient(circle at 10% 90%, rgba(130,110,45,.10), transparent 22%),
+      repeating-linear-gradient(180deg, rgba(120,120,80,.045) 0 1px, transparent 1px 26px),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='2' seed='11'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23p)' opacity='.32'/%3E%3C/svg%3E");
+  }
+
+  .leaf-inner{
+    position:absolute; inset:0; z-index:1;
+    overflow-y:auto; overflow-x:hidden;
+    -webkit-overflow-scrolling:touch; overscroll-behavior:contain; scrollbar-width:none;
+    padding:20px 20px 96px;
+  }
+  .leaf-inner::-webkit-scrollbar{ display:none; }
+
+  /* ── die aufgeklebte Tafel ───────────────────────────────────── */
+  .plate{ position:relative; margin:4px 0 8px; }
+  .plate-frame{
+    position:relative; background:var(--paper-hi);
+    border:1px solid var(--ink);
+    box-shadow:0 3px 12px rgba(50,45,15,.2), inset 0 0 0 3px var(--paper-hi), inset 0 0 0 4px rgba(35,48,31,.45);
+    padding:5px;
+  }
+  .plate-frame svg{ display:block; width:100%; height:auto; }
+  /* Papierstreifen, mit denen der Bogen eingeklebt ist */
+  .plate-frame::before,.plate-frame::after{
+    content:''; position:absolute; width:42px; height:14px; z-index:2;
+    background:rgba(200,176,116,.55); border:1px solid rgba(140,120,70,.35);
+  }
+  .plate-frame::before{ left:-9px; top:-6px; transform:rotate(-24deg); }
+  .plate-frame::after{ right:-9px; bottom:-6px; transform:rotate(-20deg); }
+  .plate-cap{
+    font-family:'Caveat', cursive; font-size:1.2rem; color:var(--ink-soft);
+    text-align:center; margin-top:7px; line-height:1.14;
+  }
+
+  /* selbstzeichnende Tinte — pathLength=1, enthüllt beim Aufschlagen */
+  .ink [data-draw]{
+    stroke-dasharray:1; stroke-dashoffset:1;
+    fill:none; stroke:var(--ink); stroke-width:1.35;
+    stroke-linecap:round; stroke-linejoin:round;
+    vector-effect:non-scaling-stroke;
+  }
+  .ink .fade{ opacity:0; }
+  .page.is-current .ink [data-draw]{ animation:inkdraw var(--dur,1.5s) cubic-bezier(.5,0,.2,1) forwards; animation-delay:var(--del,0s); }
+  .page.is-current .ink .fade{ animation:inkfade 1.1s ease forwards; animation-delay:var(--del,.4s); }
+  @keyframes inkdraw{ to{ stroke-dashoffset:0; } }
+  @keyframes inkfade{ to{ opacity:1; } }
+
+  /* ── Typographie des Journals ────────────────────────────────── */
+  .chap{
+    font-family:'IM Fell English SC', serif; letter-spacing:.22em;
+    font-size:.82rem; color:var(--ox); margin-top:8px;
+  }
+  h1.title{
+    font-family:'IM Fell English SC', serif; font-weight:400;
+    font-size:clamp(1.85rem,7.4vw,2.4rem); line-height:1.04; color:var(--ink);
+    margin:.06em 0 .06em; letter-spacing:.01em;
+  }
+  .local{ font-style:italic; font-size:1.12rem; color:var(--sage-dk); }
+  .meta{
+    font-family:'IM Fell English SC', serif; letter-spacing:.08em;
+    font-size:.76rem; color:var(--ink-soft);
+    margin-top:.55em; padding-top:.5em; border-top:1px solid var(--ink-faint);
+  }
+  .sec{ margin-top:16px; }
+  .lbl{
+    display:inline-block; font-family:'IM Fell English SC', serif;
+    letter-spacing:.17em; font-size:.76rem;
+    color:var(--sage-dk); border-bottom:1.5px solid var(--sage); padding-bottom:2px; margin-bottom:8px;
+  }
+  .sec.fact .lbl{ color:var(--ox); border-color:var(--ox-lt); }
+  .sec p{ font-size:1.16rem; line-height:1.58; color:var(--ink); }
+  .sec p em{ font-style:italic; color:var(--ox); font-weight:500; }
+  .sec p strong{ font-weight:600; color:var(--bark); font-style:normal; }
+  .drop::first-letter{
+    font-family:'IM Fell English SC', serif;
+    font-size:3.2em; line-height:.8; float:left; padding:4px 8px 0 0; color:var(--ox);
+  }
+  .aside{
+    margin-top:14px; padding:9px 12px; border-left:2px solid var(--ochre);
+    background:rgba(201,165,79,.11);
+    font-family:'Caveat',cursive; font-size:1.24rem; line-height:1.24; color:var(--ink-soft);
+  }
+  .aside b{ font-weight:600; color:var(--ox); }
+
+  /* ── UMSCHLAG ────────────────────────────────────────────────── */
+  .cover .leaf-inner{ display:flex; flex-direction:column; align-items:center; text-align:center; padding-top:26px; }
+  .cover .plate{ width:100%; }
+  .cover .rule{ width:62%; height:1px; background:linear-gradient(90deg,transparent,var(--ochre),transparent); margin:15px 0; }
+  .cover .place{ font-family:'IM Fell English SC',serif; letter-spacing:.36em; font-size:.8rem; color:var(--ox); }
+  .cover h1{
+    font-family:'IM Fell English SC',serif; font-weight:400;
+    font-size:clamp(2.3rem,10vw,3.05rem); line-height:1; color:var(--ink); margin:.1em 0;
+  }
+  .cover .sub{ font-family:'Caveat',cursive; font-size:1.55rem; color:var(--sage-dk); }
+  .cover .exlibris{
+    margin-top:20px; font-family:'IM Fell English SC',serif; letter-spacing:.16em;
+    font-size:.66rem; color:var(--ink-soft); border:1px solid var(--ink-faint); padding:6px 12px;
+  }
+  .cover .begin{
+    margin-top:16px; font-family:'Caveat',cursive; font-size:1.3rem; color:var(--ox);
+    animation:pulse 2.4s ease-in-out infinite;
+  }
+  @keyframes pulse{ 0%,100%{opacity:.5} 50%{opacity:1} }
+
+  /* ── INHALT ──────────────────────────────────────────────────── */
+  .toc h2{ font-family:'IM Fell English SC',serif; font-weight:400; font-size:1.85rem; color:var(--ink); }
+  .toc .lede{ font-style:italic; color:var(--ink-soft); margin:2px 0 6px; font-size:1.05rem; }
+  .toc ul{ list-style:none; }
+  .toc li{
+    display:flex; align-items:baseline; gap:12px; padding:10px 2px; cursor:pointer;
+    border-bottom:1px dotted var(--ink-faint); transition:padding-left .2s, background .2s;
+  }
+  .toc li:hover{ background:rgba(107,122,79,.10); padding-left:8px; }
+  .toc .rn{ font-family:'IM Fell English SC',serif; color:var(--ox); min-width:34px; }
+  .toc .tt{ flex:1; }
+  .toc .nm{ font-family:'IM Fell English SC',serif; letter-spacing:.03em; font-size:1rem; color:var(--ink); }
+  .toc .sb{ font-style:italic; font-size:.92rem; color:var(--ink-soft); }
+  .toc .di{ font-family:'IM Fell English SC',serif; font-size:.74rem; color:var(--sage-dk); white-space:nowrap; }
+  .toc .foot{ margin-top:12px; font-family:'Caveat',cursive; font-size:1.26rem; color:var(--ink-soft); text-align:center; line-height:1.2; }
+
+  /* ── KARTE ───────────────────────────────────────────────────── */
+  .mapleaf .leaf-inner{ display:flex; flex-direction:column; }
+  .mapleaf h2{ font-family:'IM Fell English SC',serif; font-weight:400; font-size:1.6rem; color:var(--ink); }
+  .mapleaf .lede{ font-style:italic; color:var(--ink-soft); font-size:.98rem; margin-bottom:8px; }
+  .map-holder{ position:relative; width:100%; aspect-ratio:320 / 380; border:1px solid var(--ink); background:var(--paper-hi); box-shadow:inset 0 0 0 3px var(--paper-hi), inset 0 0 0 4px rgba(35,48,31,.4); }
+  #map-svg{ width:100%; height:100%; display:block; touch-action:manipulation; }
+  .map-pin{ cursor:pointer; }
+  .maphint{ text-align:center; font-family:'Caveat',cursive; font-size:1.2rem; color:var(--ink-soft); margin-top:6px; }
+
+  /* ── feste Bedienelemente ────────────────────────────────────── */
+  .topbar{ position:fixed; z-index:12; top:0; left:0; right:0; display:flex; justify-content:space-between; padding:max(12px,env(safe-area-inset-top)) 16px 0; pointer-events:none; }
+  .chip{
+    pointer-events:auto; cursor:pointer;
+    font-family:'IM Fell English SC',serif; letter-spacing:.1em; font-size:.7rem;
+    color:var(--paper-hi); background:rgba(10,17,9,.74);
+    border:1px solid rgba(201,165,79,.5); border-radius:2px; padding:7px 11px;
+    display:flex; align-items:center; gap:7px; backdrop-filter:blur(4px);
+    transition:background .2s,border-color .2s;
+  }
+  .chip:active{ transform:translateY(1px); }
+  .chip .dot{ width:7px; height:7px; border-radius:50%; background:var(--ochre-lt); }
+  .chip.locating .dot{ animation:blink 1s steps(2) infinite; }
+  .chip.on{ background:var(--sage-dk); }
+  .chip.tts.on{ background:var(--ox); }
+  @keyframes blink{ 50%{opacity:.25} }
+
+  .nav{ position:fixed; z-index:12; left:0; right:0; bottom:max(16px,env(safe-area-inset-bottom)); display:flex; align-items:center; justify-content:center; gap:16px; pointer-events:none; }
+  .nav button{
+    pointer-events:auto; cursor:pointer; width:52px; height:52px; border-radius:50%;
+    border:1.5px solid var(--ochre); background:#141d10; color:var(--ochre-lt);
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 3px 10px rgba(0,0,0,.5);
+    transition:transform .15s, opacity .2s;
+  }
+  .nav button:active{ transform:scale(.9); }
+  .nav button:disabled{ opacity:.28; cursor:default; }
+  .nav button svg{ width:20px; height:20px; }
+  .progress{ pointer-events:none; font-family:'IM Fell English SC',serif; letter-spacing:.12em; color:var(--paper-hi); background:rgba(10,17,9,.74); border:1px solid rgba(201,165,79,.4); border-radius:18px; padding:8px 15px; font-size:.72rem; min-width:78px; text-align:center; }
+
+  @media (max-width:360px){ .sec p{ font-size:1.08rem; } h1.title{ font-size:1.66rem; } }
+  @media (prefers-reduced-motion:reduce){
+    .page{ transition:none; }
+    .ink [data-draw]{ stroke-dashoffset:0; } .ink .fade{ opacity:1; }
+    .page.is-current .ink [data-draw], .page.is-current .ink .fade{ animation:none; }
+    .shafts,.grain,.spore{ animation:none; }
+  }
+</style>
+</head>
+<body>
+<div class="forest"></div>
+<div class="spores" id="spores"></div>
+<div class="shafts"></div>
+<div class="grain"></div>
+
+<div class="topbar">
+  <div class="chip gps" id="gps"><span class="dot"></span><span id="gps-label">Standort</span></div>
+  <div class="chip tts" id="tts"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13 3a4 4 0 00-2-3.46v6.92A4 4 0 0016 12z"/></svg><span id="tts-label">Vorlesen</span></div>
+</div>
+
+<div id="stage">
+  <div id="book">
+    <div class="deckshadow"></div>
+    <div class="board"></div>
+    <div class="spine"></div>
+    <div class="corner tl"></div><div class="corner tr"></div>
+    <div class="corner bl"></div><div class="corner br"></div>
+    <div id="pages"></div>
+  </div>
+</div>
+
+<div class="nav">
+  <button id="prev" aria-label="Zurück"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button>
+  <div class="progress" id="progress">01 / 13</div>
+  <button id="next" aria-label="Weiter"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
+</div>
+
+<script>
+/* ══════════════════════════════════════════════════════════════
+   DER KÖNIGSTUHL — EIN WALDJOURNAL · Maschinerie
+   ══════════════════════════════════════════════════════════════ */
+const NS='http://www.w3.org/2000/svg';
+const C={ ink:'#23301f', inkSoft:'#4b5842', inkFaint:'#8c8462',
+          sage:'#6b7a4f', sageDk:'#46552e', ochre:'#a0782b', ochreLt:'#c9a54f',
+          ox:'#7a2a18', oxLt:'#9c3d24', bark:'#8a4a2c', barkLt:'#b2703f',
+          paper:'#f5eeda', sky:'#c3cdb4' };
+
+/* ── Federstriche ──────────────────────────────────────────────
+   SP rafft den ganzen Zeitplan: die Feder soll zügig schreiben,
+   nicht bedächtig. Verzögerungen werden gestaucht, Strichdauern
+   bleiben — so überlappen die Züge leicht, wie von Hand.        */
+const SP=.52;
+const D=v=>(+v*SP).toFixed(2);
+function P(d,dur,del,w,col){ return `<path pathLength="1" data-draw style="--dur:${dur};--del:${D(del)}s" d="${d}"${w?` stroke-width="${w}"`:''}${col?` stroke="${col}"`:''}/>`; }
+function LC(cx,cy,r,dur,del,w,col){ return `<circle pathLength="1" data-draw style="--dur:${dur};--del:${D(del)}s" cx="${cx}" cy="${cy}" r="${r}"${w?` stroke-width="${w}"`:''}${col?` stroke="${col}"`:''}/>`; }
+function EL(cx,cy,rx,ry,dur,del,w,col){ return `<ellipse pathLength="1" data-draw style="--dur:${dur};--del:${D(del)}s" cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}"${w?` stroke-width="${w}"`:''}${col?` stroke="${col}"`:''}/>`; }
+/* Lavierung: die Deckung sitzt auf fill-opacity, denn die Einblend-
+   Animation fährt opacity auf 1 und würde sie sonst überschreiben. */
+function wash(d,f,del,op){ return `<path class="fade" style="--del:${D(del)}s" d="${d}" fill="${f}" fill-opacity="${op===undefined?1:op}"/>`; }
+function dot(cx,cy,r,f,del,op){ return `<circle class="fade" style="--del:${D(del)}s" cx="${cx}" cy="${cy}" r="${r}" fill="${f}" fill-opacity="${op===undefined?1:op}"/>`; }
+function tx(x,y,t,del,o){ o=o||{}; return `<text class="fade" style="--del:${D(del)}s" x="${x}" y="${y}" fill="${o.fill||C.inkSoft}" font-family="${o.ff||"'Cormorant Garamond',serif"}" font-size="${o.fs||10}" font-style="${o.fi||'normal'}" text-anchor="${o.ta||'start'}" letter-spacing="${o.ls||0}">${t}</text>`; }
+function hand(x,y,t,del,o){ return tx(x,y,t,del,Object.assign({ff:"'Caveat',cursive",fs:14,fill:C.inkSoft},o||{})); }
+function bino(x,y,t,del){ return tx(x,y,t,del,{fi:'italic',fs:10.5,ta:'middle',fill:C.sageDk}); }
+function figno(x,y,t,del){ return tx(x,y,t,del,{ff:"'IM Fell English SC',serif",fs:10,fill:C.ox,ls:1}); }
+/* Maßstabsleiste */
+function bar(x,y,w,label,del){
+  return P(`M${x} ${y} H${x+w}`,'.7s',del,1.1)
+       + P(`M${x} ${y-4} V${y+4}`,'.2s',del+.3,1.1)
+       + P(`M${x+w} ${y-4} V${y+4}`,'.2s',del+.35,1.1)
+       + tx(x+w/2,y+13,label,del+.5,{ta:'middle',ff:"'Caveat',cursive",fs:12.5});
+}
+/* Maßlinie mit Pfeilen (senkrecht) */
+function dim(x,y0,y1,label,del){
+  return P(`M${x} ${y0} V${y1}`,'.8s',del,1)
+       + P(`M${x-3.5} ${y0+5} L${x} ${y0} L${x+3.5} ${y0+5}`,'.3s',del+.4,1)
+       + P(`M${x-3.5} ${y1-5} L${x} ${y1} L${x+3.5} ${y1-5}`,'.3s',del+.45,1)
+       + tx(x+6,(y0+y1)/2+3,label,del+.6,{ff:"'Caveat',cursive",fs:13});
+}
+/* gestrichelte Hilfslinie */
+function lead(x0,y0,x1,y1,del){ return `<path class="fade" style="--del:${D(del)}s" d="M${x0} ${y0} L${x1} ${y1}" fill="none" stroke="${C.inkFaint}" stroke-width=".8" stroke-dasharray="2 2.5"/>`; }
+/* Schraffur in einem Kegel/Feld */
+function hatchBand(x0,y0,x1,y1,n,dx,del,step,col){
+  let s=''; for(let i=0;i<n;i++){ const t=i/(n-1||1);
+    s+=P(`M${(x0+(x1-x0)*t).toFixed(1)} ${(y0+(y1-y0)*t).toFixed(1)} l${dx} ${-dx*1.1}`,'.35s',(del+i*step).toFixed(2),.7,C.inkSoft); }
+  return s;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   TAFELN
+   ══════════════════════════════════════════════════════════════ */
+function illustrationSVG(type){
+  const open=`<svg viewBox="0 0 320 300" xmlns="${NS}"><g class="ink">`;
+  const openTall=`<svg viewBox="0 0 320 340" xmlns="${NS}"><g class="ink">`;
+  const close=`</g></svg>`;
+
+  /* Buchenstämme im Hintergrund — für mehrere Tafeln */
+  const beeches=(list,del)=>{
+    let s='';
+    list.forEach((t,i)=>{ const x=t[0],w=t[1],b=t[2],h=t[3];
+      s+=P(`M${x} ${b} C${x+1} ${b-h*.5}, ${x-1} ${b-h*.8}, ${x+2} ${b-h}`,'1.2s',(del+i*.12).toFixed(2),1.5);
+      s+=P(`M${x+w} ${b} C${x+w-1} ${b-h*.5}, ${x+w+1} ${b-h*.8}, ${x+w-2} ${b-h}`,'1.2s',(del+.05+i*.12).toFixed(2),1.5);
+      s+=wash(`M${x} ${b} C${x+1} ${b-h*.5}, ${x-1} ${b-h*.8}, ${x+2} ${b-h} L${x+w-2} ${b-h} C${x+w+1} ${b-h*.8}, ${x+w-1} ${b-h*.5}, ${x+w} ${b} Z`,C.sage,(del+.7+i*.08).toFixed(2),.10);
+    });
+    return s;
+  };
+
+  /* Nadelbaumsignatur — geschlossenes Dreieck über kurzem Stamm.
+     Ein offener Winkel über einem Strich liest sich als Pfeil. */
+  const tree=(x,y,h,del,col,w)=>
+      P(`M${x} ${y} v-${(h*.26).toFixed(1)}`,'.2s',del,w||.85,col)
+    + P(`M${(x-h*.3).toFixed(1)} ${(y-h*.24).toFixed(1)} L${x} ${(y-h).toFixed(1)} L${(x+h*.3).toFixed(1)} ${(y-h*.24).toFixed(1)} Z`,'.3s',(+del+.04).toFixed(2),w||.85,col);
+
+  /* UMSCHLAG — die Rotbuche in ganzer Gestalt, mit Mensch als Maßstab.
+     Der Baum dieser Runde: glatter Schaft, hoch angesetzte,
+     breit ausladende Krone. */
+  if(type==='buche'){
+    let s=open;
+    const CX=152;
+    // Schaft
+    s+=P(`M${CX-13} 262 C${CX-11} 230, ${CX-9} 200, ${CX-8} 168`,'1.4s',.2,2);
+    s+=P(`M${CX+13} 262 C${CX+11} 230, ${CX+9} 200, ${CX+8} 168`,'1.4s',.32,2);
+    s+=P(`M${CX-22} 262 C${CX-17} 254, ${CX-14} 250, ${CX-13} 244`,'.5s',.8,1.4);
+    s+=P(`M${CX+22} 262 C${CX+17} 254, ${CX+14} 250, ${CX+13} 244`,'.5s',.85,1.4);
+    s+=wash(`M${CX-13} 262 C${CX-11} 230, ${CX-9} 200, ${CX-8} 168 L${CX+8} 168 C${CX+9} 200, ${CX+11} 230, ${CX+13} 262 Z`,C.inkSoft,1.0,.14);
+    // Astgerüst — zwei- bis dreimal gegabelt
+    const limbs=[[-1,-52,-38],[1,-52,38],[-1,-30,-58],[1,-30,58],[-1,-8,-70],[1,-8,70]];
+    limbs.forEach((L,i)=>{ const dir=L[0], y0=168, y1=168+L[1], dx=L[2];
+      s+=P(`M${CX+dir*7} ${y0} Q${CX+dx*.4} ${y0+L[1]*.4}, ${CX+dx} ${y1}`,'.8s',(1.0+i*.09).toFixed(2),1.4);
+      s+=P(`M${CX+dx*.62} ${(y0+L[1]*.62).toFixed(1)} q${dx*.14} -14, ${dx*.3} -22`,'.4s',(1.6+i*.06).toFixed(2),.9);
+    });
+    // Krone: breite, wolkige Laubmasse in Lappen
+    const lobes=[[152,54,58,30],[96,74,40,24],[208,74,40,24],[68,104,32,20],[236,104,32,20],[112,58,32,20],[192,58,32,20],[104,110,34,20],[200,110,34,20],[152,96,44,26]];
+    lobes.forEach((L,i)=>{ const [cx,cy,rx,ry]=L;
+      let d=`M${cx-rx} ${cy}`;
+      const n=9;
+      for(let k=0;k<=n;k++){ const a=Math.PI-(k/n)*Math.PI*2;
+        const rr=1+((k%2)?.06:-.06);
+        d+=` L${(cx+Math.cos(a)*rx*rr).toFixed(1)} ${(cy+Math.sin(a)*ry*rr).toFixed(1)}`; }
+      s+=P(d+' Z','.9s',(1.9+i*.1).toFixed(2),1.1);
+      s+=wash(d+' Z',C.sage,(2.6+i*.07).toFixed(2),.13);
+    });
+    // Boden
+    s+=P('M14 262 H306','1.2s',2.9,1.5);
+    for(let i=0;i<11;i++){ const x=24+i*26, y=278+((i*7)%7);
+      s+=P(`M${x} ${y} q5 -4, 10 0 q-5 4, -10 0`,'.25s',(3.0+i*.04).toFixed(2),.7,C.ochre); }
+    // Mensch als Maßstab
+    s+=P('M248 262 v-9','.3s',3.2,1.4)+LC(248,250,2.8,'.3s',3.25,1.2)+P('M248 260 l-3 -7 M248 260 l3 -7 M244 255 h8','.4s',3.3,1.1);
+    s+=hand(280,258,'≈ 1,7 m',3.5,{fs:12});
+    s+=bar(24,236,44,'≈ 10 m',3.3);
+    s+=bino(256,214,'Fagus sylvatica',3.5);
+    return s+close;
+  }
+
+  /* Höhenprofil der Runde: 4,4 km, 100 Höhenmeter */
+  if(type==='profil'){
+    let s=open;
+    const X=k=>+(30+(k/4.4)*268).toFixed(1);       // km → x
+    const Y=e=>+(238-((e-440)/150)*164).toFixed(1);// Meter → y
+    // Achsen
+    s+=P(`M30 ${Y(440)} H298`,'1s',.1,1.4);
+    s+=P('M30 238 V60','.8s',.2,1);
+    const prof=`M${X(0)} ${Y(472)} C${X(.5)} ${Y(486)}, ${X(1)} ${Y(506)}, ${X(1.4)} ${Y(534)} C${X(1.7)} ${Y(556)}, ${X(1.8)} ${Y(564)}, ${X(1.9)} ${Y(566)} `
+              +`C${X(2.2)} ${Y(566)}, ${X(2.4)} ${Y(558)}, ${X(2.8)} ${Y(548)} C${X(3.1)} ${Y(536)}, ${X(3.2)} ${Y(520)}, ${X(3.3)} ${Y(512)} `
+              +`C${X(3.7)} ${Y(494)}, ${X(4.1)} ${Y(478)}, ${X(4.4)} ${Y(472)}`;
+    s+=P(prof,'2.4s',.4,1.8);
+    s+=wash(prof+` L${X(4.4)} ${Y(440)} L${X(0)} ${Y(440)} Z`,C.sage,1.4,.17);
+    // Kilometermarken
+    [0,1,2,3,4].forEach((k,i)=>{ s+=P(`M${X(k)} ${Y(440)} v5`,'.2s',(1.6+i*.05).toFixed(2),1);
+      s+=tx(X(k),Y(440)+16,k+'',(1.7+i*.05).toFixed(2),{ta:'middle',fs:10}); });
+    s+=tx(298,Y(440)+16,'km',1.95,{ta:'middle',fs:10,fi:'italic'});
+    // Höhenmarken
+    [450,500,550].forEach((e,i)=>{ s+=P(`M26 ${Y(e)} h4`,'.2s',(1.8+i*.05).toFixed(2),1);
+      s+=tx(24,Y(e)+3,e+'',(1.85+i*.05).toFixed(2),{ta:'end',fs:9,fill:C.inkFaint}); });
+    // Stationen auf dem Profil
+    const st=[[1.9,566,'Blick','III'],[2.3,562,'Kästenbaum','IV'],[2.76,549,'Erlebnispfad','V'],[3.3,512,'Kaltteichhütte','VI']];
+    st.forEach((p,i)=>{ const x=X(p[0]), y=Y(p[1]);
+      s+=LC(x,y,3.2,'.25s',(2.1+i*.09).toFixed(2),1.3,C.ox);
+      s+=lead(x,y-4,x,74-i*0,(2.2+i*.09).toFixed(2)); });
+    s+=hand(X(1.9)-6,68,'III',2.5,{fs:13,fill:C.ox,ta:'middle'});
+    s+=hand(X(2.3)+4,68,'IV',2.55,{fs:13,fill:C.ox,ta:'middle'});
+    s+=hand(X(2.76)+2,68,'V',2.6,{fs:13,fill:C.ox,ta:'middle'});
+    s+=hand(X(3.3)+2,68,'VI',2.65,{fs:13,fill:C.ox,ta:'middle'});
+    s+=figno(16,26,'TAFEL I · DIE RUNDE',1.2);
+    s+=hand(300,44,'4,4 km · 100 Hm · 1 h 15',2.8,{fs:13,ta:'end'});
+    s+=tx(300,286,'Start und Ziel: Kohlhof',2.9,{ta:'end',fs:10.5,fi:'italic'});
+    return s+close;
+  }
+
+  /* Buchenwald mit Weg und Wegweiser */
+  if(type==='weg'){
+    let s=open;
+    s+=P('M12 274 H308','1s',0,1.4);
+    // Weg, fluchtend
+    s+=P('M96 274 C124 220, 146 178, 158 148','1.2s',.2,1.3);
+    s+=P('M236 274 C204 220, 178 178, 166 148','1.2s',.3,1.3);
+    s+=wash('M96 274 C124 220, 146 178, 158 148 L166 148 C178 178, 204 220, 236 274 Z',C.ochre,1.0,.15);
+    // Wurzeln quer über den Weg
+    for(let i=0;i<4;i++){ const y=262-i*30, w=(70-i*15);
+      s+=P(`M${166-w/2} ${y} q${w/2} ${-6}, ${w} 0`,'.5s',(1.2+i*.12).toFixed(2),1); }
+    s+=beeches([[42,26,268,116],[74,18,270,150],[264,24,268,120],[292,16,270,158],[196,12,264,182]],.5);
+    // Glattrindige Narben — die Buche behält jede Verletzung
+    s+=P('M48 200 q6 3, 12 -1 M46 232 q7 3, 14 -2','.4s',1.9,.7,C.inkSoft);
+    // Wegweiser
+    s+=P('M262 274 V178','.9s',2.0,1.6);
+    s+=P('M262 186 h30 l6 6 l-6 6 h-30 Z','.6s',2.2,1.3);
+    s+=P('M262 204 h26 l6 6 l-6 6 h-26 Z','.6s',2.3,1.3);
+    s+=wash('M262 186 h30 l6 6 l-6 6 h-30 Z',C.paper,2.4,.95);
+    s+=wash('M262 204 h26 l6 6 l-6 6 h-26 Z',C.paper,2.45,.95);
+    // Laub am Boden
+    for(let i=0;i<12;i++){ const x=20+i*24, y=266+((i*7)%8);
+      s+=P(`M${x} ${y} q5 -4, 10 0 q-5 4, -10 0`,'.3s',(2.5+i*.04).toFixed(2),.7,C.ochre); }
+    s+=figno(16,26,'TAFEL II · DER AUFSTIEG',1.9);
+    s+=hand(160,292,'hundert Höhenmeter, in Kehren',2.8,{fs:13,ta:'middle'});
+    return s+close;
+  }
+
+  /* Die Aussicht: ferne Haardt, Ebene, Neckar, Altstadt, Schloss */
+  if(type==='blick'){
+    let s=open;
+    s+=figno(16,26,'TAFEL III · DER BLICK',.6);
+    // ferne Kante des Pfälzerwaldes
+    s+=P('M8 92 C56 84, 96 92, 140 86 C186 80, 222 88, 268 82 C288 80, 302 84, 314 82','1.6s',.2,1.1,C.inkSoft);
+    s+=wash('M8 92 C56 84, 96 92, 140 86 C186 80, 222 88, 268 82 C288 80, 302 84, 314 82 L314 100 L8 100 Z',C.inkSoft,1.0,.16);
+    s+=hand(184,76,'Pfälzerwald',1.2,{fs:12,fill:C.inkFaint,ta:'middle'});
+    // Rheinebene: ein ruhiges Band, nur zwei, drei Feldlinien
+    s+=wash('M8 96 H314 V142 H8 Z',C.sage,1.1,.07);
+    s+=P('M28 114 H206','.7s',1.2,.4,C.inkFaint);
+    s+=P('M92 126 H272','.7s',1.3,.4,C.inkFaint);
+    s+=P('M58 100 v-9 M63 100 v-13','.25s',1.5,.8,C.inkSoft);
+    s+=hand(16,138,'Rheinebene',1.6,{fs:12,fill:C.inkFaint});
+    // der Neckar, von rechts hereinziehend
+    s+=P('M318 166 C266 158, 226 150, 180 147 C142 145, 102 148, 66 147','1.6s',1.5,4,'#8fa3b3');
+    s+=hand(300,140,'Neckar',2.0,{fs:12.5,fill:'#4d6272',ta:'end'});
+    // Altstadt: ein Dächerband am Südufer
+    s+=wash('M70 182 H268 V162 H70 Z',C.ochre,2.2,.14);
+    for(let i=0;i<21;i++){ const x=76+i*9, y=178+((i*5)%6);
+      s+=P(`M${x} ${y} l4.5 -7 l4.5 7`,'.2s',(1.9+i*.028).toFixed(2),.8); }
+    s+=hand(70,196,'Altstadt',2.5,{fs:12.5});
+    // das Schloss, näher und tiefer als die Stadt dahinter
+    s+=P('M176 214 V186 H244 V214','.9s',2.2,1.6);
+    s+=P('M176 186 v-15 h13 v15 M231 186 v-18 h13 v18','.7s',2.3,1.5);
+    s+=wash('M176 214 V186 H244 V214 Z',C.bark,2.5,.32);
+    s+=wash('M176 171 h13 v15 h-13 Z',C.bark,2.55,.32);
+    s+=wash('M231 168 h13 v18 h-13 Z',C.bark,2.55,.32);
+    for(let i=0;i<6;i++){ s+=P(`M${186+i*10} 210 v-16`,'.2s',(2.6+i*.04).toFixed(2),.5,C.inkSoft); }
+    s+=lead(244,198,272,204,2.8)+hand(312,208,'Schloss',2.9,{fs:12.5,fill:C.ox,ta:'end'});
+    // bewaldeter Vordergrundhang
+    s+=P('M0 244 C60 234, 120 240, 180 232 C240 224, 286 230, 320 224','1.4s',2.4,1.6);
+    s+=wash('M0 244 C60 234, 120 240, 180 232 C240 224, 286 230, 320 224 L320 300 L0 300 Z',C.sageDk,2.6,.2);
+    for(let i=0;i<24;i++){ const x=8+i*13.2, yb=246-((i*11)%11)+((i*7)%6);
+      s+=tree(x,yb,13,(2.8+i*.025).toFixed(2),C.sageDk,.8); }
+    s+=hand(160,288,'drei Kanzeln in zweihundert Metern',3.5,{fs:13,ta:'middle'});
+    return s+close;
+  }
+
+  /* Hohler Kästenbaum: Wegkreuz, Wegweiserpfahl, Esskastanie */
+  if(type==='kaestenbaum'){
+    let s=open;
+    s+=P('M12 260 H308','1s',0,1.4);
+    // der hohle Stamm
+    s+=P('M52 260 C56 216, 54 168, 62 122 C66 100, 78 88, 92 86','1.5s',.2,1.8);
+    s+=P('M126 260 C120 216, 122 168, 118 122 C116 102, 106 88, 92 86','1.5s',.35,1.8);
+    s+=wash('M52 260 C56 216, 54 168, 62 122 C66 100, 78 88, 92 86 C106 88, 116 102, 118 122 C122 168, 120 216, 126 260 Z',C.bark,1.0,.16);
+    // die Höhlung
+    s+=P('M74 260 C72 228, 74 196, 82 176 C90 164, 98 168, 100 182 C104 208, 104 236, 106 260','1.3s',1.0,1.5);
+    s+=wash('M74 260 C72 228, 74 196, 82 176 C90 164, 98 168, 100 182 C104 208, 104 236, 106 260 Z','#1e2a18',1.4,.82);
+    // Rindenfurchen, spiralig wie bei der Kastanie
+    for(let i=0;i<5;i++){ const x=58+i*4;
+      s+=P(`M${x} 254 C${x+6} 210, ${x+2} 160, ${x+10} 118`,'1s',(1.6+i*.07).toFixed(2),.5,C.inkSoft); }
+    // Wegweiserpfahl mit vielen Schildern
+    s+=P('M196 260 V96','1.2s',1.2,1.7);
+    for(let i=0;i<5;i++){ const y=104+i*20, dir=i%2?-1:1, w=52-i*4;
+      const d=dir>0?`M196 ${y} h${w} l7 6 l-7 6 h-${w} Z`:`M196 ${y} h-${w} l-7 6 l7 6 h${w} Z`;
+      s+=P(d,'.5s',(1.5+i*.11).toFixed(2),1.2);
+      s+=wash(d,C.paper,(2.1+i*.06).toFixed(2),.95);
+      s+=P(dir>0?`M202 ${y+8} h${w-14}`:`M190 ${y+8} h-${w-14}`,'.3s',(2.3+i*.05).toFixed(2),.6,C.inkFaint);
+    }
+    s+=hand(160,282,'ein Wegkreuz, sechs Richtungen',2.9,{fs:13,ta:'middle'});
+    // Kastanienblatt: lanzettlich, scharf gesägt
+    s+=P('M252 84 C236 68, 240 36, 258 22 C276 36, 280 68, 264 84 C260 88, 256 88, 252 84 Z','1.2s',2.4,1.4);
+    s+=P('M258 22 V90','.5s',2.8,1);
+    for(let i=0;i<7;i++){ const y=30+i*8;
+      s+=P(`M258 ${y} l-13 ${5+i}`,'.2s',(2.9+i*.04).toFixed(2),.55,C.inkSoft);
+      s+=P(`M258 ${y} l13 ${5+i}`,'.2s',(2.92+i*.04).toFixed(2),.55,C.inkSoft); }
+    s+=wash('M252 84 C236 68, 240 36, 258 22 C276 36, 280 68, 264 84 C260 88, 256 88, 252 84 Z',C.sage,3.1,.16);
+    // stachelige Fruchthülle, klein, neben dem Blatt
+    s+=LC(300,64,10,'.6s',2.6,1.3);
+    for(let k=0;k<14;k++){ const a=k/14*Math.PI*2;
+      s+=P(`M${(300+Math.cos(a)*10).toFixed(1)} ${(64+Math.sin(a)*10).toFixed(1)} l${(Math.cos(a)*6).toFixed(1)} ${(Math.sin(a)*6).toFixed(1)}`,'.2s',(2.7+k*.02).toFixed(2),.65,C.ochre); }
+    s+=bino(266,106,'Castanea sativa',3.2);
+    s+=figno(16,26,'TAFEL IV · DER KÄSTENBAUM',2.2);
+    return s+close;
+  }
+
+  /* Der Dachs — das Tier hinter der Schnitzerei am Erlebnispfad.
+     Kennzeichen: der gerade Rücken, der keilförmig auslaufende
+     Kopf und die schwarzweiße Gesichtsbinde. */
+  if(type==='dachs'){
+    let s=open;
+    s+=figno(16,26,'TAFEL V · DER DACHS',.4);
+    // Umriss in einem Zug: Rücken → Kopfkeil → Schnauzenspitze → Kehle → Bauch
+    const body='M62 112 C94 98, 152 94, 202 102 C242 109, 278 128, 304 150 '
+              +'C280 160, 246 174, 218 190 C182 197, 110 199, 78 191 '
+              +'C56 185, 46 168, 46 150 C46 132, 52 120, 62 112 Z';
+    s+=P(body,'2.6s',.5,1.7);
+    s+=wash(body,'#5f5c50',1.6,.2);
+    // die Kopflinie setzt den Keil ab
+    s+=P('M212 105 C216 130, 219 156, 224 184','.7s',1.4,.9,C.inkFaint);
+    // Gesichtsbinden — zwei dunkle Streifen, innerhalb des Umrisses
+    s+=wash('M294 148 L285 155 L240 126 L245 116 Z',C.ink,1.8,.88);
+    s+=wash('M294 153 L292 162 L250 178 L246 168 Z',C.ink,1.85,.88);
+    s+=dot(268,146,2.2,C.paper,2.1);
+    s+=dot(299,150,2.6,C.ink,2.0);
+    // Ohr
+    s+=P('M230 105 c-3 -10, 5 -15, 12 -9','.35s',1.9,1.3);
+    // Beine, kurz und stämmig, mit Grabkrallen
+    const legs=[[212,192],[186,193],[104,194],[78,192]];
+    legs.forEach((l,i)=>{
+      s+=P(`M${l[0]-8} ${l[1]} v16 h16 v-16`,'.5s',(2.0+i*.07).toFixed(2),1.5);
+      s+=wash(`M${l[0]-8} ${l[1]} v16 h16 v-16 Z`,C.ink,(2.3+i*.05).toFixed(2),.45);
+      s+=P(`M${l[0]-7} ${l[1]+16} l-4 5 M${l[0]} ${l[1]+16} v6 M${l[0]+7} ${l[1]+16} l4 5`,'.3s',(2.15+i*.07).toFixed(2),1);
+    });
+    // Fell: kurze Striche längs des Rückens
+    for(let i=0;i<16;i++){ const t=i/15, x=70+t*130, y=110-Math.sin(t*Math.PI)*7+((i*7)%4);
+      s+=P(`M${x.toFixed(1)} ${y.toFixed(1)} l3 7`,'.2s',(2.4+i*.025).toFixed(2),.55,C.inkSoft); }
+    // Schwanz, kurz und buschig
+    s+=P('M47 138 c-14 -8, -26 -6, -30 2 c-3 8, 6 16, 22 18','.6s',2.6,1.5);
+    for(let i=0;i<4;i++){ s+=P(`M${34-i*4} ${134+i*7} l-7 -3`,'.2s',(2.7+i*.04).toFixed(2),.6,C.inkSoft); }
+    // Boden und eine Röhre im Sandstein
+    s+=P('M12 214 H308','1s',2.7,1.5);
+    s+=P('M12 214 C34 206, 52 204, 66 210','.5s',2.8,1.3,C.ochre);
+    s+=P('M22 212 c6 -12, 22 -12, 28 -1','.5s',2.85,1.2,C.ochre);
+    s+=hand(38,238,'Röhre',2.95,{fs:12,fill:C.bark,ta:'middle'});
+    s+=bino(206,240,'Meles meles',2.9);
+    s+=hand(160,272,'am Pfad liegt er in Holz — hier lebt er wirklich',3.0,{fs:13,ta:'middle'});
+    return s+close;
+  }
+
+  /* Die Kaltteichhütte: Schindeldach über offenen Pfosten */
+  if(type==='huette'){
+    let s=open;
+    s+=beeches([[16,18,238,206],[262,20,240,214],[298,14,242,188]],.2);
+    s+=P('M10 244 H310','1s',.8,1.5);
+    // Dach
+    s+=P('M50 150 L160 96 L270 150','1.4s',1.0,1.9);
+    s+=P('M50 150 C110 164, 210 164, 270 150','1s',1.3,1.7);
+    s+=wash('M50 150 L160 96 L270 150 C210 164, 110 164, 50 150 Z','#6a604a',1.7,.28);
+    // Schindelreihen
+    for(let r=0;r<5;r++){ const t=(r+1)/6.2;
+      s+=P(`M${(50+110*t).toFixed(1)} ${(150-54*t).toFixed(1)} L${(270-110*t).toFixed(1)} ${(150-54*t).toFixed(1)}`,'.7s',(1.9+r*.08).toFixed(2),.55,C.inkSoft); }
+    s+=P('M160 96 v-10 M154 88 h12','.35s',2.2,1.3);
+    // Pfosten
+    [64,110,160,210,256].forEach((x,i)=>{ s+=P(`M${x} ${152+Math.abs(x-160)*0.04} V232`,'.7s',(2.0+i*.07).toFixed(2),1.6); });
+    // Brüstung und Bank
+    s+=P('M64 206 H256','.9s',2.4,1.4);
+    s+=P('M64 232 H256','.9s',2.45,1.4);
+    s+=wash('M64 206 H256 V232 H64 Z','#6a604a',2.6,.3);
+    for(let i=0;i<12;i++){ s+=P(`M${70+i*16} 206 V232`,'.25s',(2.6+i*.03).toFixed(2),.5,C.inkSoft); }
+    s+=P('M78 218 H244','.6s',2.7,.7,C.paper);
+    // die Bank davor
+    s+=P('M262 236 h44 M266 236 v10 M302 236 v10 M264 228 h42','.6s',2.8,1.3);
+    // Laub
+    for(let i=0;i<11;i++){ const x=18+i*27, y=250+((i*5)%8);
+      s+=P(`M${x} ${y} q5 -4, 10 0 q-5 4, -10 0`,'.3s',(2.9+i*.04).toFixed(2),.7,C.ochre); }
+    s+=hand(160,288,'Kaltteichhütte — nach 3,3 km',3.2,{fs:14,ta:'middle'});
+    s+=figno(16,26,'TAFEL VI · DIE HÜTTE',2.4);
+    return s+close;
+  }
+
+  /* Fernsehturm mit Bemaßung */
+  if(type==='turm'){
+    let s=open;
+    s+=P('M40 272 H286','1s',0,1.5);
+    for(let i=0;i<11;i++){ const x=44+i*10; s+=P(`M${x} 272 l3 -14 l3 14`,'.3s',(.6+i*.05).toFixed(2),.9,C.sageDk); }
+    for(let i=0;i<8;i++){ const x=214+i*10; s+=P(`M${x} 272 l3 -13 l3 13`,'.3s',(1.1+i*.05).toFixed(2),.9,C.sageDk); }
+    // Schaft
+    s+=P('M150 272 C152 210, 154 150, 155 88','1.5s',.4,1.7);
+    s+=P('M176 272 C174 210, 172 150, 171 88','1.5s',.5,1.7);
+    s+=wash('M150 272 C152 210, 154 150, 155 88 L171 88 C172 150, 174 210, 176 272 Z','#6b6f60',1.3,.16);
+    // Kanzel auf 30 m
+    s+=P('M140 214 H186','.5s',1.5,1.5);
+    s+=P('M140 214 v-9 H186 v9','.6s',1.6,1.4);
+    for(let i=0;i<10;i++){ s+=P(`M${142+i*5} 214 v-9`,'.2s',(1.7+i*.03).toFixed(2),.6,C.inkSoft); }
+    // Antennenkorb
+    s+=P('M152 88 H174','.3s',1.9,1.4);
+    s+=P('M156 88 V44 M170 88 V44','.6s',1.95,1.3);
+    s+=P('M163 44 V18','.5s',2.1,1.5);
+    for(let i=0;i<5;i++){ const y=54+i*7; s+=P(`M${150-i} ${y} H${176+i}`,'.25s',(2.15+i*.05).toFixed(2),.8,C.inkSoft); }
+    s+=dim(232,18,272,'82 m',2.3);
+    s+=lead(140,209,86,196,2.7)+hand(14,192,'Kanzel auf 30 m —',2.8,{fs:12.5,fill:C.ox})+hand(14,208,'seit 2002 gesperrt',2.85,{fs:12.5,fill:C.ox});
+    s+=hand(46,250,'568 m ü. NHN',2.6,{fs:12.5});
+    s+=figno(16,26,'TAFEL VII · DER SENDER',2.5);
+    return s+close;
+  }
+
+  /* Turmfalke im Rüttelflug */
+  if(type==='falke'){
+    let s=open;
+    s+=P('M158 128 C176 130, 186 146, 184 166 C182 186, 170 200, 158 202 C146 200, 136 186, 134 166 C132 146, 142 130, 158 128 Z','1.5s',.2,1.6);
+    s+=P('M158 128 C154 116, 148 108, 150 100 C154 92, 166 92, 170 100 C172 108, 166 118, 158 128','1.1s',.6,1.5);
+    s+=dot(163,104,2.2,C.ink,1.6);
+    s+=P('M170 102 L180 106 L170 110','.4s',1.5,1.3);
+    // Flügel, hochgeschlagen
+    s+=P('M140 140 C112 112, 86 78, 74 44 C96 66, 124 102, 146 132','1.6s',.9,1.5);
+    s+=P('M176 140 C204 112, 230 78, 242 44 C220 66, 192 102, 170 132','1.6s',1.0,1.5);
+    for(let i=0;i<5;i++){ s+=P(`M${100-i*6} ${86-i*8} l${-14-i*2} ${-10-i*3}`,'.35s',(2.0+i*.07).toFixed(2),.85,C.inkSoft);
+                          s+=P(`M${216+i*6} ${86-i*8} l${14+i*2} ${-10-i*3}`,'.35s',(2.05+i*.07).toFixed(2),.85,C.inkSoft); }
+    // gefächerter Stoß
+    s+=P('M158 202 C142 218, 134 236, 132 252 C148 246, 168 246, 184 252 C182 236, 174 218, 158 202','1.2s',1.5,1.5);
+    for(let i=0;i<5;i++){ const x=138+i*10; s+=P(`M158 208 L${x} ${250-Math.abs(2-i)*3}`,'.4s',(2.3+i*.06).toFixed(2),.7,C.inkSoft); }
+    for(let i=0;i<6;i++){ const y=146+i*9; s+=P(`M${146-i*.4} ${y} q6 3, 12 0`,'.3s',(2.5+i*.05).toFixed(2),.7,C.bark); }
+    s+=wash('M158 128 C176 130, 186 146, 184 166 C182 186, 170 200, 158 202 C146 200, 136 186, 134 166 C132 146, 142 130, 158 128 Z',C.bark,1.6,.22);
+    s+=lead(166,112,238,240,2.6);
+    s+=P('M236 250 c7 -8, 20 -6, 22 2 c2 8, -10 12, -18 8 Z','.6s',2.7,1.1,C.inkSoft);
+    s+=P('M258 252 c9 1, 13 7, 9 11','.4s',2.9,.8,C.inkSoft);
+    s+=dot(241,248,1.4,C.ink,3.0);
+    s+=hand(150,282,'Rüttelflug — der Blick steht still',3.0,{fs:12.5,ta:'middle'});
+    s+=bino(80,264,'Falco tinnunculus',2.9);
+    s+=figno(16,26,'TAFEL VIII · DER TURMFALKE',2.4);
+    return s+close;
+  }
+
+  /* Der Mammutbaum: Stamm, Maßband, Mensch, Vergleichskreis */
+  if(type==='mammut'){
+    let s=openTall;
+    s+=`<path class="fade" style="--del:${D(.2)}s" d="M-80 322 C -40 268, 360 268, 400 322" fill="none" stroke="${C.ox}" stroke-width="1.3" stroke-dasharray="6 4" opacity=".75"/>`;
+    s+=tx(160,272,'General Sherman · 24,1 m — passt nicht aufs Blatt',.4,{ta:'middle',fs:10.5,fi:'italic',fill:C.ox});
+    s+=P('M12 300 H308','1.1s',0,1.5);
+    s+=P('M84 300 C92 268, 96 200, 98 120 C99 76, 100 46, 101 18','1.9s',.2,2.1);
+    s+=P('M196 300 C188 268, 184 200, 182 120 C181 76, 180 46, 179 18','1.9s',.35,2.1);
+    s+=P('M62 300 C74 292, 82 288, 86 282','.6s',1.0,1.5);
+    s+=P('M218 300 C206 292, 198 288, 194 282','.6s',1.05,1.5);
+    s+=wash('M84 300 C92 268, 96 200, 98 120 C99 76, 100 46, 101 18 L179 18 C180 46, 181 76, 182 120 C184 200, 188 268, 196 300 Z',C.bark,1.0,.17);
+    for(let i=0;i<9;i++){ const x=94+i*10;
+      s+=P(`M${x} 296 C${x+1.4} 240, ${x+2.2} 160, ${x+3} 60`,'1.5s',(1.2+i*.08).toFixed(2),.65,C.barkLt); }
+    s+=P('M98 74 q-40 -8, -66 -26','.8s',2.2,1.6)+P('M182 74 q40 -8, 66 -26','.8s',2.3,1.6);
+    s+=P('M98 40 q-34 -6, -54 -20','.7s',2.35,1.4)+P('M182 40 q34 -6, 54 -20','.7s',2.4,1.4);
+    // Maßband
+    s+=P('M84 216 C110 226, 170 226, 196 216','.9s',2.5,2.2,C.ox);
+    s+=P('M84 216 C110 208, 170 208, 196 208','.9s',2.6,1.2,C.ox);
+    for(let i=0;i<11;i++){ const x=92+i*10; s+=P(`M${x} ${212+(i%2?2:0)} v4`,'.15s',(2.7+i*.03).toFixed(2),.7,C.ox); }
+    s+=lead(196,214,206,222,2.95);
+    s+=hand(208,230,'8,18 m',3.0,{fs:15,fill:C.ox});
+    s+=hand(208,248,'Umfang',3.05,{fs:15,fill:C.ox});
+    // Mensch als Maßstab
+    s+=P('M244 300 v-14','.35s',3.1,1.5)+LC(244,281,4,'.35s',3.2,1.3);
+    s+=P('M244 296 l-6 -10 M244 296 l6 -10 M237 288 h14','.4s',3.25,1.2);
+    s+=hand(228,320,'1,7 m',3.4,{fs:13});
+    // Rindenausschnitt
+    s+=LC(258,110,38,'1s',3.3,1.6);
+    s+=wash('M220 110 a38 38 0 1 0 76 0 a38 38 0 1 0 -76 0',C.bark,3.4,.2);
+    for(let i=0;i<9;i++){ const x=226+i*8, h=Math.sqrt(Math.max(0,1444-(x-258)*(x-258)))*.94;
+      s+=P(`M${x} ${(110-h).toFixed(1)} v${(h*1.88).toFixed(1)}`,'.5s',(3.5+i*.05).toFixed(2),1,C.barkLt); }
+    s+=lead(196,140,222,126,3.9);
+    s+=hand(206,168,'faserig, weich, dick',4.0,{fs:12.5,fill:C.bark});
+    s+=figno(16,26,'TAFEL IX · DER MAMMUTBAUM',3.0);
+    s+=bino(120,332,'Sequoiadendron giganteum',4.1);
+    return s+close;
+  }
+
+  /* Feldnotizen: Buche, Schwarzspecht, Feuersalamander, Fingerhut */
+  if(type==='feldnotizen'){
+    let s=openTall;
+    s+=figno(14,22,'TAFEL X · FELDNOTIZEN · AUGUST',.1);
+    s+=P('M160 36 V300','1.2s',.2,.7,C.inkFaint);
+    s+=P('M14 168 H306','1.2s',.3,.7,C.inkFaint);
+
+    // Fig. I — Buchenblatt
+    s+=figno(20,54,'Fig. I',.5);
+    s+=P('M46 148 C36 126, 40 92, 66 70 C92 92, 96 126, 86 148 C72 156, 60 156, 46 148 Z','1.5s',.6,1.5);
+    s+=wash('M46 148 C36 126, 40 92, 66 70 C92 92, 96 126, 86 148 C72 156, 60 156, 46 148 Z',C.sage,1.1,.18);
+    s+=P('M66 70 V150','.7s',1.2,1.1);
+    for(let i=0;i<7;i++){ const y=82+i*10;
+      s+=P(`M66 ${y} l-19 ${7+i}`,'.3s',(1.4+i*.05).toFixed(2),.6,C.inkSoft);
+      s+=P(`M66 ${y} l19 ${7+i}`,'.3s',(1.42+i*.05).toFixed(2),.6,C.inkSoft); }
+    s+=P('M66 150 v10','.25s',1.9,1.1);
+    s+=bino(66,164,'Fagus sylvatica',2.1);
+
+    // Fig. II — Schwarzspecht
+    s+=figno(172,54,'Fig. II',.7);
+    s+=P('M196 40 V160','1s',1.0,1.5);
+    s+=EL(196,110,9,14,'.7s',1.3,1.3);
+    s+=P('M212 146 C206 122, 210 96, 224 82 C238 74, 250 82, 252 96 C254 116, 244 140, 232 152 C224 156, 216 154, 212 146 Z','1.6s',.9,1.5);
+    s+=wash('M212 146 C206 122, 210 96, 224 82 C238 74, 250 82, 252 96 C254 116, 244 140, 232 152 C224 156, 216 154, 212 146 Z',C.ink,1.5,.55);
+    s+=P('M224 82 C222 72, 228 64, 238 64 C248 64, 252 72, 250 82','.9s',1.5,1.4);
+    s+=wash('M232 62 q9 -3, 15 3 q-8 4, -15 -3',C.ox,1.8,.85);
+    s+=dot(244,74,2,C.paper,2.0);
+    s+=P('M252 74 L272 70 L252 80','.4s',1.9,1.4);
+    s+=P('M232 152 L238 176 L228 172','.4s',2.0,1.3);
+    s+=bino(232,164,'Dryocopus martius',2.4);
+
+    // Fig. III — Feuersalamander
+    s+=figno(20,196,'Fig. III',1.2);
+    s+=P('M28 262 C46 246, 74 244, 96 254 C114 262, 128 258, 136 250 C132 264, 116 274, 96 272 C74 270, 48 274, 32 270 Z','1.8s',1.3,1.5);
+    s+=wash('M28 262 C46 246, 74 244, 96 254 C114 262, 128 258, 136 250 C132 264, 116 274, 96 272 C74 270, 48 274, 32 270 Z',C.ink,1.9,.78);
+    s+=P('M136 250 c10 -6, 16 -2, 14 8','.4s',2.0,1.2);
+    const sp=[[46,258,4],[62,252,5],[80,254,4.5],[100,260,4],[118,258,3.5],[54,268,3],[88,268,3.5],[112,266,3]];
+    sp.forEach((p,i)=> s+= dot(p[0],p[1],p[2],C.ochreLt,(2.2+i*.05).toFixed(2)));
+    s+=P('M40 270 l-6 8 M62 272 l-4 9 M92 272 l4 9 M118 268 l6 8','.4s',2.2,1.1);
+    s+=bino(84,296,'Salamandra salamandra',2.9);
+
+    // Fig. IV — Fingerhut
+    s+=figno(172,196,'Fig. IV',1.4);
+    s+=P('M244 272 C242 248, 244 224, 246 198','1.2s',1.5,1.6);
+    const bl=[[198,-24],[214,26],[230,-26],[246,24],[262,-24]];
+    bl.forEach((b,i)=>{ const y=b[0], dx=b[1]>0?1:-1;
+      s+=P(`M245 ${y} q${dx*10} -6, ${dx*24} -2 q${-dx*6} 10, ${-dx*24} 6 Z`,'.7s',(1.7+i*.11).toFixed(2),1.3);
+      s+=wash(`M245 ${y} q${dx*10} -6, ${dx*24} -2 q${-dx*6} 10, ${-dx*24} 6 Z`,'#8f4f74',(2.5+i*.08).toFixed(2),.5); });
+    s+=P('M246 198 q4 -12, 2 -20','.4s',2.3,1.2);
+    for(let i=0;i<4;i++){ s+=P(`M244 ${244+i*7} q-16 -4, -26 4`,'.4s',(2.4+i*.06).toFixed(2),1,C.sageDk); }
+    s+=bino(240,290,'Digitalis purpurea',2.9);
+    s+=tx(240,303,'sehr giftig — nicht berühren',2.95,{fill:C.ox,fs:10,fi:'italic',ta:'middle'});
+    s+=hand(160,330,'August: der Wald ist still — die Singvögel mausern.',3.1,{fs:13,ta:'middle'});
+    return s+close;
+  }
+
+  /* Kompassrose und Zeichenerklärung */
+  if(type==='endpapier'){
+    let s=open;
+    s+=LC(112,140,74,'1.4s',.1,1.5);
+    s+=LC(112,140,60,'1.2s',.3,.8,C.inkSoft);
+    s+=LC(112,140,10,'.5s',.5,1.3);
+    s+=P('M112 62 L124 130 L112 218 L100 130 Z','1.4s',.7,1.5);
+    s+=wash('M112 62 L124 130 L112 140 Z',C.ink,1.6,.85);
+    s+=wash('M112 62 L100 130 L112 140 Z',C.paper,1.65,.95);
+    s+=P('M34 140 L104 152 L190 140 L104 128 Z','1.4s',.9,1.5);
+    s+=wash('M190 140 L104 128 L112 140 Z',C.ink,1.7,.55);
+    for(let k=0;k<4;k++){ const a=Math.PI/4+k*Math.PI/2;
+      s+=P(`M112 140 l${(Math.cos(a)*66).toFixed(1)} ${(Math.sin(a)*66).toFixed(1)}`,'.5s',(1.2+k*.07).toFixed(2),.8,C.inkSoft); }
+    for(let k=0;k<32;k++){ const a=k/32*Math.PI*2;
+      s+=P(`M${(112+Math.cos(a)*68).toFixed(1)} ${(140+Math.sin(a)*68).toFixed(1)} l${(Math.cos(a)*6).toFixed(1)} ${(Math.sin(a)*6).toFixed(1)}`,'.15s',(1.5+k*.015).toFixed(2),.6,C.inkFaint); }
+    s+=tx(112,52,'N',2.1,{ta:'middle',ff:"'IM Fell English SC',serif",fs:15,fill:C.ox});
+    s+=tx(200,145,'O',2.15,{ta:'middle',ff:"'IM Fell English SC',serif",fs:13});
+    s+=tx(112,238,'S',2.2,{ta:'middle',ff:"'IM Fell English SC',serif",fs:13});
+    s+=tx(24,145,'W',2.25,{ta:'middle',ff:"'IM Fell English SC',serif",fs:13});
+    s+=P('M210 62 V236','1s',2.0,.8,C.inkFaint);
+    s+=figno(224,60,'ZEICHEN',2.2);
+    s+=P('M228 84 h20','.3s',2.3,1.4,C.ox)+tx(256,88,'die Runde',2.35,{fs:11});
+    s+=`<path class="fade" style="--del:${D(2.4)}s" d="M228 108 h20" fill="none" stroke="${C.ink}" stroke-width="1.4" stroke-dasharray="4 3"/>`+tx(256,112,'Pfad',2.45,{fs:11});
+    s+=P('M232 130 v-14 M228 118 h8','.3s',2.5,1.2)+tx(256,136,'Turm',2.55,{fs:11});
+    s+=tree(232,156,15,2.6,C.sageDk,1.2)+tx(256,160,'Wald',2.65,{fs:11});
+    s+=P('M226 176 h14 v14 h-14 Z','.4s',2.7,1.2)+tx(256,188,'P — Parkplatz',2.75,{fs:11});
+    s+=EL(233,212,9,5,'.4s',2.8,1,C.sage)+tx(256,216,'Höhenlinie',2.85,{fs:11});
+    s+=hand(24,268,'4,4 km · 100 Höhenmeter · ein Vormittag',3.0,{fs:14});
+    return s+close;
+  }
+
+  return open+close;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   DIE STATIONEN
+   ══════════════════════════════════════════════════════════════ */
+const sites=[
+  { id:'kohlhof', num:'I', rn:'I', art:'profil', cap:'die Runde im Aufriss — 4,4 km, 100 Höhenmeter',
+    name:'Kohlhof', local:'Start und Ziel · Haltestelle Kohlhof Fachklinik',
+    meta:'Runde · 4,4 km · 100 Hm auf und ab · 1 Std. 15 Min. · leicht',
+    lat:49.3768, lng:8.7238,
+    lookLabel:'Im Gelände', factLabel:'Zur Planung',
+    look:`Die Runde beginnt und endet an der <em>Fachklinik Kohlhof</em>, oben auf dem Rücken zwischen Boxberg und Königstuhl. Mit dem Wagen über den Speyererhof herauf, mit dem Bus die Linie <em>39</em> vom Bismarckplatz — sie hält hier, ehe sie weiter zum Gipfel fährt. Gehen Sie gegen den Uhrzeigersinn: erst der lange, ruhige Anstieg im Buchenwald, dann die Aussichten, und ab der Hälfte geht es fast nur noch bergab. So haben Sie die Arbeit vor der Belohnung.`,
+    fact:`Vier Komma vier Kilometer, hundert Höhenmeter, gut eine Stunde — das ist eine Strecke, die man unterschätzt und dann doch in zweieinhalb Stunden geht, weil an jedem zweiten Punkt etwas steht, das man ansehen will. Die Wege sind breit, geschottert oder festgetreten, und auch nach Regen gut begehbar; feste Schuhe reichen, Bergstiefel braucht es nicht. Die Runde führt durch ein <em>Schutzgebiet</em> — Hunde an die Leine, und auf den Wegen bleiben. Und rechnen Sie oben mit drei bis fünf Grad weniger als in der Altstadt.` },
+
+  { id:'aufstieg', num:'II', rn:'II', art:'weg', cap:'der Aufstieg — Buchen, Wurzeln, Kehren',
+    name:'Der Aufstieg', local:'Vom Kohlhof zur Höhe · km 0 bis 1,8',
+    meta:'Rotbuche über Buntsandstein · knapp zwei Kilometer stetig bergan',
+    lat:49.3800, lng:8.7228,
+    lookLabel:'Auf dem Weg', factLabel:'Waldkunde',
+    look:`Der erste Abschnitt ist der stillste. Achten Sie darauf, wie sich der Bestand ändert: unten stehen Fichten und Douglasien in Reihen — gepflanzt, erkennbar an den geraden Fluchten —, weiter oben übernimmt die <em>Rotbuche</em>, und schlagartig wird der Boden dunkel und leer. Unter geschlossenen Buchen kommt fast kein Licht mehr an. Die Wurzeln queren den Weg wie Stufen. Wo der Wald sich lichtet, sehen Sie den Sandstein: rostrot, grobkörnig, in Blöcken aus der Böschung tretend.`,
+    fact:`Der Untergrund erklärt den Wald. Buntsandstein verwittert zu saurem, nährstoffarmem Sand — gut für Buche, Eiche, Heidelbeere und Adlerfarn, schlecht für alles Anspruchsvolle. Deshalb ist der Heidelberger Stadtwald über weite Strecken ein Buchenwald mit eingestreuten Nadelholzbeständen. Und deshalb war er im 19. Jahrhundert ein gesuchtes Versuchsfeld: Wer neue Baumarten prüfen wollte, fand hier magere, aber tiefgründige Böden und ein mildes Klima. Die Ergebnisse dieses Versuchs stehen bis heute im Wald — davon später mehr.` },
+
+  { id:'blick', num:'III', rn:'III', art:'blick', cap:'Altstadt, Neckar, Ebene — und ganz hinten die Haardt',
+    name:'Der Blick', local:'Drei Aussichten · km 1,84 bis 2,05',
+    meta:'Heidelberg von oben · rund 560 m ü. NHN',
+    lat:49.3846, lng:8.7232,
+    lookLabel:'Im Gelände', factLabel:'Zur Aussicht',
+    look:`Innerhalb von zweihundert Metern öffnet sich der Wald dreimal. Nehmen Sie sich für alle drei Zeit, denn sie zeigen Verschiedenes: einmal die <em>Altstadt</em> mit dem Neckar und den Brücken, einmal das Schloss von schräg oben, einmal die weite Ebene. Suchen Sie zuerst die Alte Brücke, dann arbeiten Sie sich flussabwärts. Bei klarer Luft steht am Horizont die dunkle Kante des Pfälzerwaldes, davor die Schlote von Ludwigshafen. Morgens liegt oft Dunst im Tal und nur die Türme stehen heraus.`,
+    fact:`Was hier so ordentlich aussieht, ist Geologie: Der Neckar tritt genau an dieser Stelle aus dem Odenwald in den <em>Oberrheingraben</em>, einen Grabenbruch, an dem die Erdkruste seit rund 35 Millionen Jahren auseinanderzieht. Die Ebene ist der abgesunkene Block, der Königstuhl gehört zur stehen gebliebenen Schulter — daher der schroffe Absatz und die 430 Meter, die zwischen Ihnen und den Feldern liegen. Heidelberg liegt am Ausgang, wo der Fluss die Enge verlässt: der einzige vernünftige Platz für eine Stadt weit und breit.` },
+
+  { id:'kaestenbaum', num:'IV', rn:'IV', art:'kaestenbaum', cap:'Wegkreuz und Esskastanie',
+    name:'Hohler Kästenbaum', local:'Wegkreuz mit Hütte · km 2,3',
+    meta:'„Kästenbaum" — kurpfälzisch für Esskastanie · Rastplatz und Schnitzwerk',
+    lat:49.3845, lng:8.7278,
+    lookLabel:'Im Gelände', factLabel:'Zum Namen',
+    look:`Ein Wegkreuz, wie es im Odenwald viele gibt: eine Schutzhütte, Bänke, ein Pfahl mit Schildern in alle Richtungen. Der Grund, hier stehen zu bleiben, liegt am Boden — eine übermannsgroße <em>hölzerne Hand</em>, aus einem liegenden Stamm geschnitzt, Handfläche nach oben, die Finger im Laub. Setzen Sie sich hinein, das ist ausdrücklich vorgesehen. Lesen Sie dann den Wegweiser: von hier kommt man in jede Richtung weiter, und das ist die Einladung, die Runde spontan zu verlängern.`,
+    fact:`Der Name ist älter als jede Markierung. <em>Kästenbaum</em> ist die kurpfälzische Form von Kastanienbaum und meint die <em>Esskastanie</em> — nicht die Rosskastanie der Alleen, sondern den Baum mit dem lanzettlichen, scharf gesägten Blatt und der stacheligen Fruchthülle. Die Römer brachten sie über die Alpen; im wärmeren Südwesten ist sie geblieben und wurde jahrhundertelang wegen ihrer Früchte gehegt. Ein einzelner hohler Altbaum an einer Wegkreuzung war Landmarke genug, um dem Ort seinen Namen zu geben — lange bevor jemand Schilder aufhängte.` },
+
+  { id:'erlebnispfad', num:'V', rn:'V', art:'dachs', cap:'der Dachs — am Pfad in Holz, im Wald in echt',
+    name:'Der Walderlebnispfad', local:'Stationen und Schnitzereien · km 2,3 bis 2,8',
+    meta:'Rundweg der Stadt Heidelberg · Holzfiguren, Tafeln, Mitmachstationen',
+    lat:49.3833, lng:8.7292,
+    lookLabel:'Im Gelände', factLabel:'Naturalia',
+    look:`Auf diesem Stück steht der Wald zum Anfassen bereit. Zwischen den Bäumen liegen geschnitzte Tiere, Balken zum Balancieren und Tafeln, die erklären, was man gerade sieht. Es lohnt sich, die Stationen wirklich zu benutzen, auch ohne Kinder: An einer prüfen Sie, ob Sie einen Baum an der Rinde erkennen; an einer anderen, wie tief eine Wurzel reicht. Suchen Sie den <em>Dachs</em> — er liegt in Holz am Weg. Und schauen Sie an den Böschungen nach seinen echten Röhren: runde Löcher, faustgroßer Aushub davor.`,
+    fact:`Der Dachs ist der heimliche Hausherr solcher Sandsteinhänge. Er gräbt <em>Baue</em>, die über Generationen weiterwachsen — Anlagen mit Dutzenden Eingängen, Jahrzehnte, mitunter Jahrhunderte in Gebrauch. Gesehen wird er fast nie, denn er kommt erst nach Einbruch der Dunkelheit heraus; die schwarzweiße Gesichtsbinde ist ein Warnsignal für den, dem er nachts begegnet. Gefressen wird alles: Regenwürmer zu zwei Dritteln, dazu Käfer, Wurzeln, Fallobst. Wer im August frisch aufgeworfene Erde vor einem Loch findet, hat einen bewohnten Bau vor sich.` },
+
+  { id:'kaltteich', num:'VI', rn:'VI', art:'huette', cap:'die Kaltteichhütte, sechseckig unter Schindeln',
+    name:'Die Kaltteichhütte', local:'Die Rast · km 3,3',
+    meta:'Schutzhütte im Stadtwald · Bänke, Dach, kein Wasser',
+    lat:49.3800, lng:8.7285,
+    lookLabel:'Im Gelände', factLabel:'Zur Rast',
+    look:`Die Hütte, die der Runde ihren Namen gibt: ein sechseckiger Holzbau mit steilem Schindeldach, offen an allen Seiten, Bänke ringsum, davor noch eine Bank in der Sonne. Hier ist der richtige Platz für das mitgebrachte Brot — es gibt unterwegs nichts zu kaufen. Von hier an geht es nur noch bergab. Wenn Sie still sitzen bleiben, dauert es selten lange, bis etwas ruft: der Eichelhäher zuerst, weil er Sie schon eine Weile beobachtet hat.`,
+    fact:`Solche Hütten sind kein Zufall, sondern Programm. Der Odenwaldklub und die Forstverwaltungen haben seit dem späten 19. Jahrhundert Schutzhütten in die Wälder gestellt, als das Wandern aus den Städten heraus zur Bewegung wurde — jede mit Namen, jede an einem Wegkreuz oder einer Quelle. Sie werden bis heute ehrenamtlich unterhalten. Der Name deutet auf einen <em>Teich</em>: In diesen Hangwäldern wurden kleine Weiher angelegt, für das Vieh, für die Waldarbeit, für das Eis, das man im Winter schnitt. Viele sind längst verlandet, ihre Namen sind geblieben.` },
+
+  { id:'gipfel', num:'VII', rn:'VII', art:'turm', cap:'der Fernsehturm — 82 m auf 568 m',
+    name:'Der Gipfel', local:'Königstuhl · 567,8 m ü. NHN · der Abstecher',
+    meta:'Fernsehturm seit 1958 · Bergbahn · Märchenparadies · Sternwarte',
+    lat:49.3842, lng:8.7262,
+    lookLabel:'Im Gelände', factLabel:'Aus der Chronik',
+    look:`Der Gipfel liegt nicht auf der Runde, aber gleich daneben — vom Kohlhof sind es mit dem Wagen fünf Minuten. Oben: zwei gebührenfreie Waldparkplätze, die Bergstation der Bergbahn, das Märchenparadies, Gastronomie. Der schlanke Betonschaft mit dem Antennenkorb ist der <em>Fernsehturm</em>, nur 82 Meter hoch — er steht ja schon auf 568. Die offene Kanzel auf 30 Metern ist seit 2002 gesperrt; man sieht das leere Geländer. Anderthalb Kilometer nördlich stehen die Kuppeln der Landessternwarte von 1898 und das Max-Planck-Institut für Astronomie.`,
+    fact:`Erschlossen wurde die Kuppe von unten. 1890 nahm die untere Sektion der <em>Heidelberger Bergbahn</em> den Betrieb auf, vom Kornmarkt über das Schloss zur Molkenkur; 1907 kam die obere Sektion hinzu, die von dort auf den Königstuhl führt — sie fährt bis heute mit ihren hölzernen Wagen von 1907. Die Sternwarte weihte Großherzog Friedrich I. am 20. Juni 1898 ein. Ihr berühmtester Kopf war <strong>Max Wolf</strong>, der als Erster Kleinplaneten fotografisch aufspürte: Auf einer lang belichteten Platte hinterlässt ein bewegter Körper einen Strich, wo die Sterne Punkte bleiben.` },
+
+  { id:'falknerei', num:'VIII', rn:'VIII', art:'falke', cap:'Turmfalke im Rüttelflug',
+    name:'Die Falknerei', local:'Tinnunculus · Königstuhl 2',
+    meta:'Flugvorführung Di–Fr 15.30 · Sa/So/Feiertag 11.30 & 15.30 · Mo geschlossen',
+    lat:49.3849, lng:8.7233,
+    lookLabel:'Im Gelände', factLabel:'Naturalia',
+    look:`Wenige Schritte vom Gipfelparkplatz, wenn Sie den Abstecher ohnehin machen. Kommen Sie zur <em>Flugvorführung</em> — dienstags bis freitags um 15.30 Uhr, an Wochenenden und Feiertagen zusätzlich um 11.30 Uhr; montags ist geschlossen. Setzen Sie sich in die oberen Reihen: von dort sehen Sie die Vögel gegen den Himmel statt gegen den Wald, und Sie merken, wie tief ein Uhu über die Köpfe streicht. Bei Regen oder großer Hitze wird nur eingeschränkt geflogen — ein Anruf vorher spart die Fahrt.`,
+    fact:`Der Name der Falknerei ist zugleich eine Bestimmungsangabe: <em>Falco tinnunculus</em> ist der Turmfalke, und <em>tinnunculus</em> heißt so viel wie „der Klingelnde" — nach dem hellen, schnellen „ki-ki-ki", das er im Streit ausstößt. Er ist der einzige heimische Greifvogel, der über einem Punkt stehen bleiben kann: im <strong>Rüttelflug</strong> schlägt er die Flügel, während der Kopf reglos in der Luft hängt und die Wiese absucht. Dafür braucht es keine Vorführung — halten Sie auf der Rückfahrt über den Feldern Ausschau.` },
+
+  { id:'mammut', num:null, rn:'✦', art:'mammut', isExtras:true, cap:'8,18 m Umfang — und der Kreis, der nicht aufs Blatt passt',
+    name:'Nachtrag: die Mammutbäume', local:'Arboretum I an der Sprunghöhe · 348 m',
+    meta:'Nicht auf dieser Runde · andere Flanke des Berges · für ein andermal',
+    lookLabel:'Wenn Sie hinwollen', factLabel:'Naturalia',
+    look:`Die Heidelberger Mammutbäume stehen nicht an dieser Runde, sondern auf der <em>nordwestlichen</em> Flanke des Königstuhls. Anfahrt: über die Klingenteichstraße Richtung Gaiberg zum Waldparkplatz <em>Blockhaus</em>; von dort an der großen Rhododendronanlage vorbei, dann den Hutzelwaldweg rund 340 Meter zur Sprunghütte, dort nach Südosten abbiegen und 120 Meter hinunter. Suchen Sie dort den <em>Holzkreis</em> am Boden: er legt den Umfang des größten Baums der Erde aus, des „General Sherman". Der stärkste Stamm hier misst 8,18 Meter — gut ein Drittel davon.`,
+    fact:`Der Hain ist kein Naturwunder, sondern ein Versuch. 1860 legten die Heidelberger Forstleute an der Sprunghöhe eine <em>Saatschule</em> an; ab 1876 zogen die Oberförster hier fremdländische Baumarten heran, um zu sehen, was auf Buntsandstein taugt — Riesenmammutbaum, Douglasie, Küstentanne. Rund zehn <em>Sequoiadendron giganteum</em> stehen heute dort, mit Tafeln an den Stämmen; die Fläche ist geschütztes Biotop. Und noch etwas: In der Sierra Nevada wäre ein hundertfünfzigjähriger Mammutbaum ein Jungbaum — die Art wird dreitausend Jahre alt. Was dort steht, ist der Anfang eines Baumes.` },
+
+  { id:'feldnotizen', num:null, rn:'✦', art:'feldnotizen', isExtras:true, cap:'was im August zu sehen und zu hören ist',
+    name:'Feldnotizen', local:'Der Wald am Königstuhl im Hochsommer',
+    meta:'Rotbuche · Schwarzspecht · Feuersalamander · Fingerhut',
+    lookLabel:'Zu sehen und zu hören', factLabel:'Naturalia',
+    look:`Im August schweigt der Wald: Die meisten Singvögel haben gebrütet und mausern, sie halten sich still. Was bleibt, sind die lauten: der <em>Eichelhäher</em>, der jeden Spaziergänger verrät, das durchdringende „krü-krü" des <em>Schwarzspechts</em> und, über den Kuppen, das kehlige Rufen der Kolkraben. Suchen Sie an alten Buchen nach ovalen Spechthöhlen. Am Wegrand reifen Heidelbeeren, auf den Lichtungen steht der <em>Fingerhut</em> — sehr giftig, nicht anfassen. Nach einem Regen kriecht in den feuchten Klingen der Feuersalamander.`,
+    fact:`Die Rotbuche ist hier die Hausherrin: In einem geschlossenen Buchenwald erreicht kaum noch Licht den Boden, weshalb es unter ihr auffallend leer und dämmrig ist — die Kräuter blühen im April, ehe das Laub austreibt. Der Feuersalamander ist an sein Bachtal gebunden und wird über zwanzig Jahre alt; seine gelben Flecken sind eine Warnfarbe und kein Muster von der Stange, jedes Tier trägt seine eigene Zeichnung. Und noch eine Notiz aus der Praxis: Baden-Württemberg ist FSME-Risikogebiet — abends die Beine absuchen.` }
+];
+
+/* ══════════════════════════════════════════════════════════════
+   KARTE
+   ══════════════════════════════════════════════════════════════ */
+const MAP_BBOX={ minLat:49.3757, maxLat:49.3862, minLng:8.7195, maxLng:8.7331 };
+const MAP_W=320, MAP_H=380;
+function projectToMap(lat,lng){
+  const x=((lng-MAP_BBOX.minLng)/(MAP_BBOX.maxLng-MAP_BBOX.minLng))*MAP_W;
+  const y=MAP_H-((lat-MAP_BBOX.minLat)/(MAP_BBOX.maxLat-MAP_BBOX.minLat))*MAP_H;
+  return {x,y};
+}
+
+/* ══════════════════════════════════════════════════════════════
+   AUFBAU
+   ══════════════════════════════════════════════════════════════ */
+const pagesEl=document.getElementById('pages');
+let pageEls=[], currentPage=0, totalPages=0, animating=false;
+
+function leaf(html,cls){ const p=document.createElement('div'); p.className='page '+(cls||''); p.innerHTML=`<div class="leaf-inner">${html}</div>`; return p; }
+
+function buildAll(){
+  // UMSCHLAG
+  pagesEl.appendChild(leaf(`
+    <div class="place">Odenwald · Heidelberg</div>
+    <div class="plate"><div class="plate-frame">${illustrationSVG('buche')}</div></div>
+    <div class="rule"></div>
+    <h1>Der Königstuhl</h1>
+    <div class="sub">ein Waldjournal zur Kaltteichhütten-Runde</div>
+    <div class="rule"></div>
+    <p style="max-width:340px;font-style:italic;color:var(--ink-soft);margin-top:6px">Ein Vormittag für zwei: 4,4 Kilometer, hundert Höhenmeter, ab Kohlhof. Sechs Stationen auf dem Weg, zwei Abstecher am Gipfel, zwei eingelegte Blätter.</p>
+    <div class="exlibris">◆ nach der Natur gezeichnet · MMXXVI ◆</div>
+    <div class="begin">umblättern →</div>`, 'cover'));
+
+  // INHALT
+  let toc=`<h2>Der Gang</h2><p class="lede">Sechs Stationen auf der Runde, zwei am Gipfel daneben, zwei eingelegte Blätter — mit Stehenbleiben gut zweieinhalb Stunden.</p><ul>`;
+  sites.forEach((s,i)=>{
+    const dist=s.isExtras?'':`<span class="di" data-id="${s.id}"></span>`;
+    toc+=`<li data-goto="${i+3}"><span class="rn">${s.rn}</span><span class="tt"><span class="nm">${s.name}</span><br><span class="sb">${s.local}</span></span>${dist}</li>`;
+  });
+  toc+=`</ul><div class="foot">Oben links den Standort antippen — oder einfach blättern; die Stationen stehen in der Reihenfolge, in der man sie trifft.</div>`;
+  pagesEl.appendChild(leaf(toc,'toc'));
+
+  // KARTE
+  pagesEl.appendChild(leaf(`
+    <h2>Die Runde</h2>
+    <div class="lede">Der geschlossene Ring ist der Weg, die gestrichelte Linie der Abstecher zum Gipfel. Auf eine Ziffer tippen, um hinzublättern; auf freie Fläche tippen, um sich von Hand zu setzen.</div>
+    <div class="map-holder"><svg id="map-svg" viewBox="0 0 ${MAP_W} ${MAP_H}" preserveAspectRatio="xMidYMid meet"></svg></div>
+    <div class="maphint">der Stern sind Sie · die Lage der Stationen ist geschätzt</div>`, 'mapleaf'));
+
+  // STATIONEN
+  sites.forEach(s=>{
+    const lookLbl=s.lookLabel||'Im Gelände';
+    const factLbl=s.factLabel||'Aus der Chronik';
+    const chap=s.num?`Station ${s.num}`:'Eingelegtes Blatt';
+    pagesEl.appendChild(leaf(`
+      <div class="plate"><div class="plate-frame">${illustrationSVG(s.art)}</div><div class="plate-cap">${s.cap}</div></div>
+      <div class="chap">${chap}</div>
+      <h1 class="title">${s.name}</h1>
+      <div class="local">${s.local}</div>
+      <div class="meta">${s.meta}</div>
+      <div class="sec"><span class="lbl">${lookLbl}</span><p class="drop">${s.look}</p></div>
+      <div class="sec fact"><span class="lbl">${factLbl}</span><p>${s.fact}</p></div>`));
+  });
+
+  // VORSATZBLATT — Praktisches
+  pagesEl.appendChild(leaf(`
+    <div class="plate"><div class="plate-frame">${illustrationSVG('endpapier')}</div><div class="plate-cap">Norden, und die Zeichen der Karte</div></div>
+    <div class="chap">Vorsatzblatt</div>
+    <h1 class="title">Praktisches</h1>
+    <div class="meta">Die einzige Seite, die altert · Stand August 2026</div>
+    <div class="sec"><span class="lbl">Hin und zurück</span><p>Start und Ziel ist die Haltestelle <em>Kohlhof Fachklinik</em>. Mit dem Bus: Linie <em>39</em> ab Bismarckplatz über Speyererhof, EMBL und Boxberg/Kohlhof, etwa im Stundentakt — sie fährt anschließend weiter auf den Königstuhl, was den Abstecher zum Gipfel ohne Auto möglich macht. Mit dem Wagen aus der Altstadt über die Klingenteichstraße Richtung Gaiberg; am Gipfel liegen zwei große <em>gebührenfreie</em> Waldparkplätze beim Märchenparadies. Die Straßen dort oben sind eng und kurvig.</p></div>
+    <div class="sec fact"><span class="lbl">Der Vormittag</span><p>Ein Vorschlag: gegen <em>9.30 Uhr</em> am Kohlhof los, gegen den Uhrzeigersinn. Nach etwa fünfzig Minuten die drei Aussichten, kurz darauf der Hohle Kästenbaum mit der geschnitzten Hand. Dann der Walderlebnispfad — hier verliert man am meisten Zeit, und zwar gern. Gegen <em>11.15 Uhr</em> Rast an der Kaltteichhütte, um <em>12 Uhr</em> zurück am Start. Wer den Abstecher anhängt: mit dem Wagen fünf Minuten zum Gipfel, dort die Flugvorführung der Falknerei um <em>11.30 Uhr</em> (Wochenende und Feiertage) oder <em>15.30 Uhr</em>.</p></div>
+    <div class="sec"><span class="lbl">Mitzunehmen</span><p>Feste Schuhe — die Wege sind gut, aber wurzelig und nach Regen rutschig. Auf der Runde gibt es <em>nichts zu kaufen und kein Wasser</em>: Brot und Flasche gehören in den Rucksack, die Kaltteichhütte nach 3,3 Kilometern ist der Platz dafür. Zeckenschutz und lange Hosen. Eine Jacke, denn oben ist es drei bis fünf Grad kühler als in der Altstadt. Und ein Fernglas, wenn Sie eins haben — für die Aussichten und für die Spechte.</p></div>
+    <div class="sec fact"><span class="lbl">Gut zu wissen</span><p>Die Runde führt durch ein <em>Schutzgebiet</em>: Hunde an die Leine, auf den Wegen bleiben. Die Flugvorführungen der Falknerei fallen bei Regen und großer Hitze aus, montags ist geschlossen. Das Märchenparadies am Gipfel hat in den Sommerferien täglich 10 bis 19 Uhr geöffnet (2 bis 12 Jahre 8 €, ab 13 Jahren 9 €). Zeiten und Preise wechseln — vor einer eigens geplanten Fahrt kurz nachsehen. Für Auskunft zu den Wald-Lehrpfaden und den Arboreten ist das städtische Forstamt zuständig.</p></div>
+    <div class="aside">Die Lage der Stationen auf der Karte ist <b>geschätzt</b> — die Kilometerangaben stammen aus der Tour und stimmen. Im Zweifel dem Weg folgen, nicht dem Punkt.</div>`));
+
+  pageEls=[...pagesEl.querySelectorAll('.page')];
+  totalPages=pageEls.length;
+  pageEls.forEach((p,i)=>{ p.dataset.page=i; });
+  pagesEl.querySelectorAll('[data-goto]').forEach(el=> el.addEventListener('click',()=>goTo(parseInt(el.dataset.goto))));
+
+  buildMap(); makeSpores();
+  pageEls[0].classList.add('is-current');
+  updateChrome();
+}
+
+/* ── Blütenstaub ─────────────────────────────────────────────── */
+function makeSpores(){
+  const box=document.getElementById('spores');
+  for(let i=0;i<26;i++){
+    const d=document.createElement('div'); d.className='spore';
+    const s=1+((i*41)%40)/13;
+    d.style.width=d.style.height=s.toFixed(1)+'px';
+    d.style.left=((i*47)%100)+'%'; d.style.top=(26+((i*31)%72))+'%';
+    d.style.setProperty('--dx',(((i*67)%200)-100)+'px');
+    d.style.setProperty('--dy',(-130-((i*53)%250))+'px');
+    d.style.animationDuration=(15+((i*19)%22))+'s';
+    d.style.animationDelay=(-(i*3.3))+'s';
+    box.appendChild(d);
+  }
+}
+
+/* ── Kartenzeichnung ─────────────────────────────────────────── */
+let manualPos=null, gpsPos=null, gpsActive=false;
+function buildMap(){
+  const svg=document.getElementById('map-svg'); if(!svg) return;
+  svg.innerHTML='';
+  const add=(t,a)=>{ const n=document.createElementNS(NS,t); for(const k in a)n.setAttribute(k,a[k]); svg.appendChild(n); return n; };
+  add('rect',{x:0,y:0,width:MAP_W,height:MAP_H,fill:'#f5eeda'});
+
+  // Waldfläche
+  add('rect',{x:0,y:0,width:MAP_W,height:MAP_H,fill:'#6b7a4f',opacity:.09});
+
+  // Höhenlinien um die Kuppe
+  const top=projectToMap(49.3842,8.7262);
+  for(let i=1;i<=7;i++){
+    const rx=20*i+i*i*2.2, ry=(20*i+i*i*2.2)*0.74;
+    add('ellipse',{cx:top.x-i*1.4, cy:top.y+i*3.2, rx:rx, ry:ry,
+      fill:'none', stroke:'#8c8462', 'stroke-width':i%2?0.7:1.05, opacity:.5,
+      transform:`rotate(-16 ${top.x-i*1.4} ${top.y+i*3.2})`});
+  }
+
+  // der Königstuhlweg: vom Kohlhof herauf zum Gipfel
+  const kh=projectToMap(49.3768,8.7238);
+  add('path',{d:`M${kh.x} ${kh.y+16} C ${kh.x-14} ${kh.y-40}, ${top.x-46} ${top.y+80}, ${top.x-6} ${top.y+6} L ${top.x} ${top.y}`,
+    fill:'none',stroke:'#a0782b','stroke-width':3.2,opacity:.7,'stroke-linecap':'round'});
+
+  // Baumsignaturen: kleine geschlossene Nadelbaum-Dreiecke
+  const conifer=(x,y,h,col,w,op)=>{
+    add('path',{d:`M${x} ${y} v-${(h*.28).toFixed(1)} M${x-h*.32} ${y-h*.26} L${x} ${y-h} L${x+h*.32} ${y-h*.26} Z`,
+      fill:'none',stroke:col,'stroke-width':w,opacity:op,'stroke-linecap':'round','stroke-linejoin':'round'});
+  };
+  const seed=[[40,60],[74,44],[118,64],[168,38],[214,52],[268,44],[300,86],[34,124],[92,116],[146,124],[210,116],[262,130],[36,196],[104,206],[160,190],[228,196],[286,206],[52,272],[118,286],[186,268],[248,290],[298,262],[76,336],[142,342],[212,330],[276,344]];
+  seed.forEach(p=> conifer(p[0],p[1],11,'#46552e',.9,.42));
+
+  const lbl=(x,y,t,rot,col,sz)=>{ const e=document.createElementNS(NS,'text');
+    e.setAttribute('x',x);e.setAttribute('y',y);e.setAttribute('fill',col||'#4b5842');
+    e.setAttribute('font-family',"'Caveat',cursive");e.setAttribute('font-size',sz||13);e.setAttribute('opacity','.9');
+    if(rot)e.setAttribute('transform',`rotate(${rot} ${x} ${y})`); e.textContent=t; svg.appendChild(e); };
+  lbl(8,24,'\u2196 Heidelberg, Neckar, Ebene',0,'#8c8462',12.5);
+  lbl(196,372,'Gaiberg, Odenwald \u2192',0,'#8c8462',12);
+  lbl(top.x-122,top.y+42,'K\u00f6nigstuhl 567,8 m',0,'#7a2a18',13);
+  lbl(kh.x+16,kh.y+6,'Kohlhof',0,'#7a2a18',13.5);
+
+  // Die Runde — geschlossener Ring über die sechs Stationen des Wegs
+  const LOOP=['kohlhof','aufstieg','blick','kaestenbaum','erlebnispfad','kaltteich'];
+  const loopSites=LOOP.map(id=>sites.find(s=>s.id===id)).filter(Boolean);
+  const lp=loopSites.map(s=>projectToMap(s.lat,s.lng));
+  let ring='';
+  lp.forEach((p,i)=>{ ring+=(i?'L':'M')+p.x.toFixed(1)+' '+p.y.toFixed(1)+' '; });
+  ring+='Z';
+  add('path',{d:ring,fill:'none',stroke:'#7a2a18','stroke-width':2.2,opacity:.75,'stroke-linejoin':'round'});
+
+  // Der Abstecher zum Gipfel — gestrichelt, weil er nicht zur Runde gehört
+  const gp=projectToMap(49.3842,8.7262), bp=projectToMap(49.3846,8.7232);
+  add('path',{d:`M${bp.x.toFixed(1)} ${bp.y.toFixed(1)} L${gp.x.toFixed(1)} ${gp.y.toFixed(1)}`,
+    fill:'none',stroke:'#23301f','stroke-width':1.3,'stroke-dasharray':'4 4',opacity:.55});
+
+  const ordered=sites.filter(s=>!s.isExtras&&s.lat);
+  // Blick und Falknerei liegen dicht beieinander; die Ziffer wird versetzt.
+  const NUDGE={ falknerei:[38,-6] };
+  const pinPos=s=>{ const p=projectToMap(s.lat,s.lng), n=NUDGE[s.id]; return n?{x:p.x+n[0],y:p.y+n[1]}:p; };
+
+  ordered.forEach(s=>{
+    const p=pinPos(s);
+    const pin=document.createElementNS(NS,'g'); pin.setAttribute('class','map-pin'); pin.style.cursor='pointer';
+    pin.innerHTML=`<circle cx="${p.x}" cy="${p.y}" r="11" fill="#f5eeda" stroke="#23301f" stroke-width="1.5"/><text x="${p.x}" y="${p.y+3.6}" text-anchor="middle" font-family="'IM Fell English SC',serif" font-size="10" fill="#7a2a18">${s.rn}</text>`;
+    pin.addEventListener('click',e=>{ e.stopPropagation(); const idx=sites.findIndex(x=>x.id===s.id); goTo(idx+3); });
+    svg.appendChild(pin);
+  });
+
+  // Maßstab und Nordpfeil
+  add('path',{d:`M18 ${MAP_H-22} h56`,stroke:'#23301f','stroke-width':1.4,fill:'none'});
+  add('path',{d:`M18 ${MAP_H-26} v8 M74 ${MAP_H-26} v8`,stroke:'#23301f','stroke-width':1.2,fill:'none'});
+  lbl(30,MAP_H-8,'500 m',0,'#4b5842',12);
+  add('path',{d:`M${MAP_W-24} 62 v-30 M${MAP_W-29} 38 l5 -8 l5 8`,stroke:'#23301f','stroke-width':1.4,fill:'none','stroke-linecap':'round'});
+  lbl(MAP_W-29,78,'N',0,'#7a2a18',14);
+
+  const you=document.createElementNS(NS,'g'); you.setAttribute('id','you-marker'); svg.appendChild(you); drawYou();
+  svg.addEventListener('click',e=>{
+    if(e.target.closest('.map-pin')) return;
+    const pt=svg.createSVGPoint(); pt.x=e.clientX; pt.y=e.clientY;
+    const sp=pt.matrixTransform(svg.getScreenCTM().inverse());
+    const lng=MAP_BBOX.minLng+(sp.x/MAP_W)*(MAP_BBOX.maxLng-MAP_BBOX.minLng);
+    const lat=MAP_BBOX.minLat+((MAP_H-sp.y)/MAP_H)*(MAP_BBOX.maxLat-MAP_BBOX.minLat);
+    manualPos={lat,lng}; gpsActive=true; drawYou(); updateDistances(); setGpsLabel('Gesetzt');
+  });
+}
+function drawYou(){
+  const you=document.getElementById('you-marker'); if(!you) return; you.innerHTML='';
+  const pos=gpsPos||manualPos; if(!pos) return;
+  const p=projectToMap(pos.lat,pos.lng);
+  you.innerHTML=`<circle cx="${p.x}" cy="${p.y}" r="15" fill="#6b7a4f" opacity="0.2"/><path d="M${p.x} ${p.y-9} l2.6 6.4 l6.8 .4 l-5.4 4.2 l1.9 6.6 l-5.9 -3.8 l-5.9 3.8 l1.9 -6.6 l-5.4 -4.2 l6.8 -.4 Z" fill="#46552e" stroke="#f5eeda" stroke-width="1"/>`;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   NAVIGATION — das Umblättern
+   ══════════════════════════════════════════════════════════════ */
+const reduce=window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+function goTo(target){
+  if(target<0||target>=totalPages||target===currentPage||animating) return;
+  if(speaking) stopSpeech();
+  const fwd=target>currentPage;
+  const out=pageEls[currentPage], inc=pageEls[target];
+  animating=true;
+  pageEls.forEach(p=>{ if(p!==out&&p!==inc) p.classList.remove('is-current','turn-out','turn-in'); });
+
+  if(reduce){
+    out.classList.remove('is-current','turn-out','turn-in');
+    inc.classList.remove('turn-out','turn-in'); inc.classList.add('is-current');
+    currentPage=target; endTurn(inc); return;
+  }
+
+  if(fwd){
+    out.classList.remove('is-current');
+    inc.classList.remove('turn-out','turn-in'); inc.classList.add('is-current');
+    out.classList.add('turn-out');
+  }else{
+    out.classList.remove('is-current');
+    inc.classList.remove('is-current','turn-out'); inc.classList.add('turn-in');
+    void inc.offsetWidth;
+    requestAnimationFrame(()=>{ inc.classList.remove('turn-in'); inc.classList.add('is-current'); });
+  }
+  currentPage=target; updateChrome();
+  window.setTimeout(()=>endTurn(inc), 740);
+}
+function endTurn(inc){
+  animating=false;
+  pageEls.forEach(p=>{ if(p!==inc) p.classList.remove('turn-out','turn-in'); });
+  const sc=inc.querySelector('.leaf-inner'); if(sc) sc.scrollTop=0;
+  updateChrome();
+}
+function updateChrome(){
+  document.getElementById('progress').textContent=String(currentPage+1).padStart(2,'0')+' / '+String(totalPages).padStart(2,'0');
+  document.getElementById('prev').disabled=currentPage===0;
+  document.getElementById('next').disabled=currentPage===totalPages-1;
+}
+document.getElementById('prev').addEventListener('click',()=>goTo(currentPage-1));
+document.getElementById('next').addEventListener('click',()=>goTo(currentPage+1));
+document.addEventListener('keydown',e=>{ if(e.key==='ArrowRight')goTo(currentPage+1); else if(e.key==='ArrowLeft')goTo(currentPage-1); });
+let tsx=0,tsy=0;
+document.addEventListener('touchstart',e=>{ tsx=e.touches[0].clientX; tsy=e.touches[0].clientY; },{passive:true});
+document.addEventListener('touchend',e=>{ const dx=e.changedTouches[0].clientX-tsx, dy=e.changedTouches[0].clientY-tsy; if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)*1.5){ if(dx<0)goTo(currentPage+1); else goTo(currentPage-1); } },{passive:true});
+
+/* ══════════════════════════════════════════════════════════════
+   STANDORT
+   ══════════════════════════════════════════════════════════════ */
+const gpsBtn=document.getElementById('gps'); let watchId=null;
+function setGpsLabel(t){ document.getElementById('gps-label').textContent=t; }
+gpsBtn.addEventListener('click',()=>{ if(gpsBtn.dataset.fallback==='demo'){ demoPlace(); return; } startGps(); });
+function startGps(){
+  if(!navigator.geolocation){ setGpsLabel('Kein GPS'); gpsBtn.dataset.fallback='demo'; return; }
+  gpsBtn.classList.add('locating'); setGpsLabel('Suche…');
+  navigator.geolocation.getCurrentPosition(onGps,onGpsErr,{enableHighAccuracy:true,timeout:12000,maximumAge:30000});
+  if(watchId===null) watchId=navigator.geolocation.watchPosition(onGps,()=>{},{enableHighAccuracy:true,maximumAge:5000,timeout:30000});
+}
+function onGps(pos){ gpsActive=true; gpsBtn.classList.remove('locating'); gpsBtn.classList.add('on'); gpsPos={lat:pos.coords.latitude,lng:pos.coords.longitude}; setGpsLabel('Geortet'); drawYou(); updateDistances(); }
+function onGpsErr(err){ gpsBtn.classList.remove('locating'); let m='GPS-Fehler'; if(err.code===1)m='Gesperrt'; else if(err.code===2)m='Kein Signal'; else if(err.code===3)m='Zeit aus'; setGpsLabel(m); setTimeout(()=>{ if(!gpsActive){ setGpsLabel("Am Kohlhof"); gpsBtn.dataset.fallback='demo'; } },2000); }
+function demoPlace(){ gpsActive=true; gpsBtn.classList.add('on'); gpsBtn.dataset.fallback=''; manualPos={lat:49.3768,lng:8.7238}; gpsPos=null; setGpsLabel("Kohlhof"); drawYou(); updateDistances(); goTo(2); }
+function haversine(a,b,c,d){ const R=6371000,tr=x=>x*Math.PI/180; const dLat=tr(c-a),dLng=tr(d-b); const h=Math.sin(dLat/2)**2+Math.cos(tr(a))*Math.cos(tr(c))*Math.sin(dLng/2)**2; return 2*R*Math.asin(Math.sqrt(h)); }
+function fmt(m){ return m<950?Math.round(m/10)*10+' m':(m/1000).toFixed(1).replace('.',',')+' km'; }
+function updateDistances(){ const pos=gpsPos||manualPos; if(!pos) return; document.querySelectorAll('.di').forEach(sp=>{ const s=sites.find(x=>x.id===sp.dataset.id); if(!s||!s.lat) return; sp.textContent=fmt(haversine(pos.lat,pos.lng,s.lat,s.lng)); }); }
+
+/* ══════════════════════════════════════════════════════════════
+   VORLESEN
+   ══════════════════════════════════════════════════════════════ */
+const ttsBtn=document.getElementById('tts'); let speaking=false, voicePref=null;
+function pickVoice(){
+  const v=window.speechSynthesis?window.speechSynthesis.getVoices():[]; if(!v.length)return null;
+  const prefs=[x=>x.lang==='de-DE'&&/natural|neural|enhanced|premium/i.test(x.name),
+               x=>x.lang==='de-DE', x=>x.lang.startsWith('de')];
+  for(const t of prefs){ const f=v.find(t); if(f)return f; }
+  return v[0];
+}
+if(window.speechSynthesis){ window.speechSynthesis.addEventListener('voiceschanged',()=>{ voicePref=pickVoice(); }); voicePref=pickVoice(); }
+function stripHtml(h){ const t=document.createElement('div'); t.innerHTML=h; return t.textContent||''; }
+function stopSpeech(){ if(window.speechSynthesis)window.speechSynthesis.cancel(); speaking=false; ttsBtn.classList.remove('on'); document.getElementById('tts-label').textContent='Vorlesen'; }
+ttsBtn.addEventListener('click',()=>{
+  if(!window.speechSynthesis) return;
+  if(speaking){ stopSpeech(); return; }
+  const page=pageEls[currentPage], parts=[];
+  const t=page.querySelector('.title,.cover h1,h2'); if(t)parts.push(stripHtml(t.innerHTML));
+  const loc=page.querySelector('.local'); if(loc)parts.push(stripHtml(loc.innerHTML));
+  page.querySelectorAll('.sec').forEach(sec=>{ const l=sec.querySelector('.lbl'),p=sec.querySelector('p'); if(l)parts.push(stripHtml(l.innerHTML)+'.'); if(p)parts.push(stripHtml(p.innerHTML)); });
+  const text=parts.join('. '); if(!text.trim())return;
+  window.speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(text); if(voicePref)u.voice=voicePref; u.lang='de-DE'; u.rate=.95; u.pitch=1;
+  u.onend=stopSpeech; u.onerror=stopSpeech; window.speechSynthesis.speak(u);
+  speaking=true; ttsBtn.classList.add('on'); document.getElementById('tts-label').textContent='Halt';
+});
+
+buildAll();
+</script>
+</body>
+</html>
