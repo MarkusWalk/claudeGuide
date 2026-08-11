@@ -401,6 +401,26 @@
   }
   .guide-card:hover .forest-mark { transform: scale(1.06); }
 
+  /* Palma: Mittagslicht auf Marès, das Meer darunter — und die Rosette
+     der Seu als Marke. Sie ist das Zeichen, an dem man die Stadt erkennt. */
+  .card-gradient.palma {
+    background: linear-gradient(180deg, #4a9ac9 0%, #1d5f92 45%, #0d3457 100%);
+    position: relative;
+    overflow: hidden;
+  }
+  .card-gradient.palma::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(circle at 50% 48%, rgba(224, 180, 81, 0.32) 0%, transparent 52%);
+  }
+  .rose-mark {
+    position: relative;
+    width: 148px; height: 148px;
+    filter: drop-shadow(0 3px 10px rgba(0,0,0,0.4));
+    transition: transform 0.7s cubic-bezier(0.23, 1, 0.32, 1);
+  }
+  .guide-card:hover .rose-mark { transform: rotate(15deg) scale(1.05); }
+
   /* Fort Wayne: a WPA travel-poster block — the three rivers braid into
      one under a low summit sun. Flat teal + gold, the way it was silkscreened. */
   .card-gradient.fortwayne {
@@ -836,6 +856,59 @@
               <circle cx="12" cy="10" r="3"/>
             </svg>
             Heidelberg
+          </span>
+        </div>
+        <div class="card-arrow">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </div>
+      </div>
+    </a>
+
+    <!-- Palma Guide -->
+    <a href="palma.html" class="guide-card">
+      <div class="card-image">
+        <div class="card-gradient palma">
+          <svg class="rose-mark" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="60" cy="60" r="54" stroke="#e0b451" stroke-width="2.6" opacity="0.95"/>
+            <circle cx="60" cy="60" r="30" stroke="#cfe0ec" stroke-width="1.4" opacity="0.75"/>
+            <g fill="#cfe0ec" opacity="0.85">
+              <circle cx="102" cy="60" r="5.4"/><circle cx="96.4" cy="81" r="5.4"/>
+              <circle cx="81" cy="96.4" r="5.4"/><circle cx="60" cy="102" r="5.4"/>
+              <circle cx="39" cy="96.4" r="5.4"/><circle cx="23.6" cy="81" r="5.4"/>
+              <circle cx="18" cy="60" r="5.4"/><circle cx="23.6" cy="39" r="5.4"/>
+              <circle cx="39" cy="23.6" r="5.4"/><circle cx="60" cy="18" r="5.4"/>
+              <circle cx="81" cy="23.6" r="5.4"/><circle cx="96.4" cy="39" r="5.4"/>
+            </g>
+            <path d="M60 34 L82.5 73 L37.5 73 Z" stroke="#e0b451" stroke-width="1.8" fill="none"/>
+            <path d="M60 86 L37.5 47 L82.5 47 Z" stroke="#e0b451" stroke-width="1.8" fill="none"/>
+            <circle cx="60" cy="60" r="7" fill="#b8492a"/>
+          </svg>
+        </div>
+      </div>
+      <div class="card-content">
+        <div class="card-region">Mallorca, Illes Balears</div>
+        <h2 class="card-title">Palma — Licht und Marès</h2>
+        <p class="card-description">
+          Die Altstadt-Runde von der Kathedrale über Sa Llotja und die Plaça Major
+          zum Born — auf Blättern aus Sandstein, mit Tafeln aus Glas und Trencadís,
+          die aufleuchten, sobald man umblättert. Auf Deutsch.
+        </p>
+        <div class="card-meta">
+          <span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M12 6v6l4 2"/>
+            </svg>
+            Halber Tag · 2,4 km
+          </span>
+          <span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 1118 0z"/>
+              <circle cx="12" cy="10" r="3"/>
+            </svg>
+            Palma de Mallorca
           </span>
         </div>
         <div class="card-arrow">

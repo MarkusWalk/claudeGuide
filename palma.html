@@ -1,0 +1,1161 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Palma · Licht und Marès — Die Altstadt-Runde</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Italiana&family=Marcellus+SC&family=Spectral:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+  /* ══════════════════════════════════════════════════════════════
+     PALMA — LICHT UND MARÈS
+     Ein Heft in Mallorquiner Flammenstoff (roba de llengües)
+     gebunden, auf Blättern aus Marès — dem muscheligen Sandstein,
+     aus dem die halbe Altstadt geschnitten ist. Die Tafeln sind
+     keine Zeichnungen, sondern Glas: Scherben, die aufleuchten,
+     wenn Licht durch sie fällt. Trencadís und Kirchenfenster.
+     Die Farben kommen vom Ort: Marès, Meer, Terrakotta, Gold.
+     ══════════════════════════════════════════════════════════════ */
+  :root{
+    --mares:    #e7d5ac;
+    --mares-2:  #d9c391;
+    --mares-hi: #f7eed6;
+    --ink:      #1e2f3f;   /* Schattenblau im geschnittenen Stein */
+    --ink-soft: #40607a;
+    --ink-faint:#8d9aa2;
+    --blau:     #1c5c96;   /* Kachelblau */
+    --blau-dk:  #123a5c;   /* tiefes Meer */
+    --blau-lt:  #4f9ad4;
+    --or:       #b8862c;   /* Gold der Bleiruten */
+    --or-lt:    #e0b451;
+    --terra:    #b8492a;   /* Terrakotta, Trencadís-Rot */
+    --terra-lt: #d9713f;
+    --verd:     #4e7a58;
+    --cloth:    #17517f;   /* Einband: roba de llengües */
+    --cloth-dk: #0d3255;
+    --cloth-lt: #2d78b4;
+    --shadow:   rgba(3,16,28,.6);
+  }
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  html,body{ height:100%; }
+  body{
+    font-family:'Spectral', Georgia, serif;
+    color:var(--ink);
+    background:#08243c;
+    overflow:hidden;
+    -webkit-font-smoothing:antialiased;
+    -webkit-tap-highlight-color:transparent;
+  }
+
+  /* ── Bucht, Mittagslicht, Mauersegler ───────────────────────── */
+  .bay{
+    position:fixed; inset:0; z-index:0;
+    background:
+      radial-gradient(ellipse 90% 62% at 50% 8%, #4a9ac9 0%, #1d5f92 40%, #0d3457 72%, #07202f 100%),
+      #08243c;
+  }
+  .bay::after{
+    content:''; position:absolute; inset:0; opacity:.35; mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)' opacity='.4'/%3E%3C/svg%3E");
+  }
+  /* das Licht, das über den Stein wandert */
+  .glare{
+    position:fixed; inset:0; z-index:6; pointer-events:none;
+    background:
+      linear-gradient(108deg, transparent 24%, rgba(255,238,190,.10) 32%, transparent 41%),
+      radial-gradient(ellipse 120% 108% at 50% 44%, transparent 40%, rgba(2,14,26,.5) 86%, rgba(2,12,22,.72) 100%);
+    animation:tide 14s ease-in-out infinite;
+  }
+  @keyframes tide{ 0%,100%{opacity:1; transform:translateX(0)} 50%{opacity:.84; transform:translateX(-10px)} }
+  .grain{
+    position:fixed; inset:-40%; z-index:7; pointer-events:none; opacity:.07;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' seed='5'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23g)'/%3E%3C/svg%3E");
+    animation:grainmove 1s steps(3) infinite;
+  }
+  @keyframes grainmove{ 0%{transform:translate(0,0)} 33%{transform:translate(-6px,3px)} 66%{transform:translate(4px,-5px)} 100%{transform:translate(0,0)} }
+  /* die Falzies — Mauersegler über den Türmen */
+  .swifts{ position:fixed; inset:0; z-index:5; pointer-events:none; overflow:hidden; }
+  .swift{
+    position:absolute; opacity:0;
+    background:no-repeat center/contain url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 16'%3E%3Cpath d='M20 11 C15 11 8 8 1 1 C9 4 15 5 20 5 C25 5 31 4 39 1 C32 8 25 11 20 11 Z' fill='%23071c2e'/%3E%3C/svg%3E");
+    animation:cut linear infinite;
+  }
+  @keyframes cut{
+    0%{ transform:translate3d(0,0,0) rotate(-6deg); opacity:0 }
+    12%{ opacity:.5 } 84%{ opacity:.4 }
+    100%{ transform:translate3d(var(--dx),var(--dy),0) rotate(9deg); opacity:0 }
+  }
+
+  /* ── das Heft ────────────────────────────────────────────────── */
+  #stage{
+    position:fixed; inset:0; z-index:2;
+    display:flex; align-items:center; justify-content:center;
+    padding:max(14px,env(safe-area-inset-top)) 12px max(84px,calc(env(safe-area-inset-bottom) + 78px));
+  }
+  #book{ position:relative; width:min(452px,100%); height:100%; max-height:880px; }
+  .deckshadow{
+    position:absolute; left:-30px; right:-30px; top:20px; bottom:-30px; z-index:-1;
+    background:radial-gradient(ellipse 52% 54% at 50% 58%, rgba(0,0,0,.66) 0%, rgba(0,0,0,.34) 56%, transparent 80%);
+    filter:blur(20px);
+  }
+  /* Einband aus roba de llengües — dem Flammenstoff der Insel */
+  .board{
+    position:absolute; inset:-9px -9px -9px -3px; border-radius:2px;
+    background-color:var(--cloth);
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='46' height='72'%3E%3Crect width='46' height='72' fill='%2317517f'/%3E%3Cpath d='M23 0 L29 9 L25 14 L31 23 L26 30 L32 39 L26 48 L30 57 L23 72 L16 57 L20 48 L14 39 L20 30 L15 23 L21 14 L17 9 Z' fill='%23eadfc4' opacity='.88'/%3E%3Cpath d='M2 0 L5 8 L1 16 L4 26 L0 36 L4 46 L1 56 L5 64 L2 72' stroke='%23cfe0ec' stroke-width='1.4' fill='none' opacity='.5'/%3E%3Cpath d='M44 0 L41 8 L45 16 L42 26 L46 36 L42 46 L45 56 L41 64 L44 72' stroke='%23cfe0ec' stroke-width='1.4' fill='none' opacity='.5'/%3E%3C/svg%3E");
+    box-shadow:0 20px 46px var(--shadow);
+  }
+  .board::after{
+    content:''; position:absolute; inset:0; border-radius:2px; opacity:.4; mix-blend-mode:multiply;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='c'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.6 .95' numOctaves='2'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23c)' opacity='.5'/%3E%3C/svg%3E");
+  }
+  /* Messingecken, wie an einem Hafenbuch */
+  .corner{ position:absolute; width:32px; height:32px; z-index:4; pointer-events:none;
+    background:linear-gradient(135deg, var(--or-lt) 0%, #8a6317 100%); opacity:.92; }
+  .corner.tl{ left:-9px; top:-9px; clip-path:polygon(0 0,100% 0,0 100%); }
+  .corner.tr{ right:-9px; top:-9px; clip-path:polygon(100% 0,100% 100%,0 0); }
+  .corner.bl{ left:-9px; bottom:-9px; clip-path:polygon(0 0,0 100%,100% 100%); }
+  .corner.br{ right:-9px; bottom:-9px; clip-path:polygon(100% 0,100% 100%,0 100%); }
+  .spine{
+    position:absolute; left:-10px; top:-9px; bottom:-9px; width:20px; z-index:3;
+    border-radius:3px 2px 2px 3px;
+    background:linear-gradient(90deg, var(--cloth-dk) 0%, var(--cloth) 55%, rgba(0,0,0,.34) 100%);
+    box-shadow:inset -3px 0 6px rgba(0,0,0,.4);
+  }
+  .spine::before,.spine::after{
+    content:''; position:absolute; left:4px; right:4px; height:2px;
+    background:linear-gradient(90deg,var(--or-lt),var(--or)); opacity:.55;
+  }
+  .spine::before{ top:26px; } .spine::after{ bottom:26px; }
+
+  #pages{ position:absolute; inset:0; perspective:1800px; }
+
+  /* Das Blatt ist nur die Wendefläche — gescrollt wird in .leaf-inner,
+     einem untransformierten Kind. Das bewahrt mobiles WebKit davor,
+     einen 3D-transformierten Scrollcontainer weiß zu rendern. */
+  .page{
+    position:absolute; inset:0; z-index:1; overflow:hidden;
+    transform-origin:left center; transform:rotateY(0deg);
+    backface-visibility:hidden;
+    opacity:0; visibility:hidden; pointer-events:none;
+    transition:transform .7s cubic-bezier(.36,.02,.22,1), opacity .42s ease;
+    background:
+      linear-gradient(90deg, rgba(0,0,0,.10) 0, rgba(0,0,0,0) 5%),
+      linear-gradient(176deg, var(--mares-hi), var(--mares) 56%, var(--mares-2));
+    border-radius:1px 3px 3px 1px;
+    box-shadow:inset 6px 0 14px rgba(60,70,50,.12);
+  }
+  .page.is-current{ opacity:1; visibility:visible; pointer-events:auto; z-index:20; transform:rotateY(0deg); }
+  .page.turn-out{ opacity:0; visibility:visible; z-index:30; transform:rotateY(-156deg); }
+  .page.turn-in{ opacity:0; visibility:visible; z-index:30; transform:rotateY(-156deg); }
+  /* Marès: Muschelkorn, Sägespuren des Steinbruchs, Sonnenflecken */
+  .page::after{
+    content:''; position:absolute; inset:0; pointer-events:none; z-index:0;
+    opacity:.55; mix-blend-mode:multiply;
+    background-image:
+      radial-gradient(circle at 86% 8%, rgba(180,140,60,.10), transparent 22%),
+      radial-gradient(circle at 8% 92%, rgba(140,120,60,.09), transparent 24%),
+      repeating-linear-gradient(90deg, rgba(120,105,70,.045) 0 1px, transparent 1px 38px),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.62' numOctaves='3' seed='9'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23p)' opacity='.3'/%3E%3C/svg%3E");
+  }
+
+  .leaf-inner{
+    position:absolute; inset:0; z-index:1;
+    overflow-y:auto; overflow-x:hidden;
+    -webkit-overflow-scrolling:touch; overscroll-behavior:contain; scrollbar-width:none;
+    padding:20px 20px 96px;
+  }
+  .leaf-inner::-webkit-scrollbar{ display:none; }
+
+  /* ── die Glastafel ───────────────────────────────────────────── */
+  .plate{ position:relative; margin:4px 0 8px; }
+  .plate-frame{
+    position:relative; overflow:hidden; background:var(--mares-hi);
+    border:1px solid var(--ink);
+    box-shadow:0 3px 12px rgba(30,50,60,.22), inset 0 0 0 3px var(--mares-hi), inset 0 0 0 4px rgba(184,134,44,.6);
+    padding:5px;
+  }
+  .plate-frame svg{ display:block; width:100%; height:auto; }
+  /* das Licht, das einmal durch die Scheibe fährt */
+  .plate-frame::after{
+    content:''; position:absolute; inset:0; z-index:3; pointer-events:none;
+    background:linear-gradient(104deg, transparent 34%, rgba(255,244,205,.42) 47%, transparent 60%);
+    transform:translateX(-130%);
+  }
+  .page.is-current .plate-frame::after{ animation:sweep 2.8s cubic-bezier(.4,0,.3,1) .45s forwards; }
+  @keyframes sweep{ to{ transform:translateX(130%); } }
+  .plate-cap{
+    font-family:'Marcellus SC', serif; font-size:.82rem; letter-spacing:.05em;
+    color:var(--ink-soft); text-align:center; margin-top:8px; line-height:1.3;
+  }
+
+  /* Glas: Scherben leuchten auf, Bleiruten ziehen sich nach */
+  .glass .sh{ opacity:0; transform-box:fill-box; transform-origin:center; transform:scale(.86); }
+  .glass .ld{ stroke-dasharray:1; stroke-dashoffset:1; fill:none; stroke-linecap:round; stroke-linejoin:round; }
+  .page.is-current .glass .sh{ animation:litup .72s cubic-bezier(.2,.8,.3,1) forwards; animation-delay:var(--del,0s); }
+  .page.is-current .glass .ld{ animation:leadline var(--dur,1.4s) cubic-bezier(.5,0,.2,1) forwards; animation-delay:var(--del,0s); }
+  @keyframes litup{ to{ opacity:1; transform:scale(1); } }
+  @keyframes leadline{ to{ stroke-dashoffset:0; } }
+
+  /* ── Typographie ─────────────────────────────────────────────── */
+  .chap{
+    font-family:'Marcellus SC', serif; letter-spacing:.2em;
+    font-size:.78rem; color:var(--terra); margin-top:8px;
+  }
+  h1.title{
+    font-family:'Italiana', serif; font-weight:400;
+    font-size:clamp(2.1rem,8.4vw,2.7rem); line-height:1.02; color:var(--ink);
+    margin:.04em 0; letter-spacing:.015em;
+  }
+  .local{ font-style:italic; font-size:1.08rem; color:var(--blau); }
+  .meta{
+    font-family:'Marcellus SC', serif; letter-spacing:.05em;
+    font-size:.74rem; color:var(--ink-soft);
+    margin-top:.55em; padding-top:.5em; border-top:1px solid var(--ink-faint);
+  }
+  .sec{ margin-top:16px; }
+  .lbl{
+    display:inline-block; font-family:'Marcellus SC', serif;
+    letter-spacing:.15em; font-size:.74rem;
+    color:var(--blau); border-bottom:1.5px solid var(--blau-lt); padding-bottom:2px; margin-bottom:8px;
+  }
+  .sec.fact .lbl{ color:var(--terra); border-color:var(--terra-lt); }
+  .sec p{ font-size:1.1rem; line-height:1.62; color:var(--ink); }
+  .sec p em{ font-style:italic; color:var(--terra); font-weight:500; }
+  .sec p strong{ font-weight:600; color:var(--blau-dk); font-style:normal; }
+  .drop::first-letter{
+    font-family:'Italiana', serif;
+    font-size:3.3em; line-height:.78; float:left; padding:6px 9px 0 0; color:var(--or);
+  }
+  .aside{
+    margin-top:14px; padding:9px 12px; border-left:3px solid var(--or);
+    background:rgba(184,134,44,.11);
+    font-size:.98rem; line-height:1.42; color:var(--ink-soft); font-style:italic;
+  }
+  .aside b{ font-weight:600; color:var(--terra); font-style:normal; }
+
+  /* ── UMSCHLAG ────────────────────────────────────────────────── */
+  .cover .leaf-inner{ display:flex; flex-direction:column; align-items:center; text-align:center; padding-top:24px; }
+  .cover .plate{ width:100%; }
+  .cover .rule{ width:60%; height:1px; background:linear-gradient(90deg,transparent,var(--or),transparent); margin:14px 0; }
+  .cover .place{ font-family:'Marcellus SC',serif; letter-spacing:.34em; font-size:.76rem; color:var(--terra); }
+  .cover h1{
+    font-family:'Italiana',serif; font-weight:400;
+    font-size:clamp(2.6rem,12vw,3.5rem); line-height:1; color:var(--ink); margin:.06em 0;
+    letter-spacing:.04em;
+  }
+  .cover .sub{ font-family:'Marcellus SC',serif; font-size:.94rem; letter-spacing:.09em; color:var(--blau); }
+  .cover .exlibris{
+    margin-top:18px; font-family:'Marcellus SC',serif; letter-spacing:.14em;
+    font-size:.64rem; color:var(--ink-soft); border:1px solid var(--ink-faint); padding:6px 12px;
+  }
+  .cover .begin{
+    margin-top:16px; font-family:'Marcellus SC',serif; letter-spacing:.12em;
+    font-size:.82rem; color:var(--terra);
+    animation:pulse 2.4s ease-in-out infinite;
+  }
+  @keyframes pulse{ 0%,100%{opacity:.5} 50%{opacity:1} }
+
+  /* ── INHALT ──────────────────────────────────────────────────── */
+  .toc h2{ font-family:'Italiana',serif; font-weight:400; font-size:2.1rem; color:var(--ink); }
+  .toc .lede{ font-style:italic; color:var(--ink-soft); margin:2px 0 6px; font-size:1.02rem; }
+  .toc ul{ list-style:none; }
+  .toc li{
+    display:flex; align-items:baseline; gap:12px; padding:10px 2px; cursor:pointer;
+    border-bottom:1px dotted var(--ink-faint); transition:padding-left .2s, background .2s;
+  }
+  .toc li:hover{ background:rgba(28,92,150,.09); padding-left:8px; }
+  .toc .rn{ font-family:'Marcellus SC',serif; color:var(--terra); min-width:32px; font-size:.9rem; }
+  .toc .tt{ flex:1; }
+  .toc .nm{ font-family:'Marcellus SC',serif; letter-spacing:.02em; font-size:.98rem; color:var(--ink); }
+  .toc .sb{ font-style:italic; font-size:.9rem; color:var(--ink-soft); }
+  .toc .di{ font-family:'Marcellus SC',serif; font-size:.72rem; color:var(--blau); white-space:nowrap; }
+  .toc .foot{ margin-top:12px; font-size:.95rem; font-style:italic; color:var(--ink-soft); text-align:center; line-height:1.35; }
+
+  /* ── KARTE ───────────────────────────────────────────────────── */
+  .mapleaf .leaf-inner{ display:flex; flex-direction:column; }
+  .mapleaf h2{ font-family:'Italiana',serif; font-weight:400; font-size:1.9rem; color:var(--ink); }
+  .mapleaf .lede{ font-style:italic; color:var(--ink-soft); font-size:.96rem; margin-bottom:8px; }
+  .map-holder{ position:relative; width:100%; aspect-ratio:320 / 275; border:1px solid var(--ink); background:var(--mares-hi); box-shadow:inset 0 0 0 3px var(--mares-hi), inset 0 0 0 4px rgba(184,134,44,.55); }
+  #map-svg{ width:100%; height:100%; display:block; touch-action:manipulation; }
+  .map-pin{ cursor:pointer; }
+  .maphint{ text-align:center; font-size:.92rem; font-style:italic; color:var(--ink-soft); margin-top:7px; line-height:1.35; }
+
+  /* ── feste Bedienelemente ────────────────────────────────────── */
+  .topbar{ position:fixed; z-index:12; top:0; left:0; right:0; display:flex; justify-content:space-between; padding:max(12px,env(safe-area-inset-top)) 16px 0; pointer-events:none; }
+  .chip{
+    pointer-events:auto; cursor:pointer;
+    font-family:'Marcellus SC',serif; letter-spacing:.09em; font-size:.68rem;
+    color:var(--mares-hi); background:rgba(6,28,46,.76);
+    border:1px solid rgba(224,180,81,.5); border-radius:2px; padding:7px 11px;
+    display:flex; align-items:center; gap:7px; backdrop-filter:blur(4px);
+    transition:background .2s,border-color .2s;
+  }
+  .chip:active{ transform:translateY(1px); }
+  .chip .dot{ width:7px; height:7px; border-radius:50%; background:var(--or-lt); }
+  .chip.locating .dot{ animation:blink 1s steps(2) infinite; }
+  .chip.on{ background:var(--blau); }
+  .chip.tts.on{ background:var(--terra); }
+  @keyframes blink{ 50%{opacity:.25} }
+
+  .nav{ position:fixed; z-index:12; left:0; right:0; bottom:max(16px,env(safe-area-inset-bottom)); display:flex; align-items:center; justify-content:center; gap:16px; pointer-events:none; }
+  .nav button{
+    pointer-events:auto; cursor:pointer; width:52px; height:52px; border-radius:50%;
+    border:1.5px solid var(--or); background:#0b2b45; color:var(--or-lt);
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 3px 10px rgba(0,0,0,.5);
+    transition:transform .15s, opacity .2s;
+  }
+  .nav button:active{ transform:scale(.9); }
+  .nav button:disabled{ opacity:.28; cursor:default; }
+  .nav button svg{ width:20px; height:20px; }
+  .progress{ pointer-events:none; font-family:'Marcellus SC',serif; letter-spacing:.11em; color:var(--mares-hi); background:rgba(6,28,46,.76); border:1px solid rgba(224,180,81,.4); border-radius:18px; padding:8px 15px; font-size:.7rem; min-width:78px; text-align:center; }
+
+  @media (max-width:360px){ .sec p{ font-size:1.04rem; } h1.title{ font-size:1.9rem; } }
+  @media (prefers-reduced-motion:reduce){
+    .page{ transition:none; }
+    .glass .sh{ opacity:1; transform:none; } .glass .ld{ stroke-dashoffset:0; }
+    .page.is-current .glass .sh, .page.is-current .glass .ld, .page.is-current .plate-frame::after{ animation:none; }
+    .glare,.grain,.swift{ animation:none; }
+  }
+</style>
+</head>
+<body>
+<div class="bay"></div>
+<div class="swifts" id="swifts"></div>
+<div class="glare"></div>
+<div class="grain"></div>
+
+<div class="topbar">
+  <div class="chip gps" id="gps"><span class="dot"></span><span id="gps-label">Standort</span></div>
+  <div class="chip tts" id="tts"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13 3a4 4 0 00-2-3.46v6.92A4 4 0 0016 12z"/></svg><span id="tts-label">Vorlesen</span></div>
+</div>
+
+<div id="stage">
+  <div id="book">
+    <div class="deckshadow"></div>
+    <div class="board"></div>
+    <div class="spine"></div>
+    <div class="corner tl"></div><div class="corner tr"></div>
+    <div class="corner bl"></div><div class="corner br"></div>
+    <div id="pages"></div>
+  </div>
+</div>
+
+<div class="nav">
+  <button id="prev" aria-label="Zurück"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button>
+  <div class="progress" id="progress">01 / 12</div>
+  <button id="next" aria-label="Weiter"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
+</div>
+
+<script>
+/* ══════════════════════════════════════════════════════════════
+   PALMA — LICHT UND MARÈS · Maschinerie
+   ══════════════════════════════════════════════════════════════ */
+const NS='http://www.w3.org/2000/svg';
+
+/* Die drei Tinten plus Stein — mehr kommt in keiner Tafel vor.
+   (Blau in drei Werten, Terrakotta, Gold, ein Grün; Marès als Papier.) */
+const C={
+  ink:'#1e2f3f', inkSoft:'#40607a', inkFaint:'#8d9aa2',
+  lead:'#16293a',
+  mares:'#dcc79b', maresDk:'#bda173', maresLt:'#f2e6c8',
+  blau:'#1c5c96', blauDk:'#123a5c', blauLt:'#4f9ad4', blauPl:'#a8cbe6',
+  or:'#b8862c', orLt:'#e0b451',
+  terra:'#b8492a', terraLt:'#d9713f',
+  verd:'#4e7a58', verdLt:'#7ba679',
+  night:'#0d2b44', sky:'#f0dcac', skyLt:'#f8ecca'
+};
+
+/* Zeitraffer für das Aufleuchten der Scherben */
+const SP=.5;
+const D=v=>(+v*SP).toFixed(2);
+
+/* ── Bausteine einer Glastafel ───────────────────────────────── */
+function sh(d,fill,del,op){                       // Scherbe
+  return `<path class="sh" style="--del:${D(del)}s" d="${d}" fill="${fill}"${op===undefined?'':` fill-opacity="${op}"`}/>`;
+}
+function rc(x,y,w,h,fill,del,op){                 // rechteckige Scherbe
+  return sh(`M${x} ${y} h${w} v${h} h${-w} Z`,fill,del,op);
+}
+function ci(cx,cy,r,fill,del,op){                 // runde Scherbe
+  return `<circle class="sh" style="--del:${D(del)}s" cx="${cx}" cy="${cy}" r="${r}" fill="${fill}"${op===undefined?'':` fill-opacity="${op}"`}/>`;
+}
+function el(cx,cy,rx,ry,fill,del,op){
+  return `<ellipse class="sh" style="--del:${D(del)}s" cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="${fill}"${op===undefined?'':` fill-opacity="${op}"`}/>`;
+}
+function ld(d,del,dur,w,col){                     // Bleirute
+  return `<path class="ld" pathLength="1" style="--del:${D(del)}s;--dur:${dur||1.2}s" d="${d}" stroke="${col||C.lead}" stroke-width="${w||1.1}"/>`;
+}
+function tx(x,y,t,del,o){
+  o=o||{};
+  return `<text class="sh" style="--del:${D(del)}s" x="${x}" y="${y}" fill="${o.fill||C.inkSoft}" font-family="${o.ff||"'Marcellus SC',serif"}" font-size="${o.fs||9}" font-style="${o.fi||'normal'}" text-anchor="${o.ta||'start'}" letter-spacing="${o.ls||0.5}">${t}</text>`;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   DIE TAFELN
+   Jede zeigt, woran der Ort auf der Straße wiederzuerkennen ist.
+   ══════════════════════════════════════════════════════════════ */
+function illustrationSVG(type){
+  const open=`<svg viewBox="0 0 320 206" xmlns="${NS}"><g class="glass">`;
+  const openT=`<svg viewBox="0 0 320 226" xmlns="${NS}"><g class="glass">`;
+  const close=`</g></svg>`;
+
+  /* Wiederkehrende Bausteine */
+  const palm=(x,y,h,del)=>{
+    let s=sh(`M${x-2} ${y} l1.6 ${-h} h2.8 l1.6 ${h} Z`,C.maresDk,del);
+    const fr=[[-26,-12],[-18,-22],[0,-26],[18,-22],[26,-12]];
+    fr.forEach((f,i)=>{ s+=sh(`M${x} ${y-h} q ${f[0]*.55} ${f[1]*.9} ${f[0]} ${f[1]} q ${-f[0]*.42} ${-f[1]*.2} ${-f[0]} ${-f[1]} Z`,i%2?C.verd:C.verdLt,del+.05*i); });
+    return s;
+  };
+  const crenel=(x0,x1,y,step,d,fill,del)=>{     // Zinnenkranz
+    let s='',x=x0,i=0;
+    for(;x<x1-step;x+=step*2,i++) s+=rc(x,y-d,step,d,fill,del+i*.02);
+    return s;
+  };
+  const arcRow=(x0,y0,n,w,h,fill,del,horse)=>{  // Arkadenreihe, rund oder hufeisen
+    let s='';
+    for(let i=0;i<n;i++){
+      const x=x0+i*w, r=w*.36, cx=x+w/2, top=y0;
+      const d=horse
+        ? `M${cx-r} ${top+h} L${cx-r} ${top+r*.55} A${r} ${r} 0 1 1 ${cx+r} ${top+r*.55} L${cx+r} ${top+h} Z`
+        : `M${cx-r} ${top+h} L${cx-r} ${top+r} A${r} ${r} 0 0 1 ${cx+r} ${top+r} L${cx+r} ${top+h} Z`;
+      s+=sh(d,fill,del+i*.06);
+    }
+    return s;
+  };
+
+  /* ── UMSCHLAG: die Rosette, das gotische Auge ───────────────── */
+  if(type==='rosassa'){
+    const cx=160, cy=103, R=94;
+    const cols=[C.blau,C.terra,C.or,C.blauDk,C.verd,C.blauLt];
+    let s=`<svg viewBox="0 0 320 206" xmlns="${NS}"><g class="glass">`;
+    s+=ci(cx,cy,R+8,C.maresDk,0);
+    s+=ci(cx,cy,R,C.night,.06);
+    // Kranz aus 24 Lanzetten
+    for(let i=0;i<24;i++){
+      const a0=(i/24)*Math.PI*2-Math.PI/2, a1=((i+1)/24)*Math.PI*2-Math.PI/2, r0=54, r1=R-5;
+      const p=(r,a)=>`${(cx+r*Math.cos(a)).toFixed(1)} ${(cy+r*Math.sin(a)).toFixed(1)}`;
+      s+=sh(`M${p(r0,a0+.02)} L${p(r1,a0+.02)} A${r1} ${r1} 0 0 1 ${p(r1,a1-.02)} L${p(r0,a1-.02)} Z`,cols[i%6],.2+i*.028);
+    }
+    // Sechsstern im Kern — das Muster der Seu
+    const star=(rot,fill,del)=>{
+      let d='';
+      for(let i=0;i<3;i++){
+        const a=rot+i*(Math.PI*2/3), r=48;
+        d+=(i?'L':'M')+(cx+r*Math.cos(a)).toFixed(1)+' '+(cy+r*Math.sin(a)).toFixed(1)+' ';
+      }
+      return sh(d+'Z',fill,del,.92);
+    };
+    s+=star(-Math.PI/2,C.blauLt,.95);
+    s+=star(Math.PI/2,C.orLt,1.05);
+    s+=ci(cx,cy,17,C.terra,1.2);
+    s+=ci(cx,cy,8,C.maresLt,1.3);
+    // Bleiruten
+    s+=ld(`M${cx-R} ${cy} a${R} ${R} 0 1 0 ${R*2} 0 a${R} ${R} 0 1 0 ${-R*2} 0`,.1,1.6,1.4);
+    s+=ld(`M${cx-54} ${cy} a54 54 0 1 0 108 0 a54 54 0 1 0 -108 0`,.7,1.2,1.1);
+    for(let i=0;i<12;i++){
+      const a=(i/12)*Math.PI*2;
+      s+=ld(`M${(cx+54*Math.cos(a)).toFixed(1)} ${(cy+54*Math.sin(a)).toFixed(1)} L${(cx+(R-5)*Math.cos(a)).toFixed(1)} ${(cy+(R-5)*Math.sin(a)).toFixed(1)}`,.5+i*.02,.7,.9);
+    }
+    return s+close;
+  }
+
+  /* ── I · Die Kathedrale von Süden, über dem Wasser ──────────── */
+  if(type==='seu'){
+    let s=open;
+    s+=rc(0,0,320,84,C.skyLt,0);
+    s+=rc(0,84,320,62,C.sky,.05);
+    s+=ci(46,42,17,C.orLt,.12);
+    // Baukörper
+    s+=rc(30,64,258,84,C.blauDk,.2);            // Schiff
+    s+=rc(30,50,34,98,C.blauDk,.26);            // Glockenturm
+    s+=sh('M30 50 L47 34 L64 50 Z',C.blau,.3);
+    // Strebepfeiler und Fialen an der Südflanke
+    for(let i=0;i<7;i++){
+      const x=74+i*30;
+      s+=sh(`M${x} 148 L${x+7} 148 L${x+11} 70 L${x+4} 70 Z`,C.blau,.34+i*.05);
+      s+=sh(`M${x+2} 70 L${x+7.5} 52 L${x+13} 70 Z`,C.blauLt,.4+i*.05);
+      s+=sh(`M${x+11} 100 q 14 -8 26 -2 l -1 7 q -12 -5 -25 2 Z`,C.blau,.46+i*.05,.75);
+    }
+    // Chorschluss mit der großen Rosette
+    s+=sh('M288 148 L288 60 L306 74 L306 148 Z',C.blauDk,.62);
+    s+=ci(268,96,15,C.night,.72);
+    s+=ci(268,96,12,C.terra,.78);
+    s+=ci(268,96,5,C.orLt,.84);
+    // Kaimauer und Wasser
+    s+=rc(0,148,320,16,C.maresDk,.5);
+    s+=rc(0,164,320,42,C.blau,.56);
+    for(let i=0;i<5;i++) s+=rc(0,170+i*8,320,3,C.blauLt,.6+i*.04,.55);
+    s+=rc(60,164,20,42,C.blauPl,.8,.3);
+    s+=rc(150,164,26,42,C.blauPl,.86,.26);
+    s+=ld('M0 148 H320',.5,.9,1.1);
+    s+=ld('M30 148 V50 L47 34 L64 50 V148',.24,1.4,1.2);
+    return s+close;
+  }
+
+  /* ── II · Almudaina über dem Parc de la Mar ─────────────────── */
+  if(type==='almudaina'){
+    let s=open;
+    s+=rc(0,0,320,150,C.skyLt,0);
+    s+=rc(0,60,320,90,C.sky,.06,.7);
+    // Mauerzug
+    s+=rc(24,74,272,72,C.mares,.14);
+    s+=crenel(24,296,74,11,9,C.maresDk,.2);
+    // Torre de l'Àngel
+    s+=rc(126,32,50,114,C.maresLt,.3);
+    s+=crenel(126,176,32,10,8,C.maresDk,.36);
+    s+=sh('M151 30 l7 -10 l7 5 l-3 5 Z',C.orLt,.46);   // der Engel als Wetterfahne
+    s+=rc(150,10,2,12,C.or,.44);
+    // Fenster
+    [ [46,96],[74,96],[210,96],[240,96],[268,96] ].forEach((p,i)=>{
+      s+=sh(`M${p[0]} ${p[1]+22} L${p[0]} ${p[1]+6} A6 6 0 0 1 ${p[0]+12} ${p[1]+6} L${p[0]+12} ${p[1]+22} Z`,C.blauDk,.4+i*.05);
+    });
+    s+=rc(138,58,10,26,C.blauDk,.5);
+    s+=rc(154,58,10,26,C.blauDk,.54);
+    // Hufeisenarkade am Fuß — das Maurische, das geblieben ist
+    s+=arcRow(30,116,10,26,30,C.blauDk,.58,true);
+    // Garten und Wasserbecken
+    s+=rc(0,146,320,14,C.maresDk,.72);
+    s+=rc(0,160,320,46,C.blauLt,.76,.85);
+    for(let i=0;i<4;i++) s+=rc(0,168+i*9,320,2.5,C.maresLt,.82+i*.03,.5);
+    s+=rc(120,160,58,46,C.blauPl,.9,.4);
+    s+=palm(40,160,52,.86);
+    s+=palm(284,160,44,.92);
+    s+=ld('M24 146 V74 H296 V146',.16,1.5,1.2);
+    s+=ld('M126 146 V32 H176 V146',.34,1.2,1.2);
+    return s+close;
+  }
+
+  /* ── III · Sa Llotja: Fassade und ein gewundener Pfeiler ────── */
+  if(type==='llotja'){
+    let s=open;
+    s+=rc(0,0,320,206,C.maresLt,0,.55);
+    // Fassade
+    s+=rc(30,58,152,120,C.mares,.1);
+    [30,166].forEach((x,i)=>{                       // zwei der vier Ecktürmchen
+      s+=rc(x,42,16,136,C.maresDk,.16+i*.04);
+      s+=sh(`M${x} 42 L${x+8} 22 L${x+16} 42 Z`,C.blau,.24+i*.04);
+    });
+    s+=crenel(46,166,58,9,7,C.maresDk,.3);
+    // drei hohe Maßwerkfenster
+    [56,92,128].forEach((x,i)=>{
+      s+=sh(`M${x} 152 L${x} 92 A11 11 0 0 1 ${x+22} 92 L${x+22} 152 Z`,C.blauDk,.36+i*.07);
+      s+=ld(`M${x+11} 152 V84`,.5+i*.05,.7,.9,C.maresLt);
+      s+=ci(x+11,88,4,C.orLt,.56+i*.05);
+    });
+    // Portal mit dem Schutzengel der Kaufleute
+    s+=sh('M92 178 L92 148 A14 14 0 0 1 120 148 L120 178 Z',C.blauDk,.6);
+    s+=ci(106,140,9,C.maresLt,.68);
+    s+=sh('M106 133 l6 8 l-6 8 l-6 -8 Z',C.orLt,.74);
+    s+=rc(0,178,320,28,C.maresDk,.3,.8);
+    s+=ld('M30 178 V42 M182 178 V42',.12,1.4,1.2);
+    // Trennfuge
+    s+=ld('M200 24 V190',.9,.9,.8,C.inkFaint);
+    // der gewundene Pfeiler — sechs stehen so im Saal
+    const bx=262;
+    for(let i=0;i<9;i++){
+      const y=166-i*13, sk=(i%2?4:-4);
+      s+=sh(`M${bx-11+sk} ${y} L${bx+11+sk} ${y-4} L${bx+11-sk} ${y-13} L${bx-11-sk} ${y-9} Z`,i%2?C.mares:C.maresDk,.95+i*.05);
+    }
+    s+=rc(bx-16,166,32,10,C.maresDk,.92);
+    [[-46,-30],[-26,-42],[26,-42],[46,-30]].forEach((r,i)=>{
+      s+=ld(`M${bx} 50 q ${r[0]*.4} ${r[1]*.5} ${r[0]} ${r[1]}`,1.4+i*.06,1.1,2,C.maresDk);
+    });
+    s+=ld(`M${bx} 166 V50`,1.35,1.2,1.4,C.inkSoft);
+    s+=tx(262,192,'sechs Pfeiler, keine Kapitelle',1.6,{ta:'middle',fs:8.5,fill:C.inkSoft});
+    s+=tx(106,196,'die Seefassade',1.6,{ta:'middle',fs:8.5,fill:C.inkSoft});
+    return s+close;
+  }
+
+  /* ── IV · Plaça de Cort: Dachgesims, Uhr, Ölbaum ────────────── */
+  if(type==='cort'){
+    let s=open;
+    s+=rc(0,0,320,206,C.skyLt,0,.8);
+    // Rathausfassade
+    s+=rc(96,46,224,132,C.mares,.12);
+    // das weit vorstehende Gesims (ràfec) samt Konsolen
+    s+=sh('M84 46 L320 46 L320 62 L84 62 Z',C.maresDk,.2);
+    s+=sh('M84 46 L320 46 L320 40 L92 40 Z',C.terra,.26,.85);
+    for(let i=0;i<14;i++) s+=rc(94+i*16,62,7,13,C.maresDk,.3+i*.02);
+    // Uhr „En Figuera"
+    s+=ci(214,102,19,C.maresLt,.5);
+    s+=ci(214,102,15,C.night,.56);
+    s+=ld('M214 102 V92 M214 102 L222 106',.66,.8,1.4,C.orLt);
+    s+=ci(214,102,2,C.orLt,.7);
+    // Balkone
+    [[120,128],[262,128]].forEach((p,i)=>{
+      s+=rc(p[0],p[1]-32,34,32,C.blauDk,.44+i*.05);
+      s+=rc(p[0]-4,p[1],42,7,C.maresDk,.5+i*.05);
+      for(let k=0;k<6;k++) s+=rc(p[0]-2+k*7,p[1]-9,2,9,C.or,.54+i*.04+k*.015);
+    });
+    s+=rc(190,140,46,38,C.blauDk,.56);
+    s+=rc(0,178,320,28,C.maresDk,.24,.85);
+    s+=ld('M84 46 H320 M96 46 V178',.16,1.4,1.2);
+    // die Olivera — 1989 aus Pollença hierher versetzt
+    s+=sh('M46 178 q -6 -34 4 -50 q -12 -14 -2 -22 q 10 -8 16 4 q 8 -10 14 2 q 6 12 -4 18 q 8 18 2 48 Z',C.maresDk,.8);
+    [[40,86,20],[70,80,22],[54,64,19],[86,64,15],[30,66,14]].forEach((o,i)=>{
+      s+=el(o[0],o[1],o[2],o[2]*.72,i%2?C.verd:C.verdLt,.86+i*.06,.94);
+    });
+    s+=el(58,74,10,7,C.orLt,1.2,.55);
+    s+=ld('M52 178 q -6 -36 2 -54',.84,1,1.1,C.ink);
+    s+=tx(58,196,'Sa Olivera',1.3,{ta:'middle',fs:8.5,fill:C.inkSoft});
+    s+=tx(214,196,'Ajuntament',1.3,{ta:'middle',fs:8.5,fill:C.inkSoft});
+    return s+close;
+  }
+
+  /* ── V · Sant Francesc: Barockportal, Rosette, Kreuzgang ────── */
+  if(type==='francesc'){
+    let s=open;
+    s+=rc(0,0,320,206,C.skyLt,0,.75);
+    // Giebelfront
+    s+=rc(70,52,180,110,C.mares,.1);
+    s+=sh('M70 52 L160 18 L250 52 Z',C.maresDk,.16);
+    s+=rc(58,150,204,12,C.maresDk,.2);
+    // Rosette
+    s+=ci(160,84,25,C.night,.3);
+    for(let i=0;i<8;i++){
+      const a=(i/8)*Math.PI*2, r=17;
+      s+=ci(160+r*Math.cos(a),84+r*Math.sin(a),5.6,i%2?C.blau:C.terra,.36+i*.04);
+    }
+    s+=ci(160,84,6,C.orLt,.7);
+    s+=ld('M135 84 a25 25 0 1 0 50 0 a25 25 0 1 0 -50 0',.26,1.2,1.2);
+    // Barockportal von 1700
+    s+=sh('M136 150 L136 124 A24 24 0 0 1 184 124 L184 150 Z',C.blauDk,.5);
+    s+=rc(120,116,12,34,C.maresDk,.56);
+    s+=rc(188,116,12,34,C.maresDk,.6);
+    s+=sh('M126 116 l-8 -12 h24 Z',C.terra,.64,.9);
+    s+=sh('M194 116 l-8 -12 h24 Z',C.terra,.68,.9);
+    // Juníper Serra auf dem Platz
+    s+=rc(36,132,20,30,C.maresDk,.74);
+    s+=sh('M46 132 q -7 -4 -6 -14 q 1 -12 6 -12 q 5 0 6 12 q 1 10 -6 14 Z',C.blauDk,.8);
+    s+=ci(46,102,5,C.blauDk,.84);
+    // Kreuzgang als Sockelband, mit Orangenbaum
+    s+=rc(0,162,320,44,C.maresLt,.34,.9);
+    s+=arcRow(14,168,10,26,30,C.blauDk,.9,false);
+    for(let i=0;i<11;i++) s+=rc(12+i*26,168,4,30,C.maresDk,.94+i*.02);
+    s+=el(276,182,20,17,C.verd,1.3);
+    s+=rc(274,190,4,14,C.maresDk,1.34);
+    [[266,178],[284,176],[276,188],[288,186]].forEach((o,i)=> s+=ci(o[0],o[1],3,C.terraLt,1.4+i*.04));
+    s+=ld('M0 162 H320',.3,1,1);
+    s+=tx(160,201,'Kreuzgang — trapezförmig, kein Rechteck',1.5,{ta:'middle',fs:8,fill:C.inkSoft});
+    return s+close;
+  }
+
+  /* ── VI · Plaça Major und das Gesicht von Can Forteza Rey ───── */
+  if(type==='major'){
+    let s=open;
+    s+=rc(0,0,320,206,C.skyLt,0,.75);
+    // Platzfront mit Arkaden
+    s+=rc(10,34,176,144,C.mares,.1);
+    s+=rc(4,26,188,10,C.maresDk,.16);
+    for(let r=0;r<2;r++){
+      for(let i=0;i<5;i++){
+        s+=rc(22+i*32,50+r*40,20,26,C.blauDk,.22+r*.1+i*.04);
+        s+=rc(18+i*32,76+r*40,28,4,C.maresDk,.3+r*.08+i*.03);
+        s+=rc(22+i*32,50+r*40,9,26,C.verd,.34+r*.08+i*.03,.85);
+      }
+    }
+    s+=arcRow(14,138,5,34,40,C.maresDk,.5,false);
+    for(let i=0;i<5;i++) s+=sh(`M${14+i*34} 178 L${14+i*34} 138 L${20+i*34} 138 L${20+i*34} 178 Z`,C.maresDk,.56+i*.03);
+    s+=ld('M10 178 V34 H186 V178',.14,1.5,1.2);
+    // Trennfuge
+    s+=ld('M200 22 V190',.7,.8,.8,C.inkFaint);
+    // Can Forteza Rey: das Trencadís-Gesicht über der Tür
+    const fx=260, fy=92;
+    s+=rc(212,22,96,168,C.mares,.6,.75);
+    const shards=[[-30,-34,16],[-8,-40,15],[14,-36,15],[30,-24,14],[-36,-14,14],[34,-4,14],[-34,8,13],[28,14,13],[-20,24,14],[4,30,15],[20,24,13],[-4,-16,14],[-18,4,13],[10,2,14]];
+    const pal=[C.terraLt,C.orLt,C.verdLt,C.blauLt,C.terra,C.or];
+    shards.forEach((p,i)=>{
+      s+=sh(`M${fx+p[0]} ${fy+p[1]-p[2]/2} L${fx+p[0]+p[2]/2} ${fy+p[1]} L${fx+p[0]} ${fy+p[1]+p[2]/2} L${fx+p[0]-p[2]/2} ${fy+p[1]} Z`,pal[i%6],.66+i*.045,.95);
+    });
+    s+=ci(fx-14,fy-10,7,C.maresLt,1.3);
+    s+=ci(fx+14,fy-10,7,C.maresLt,1.34);
+    s+=ci(fx-14,fy-10,3.4,C.night,1.4);
+    s+=ci(fx+14,fy-10,3.4,C.night,1.44);
+    s+=sh(`M${fx} ${fy-4} l5 16 h-10 Z`,C.night,1.5,.8);
+    s+=sh(`M${fx-13} ${fy+26} q 13 10 26 0 q -13 18 -26 0 Z`,C.night,1.56,.85);
+    // schmiedeeiserne Schnörkel darüber
+    s+=ld(`M${fx-38} ${fy-52} q 38 -22 76 0`,1.6,1,1.6,C.ink);
+    s+=ld(`M${fx-24} ${fy-48} q 8 -14 24 -6 q 16 8 24 -6`,1.7,1.1,1.4,C.ink);
+    s+=sh(`M${fx-20} 160 L${fx-20} 140 A20 20 0 0 1 ${fx+20} 140 L${fx+20} 160 Z`,C.blauDk,1.5);
+    s+=rc(212,178,96,12,C.maresDk,1.2,.9);
+    s+=tx(98,199,'die Arkaden',1.8,{ta:'middle',fs:8.5,fill:C.inkSoft});
+    s+=tx(260,199,'Can Forteza Rey, 1909',1.8,{ta:'middle',fs:8.5,fill:C.inkSoft});
+    return s+close;
+  }
+
+  /* ── VII · Es Born: Platanen, Sphinx, der Fluss darunter ───── */
+  if(type==='born'){
+    let s=open;
+    s+=rc(0,0,320,206,C.skyLt,0,.8);
+    s+=rc(0,0,320,54,C.sky,.05,.6);
+    // die Promenade als sich öffnendes Trapez
+    s+=sh('M132 60 L188 60 L236 178 L84 178 Z',C.maresLt,.1);
+    for(let i=1;i<7;i++){
+      const t=i/7, y=60+t*118, x0=132-t*48, x1=188+t*48;
+      s+=ld(`M${x0.toFixed(0)} ${y.toFixed(0)} H${x1.toFixed(0)}`,.2+i*.05,.7,.7,C.maresDk);
+    }
+    // Platanenreihen
+    const tree=(x,y,r,del)=>{
+      let t=rc(x-4,y-r*.4,8,r*1.1,C.maresDk,del);
+      t+=el(x,y-r,r,r*.82,C.verd,del+.05,.95);
+      t+=el(x-r*.45,y-r*1.2,r*.6,r*.5,C.verdLt,del+.1,.9);
+      return t;
+    };
+    [[26,150,30],[66,132,26],[100,116,21],[124,102,16]].forEach((p,i)=> s+=tree(p[0],p[1],p[2],.34+i*.08));
+    [[294,150,30],[254,132,26],[220,116,21],[196,102,16]].forEach((p,i)=> s+=tree(p[0],p[1],p[2],.38+i*.08));
+    // Sphinx auf ihrem Sockel — seit 1833 an beiden Enden
+    s+=rc(238,146,44,32,C.mares,.9);
+    s+=sh('M242 146 q 10 -6 26 -6 l 12 -4 l 2 -12 l 6 -2 l -2 16 q 4 8 -2 8 Z',C.maresDk,.98);
+    s+=ci(284,128,4,C.maresDk,1.05);
+    // der verlegte Torrent, der noch immer darunter liegt
+    s+=sh('M0 184 q 40 -12 80 0 q 40 12 80 0 q 40 -12 80 0 q 40 12 80 0 L320 206 L0 206 Z',C.blau,1.1,.5);
+    s+=ld('M0 182 q 40 -12 80 0 q 40 12 80 0 q 40 -12 80 0 q 40 12 80 0',1.15,1.4,1.2,C.blauDk);
+    s+=tx(160,200,'Sa Riera — das Bett unter dem Pflaster',1.5,{ta:'middle',fs:8.5,fill:C.blauDk});
+    return s+close;
+  }
+
+  /* ── Am Tresen: vier Tafeln ─────────────────────────────────── */
+  if(type==='tresen'){
+    let s=openT;
+    s+=rc(0,0,320,226,C.maresLt,0,.5);
+    s+=ld('M160 10 V216 M10 113 H310',.1,1.3,.9,C.inkFaint);
+    // 1 · Ensaïmada — die Schnecke aus Blätterteig
+    for(let i=5;i>=1;i--){
+      s+=ci(80,58,i*8,i%2?C.orLt:C.or,.2+ (5-i)*.06,.95);
+    }
+    s+=ci(80,58,6,C.maresLt,.55);
+    for(let i=0;i<9;i++){
+      const a=i*.7;
+      s+=ci(80+Math.cos(a)*(12+i*3.4),58+Math.sin(a)*(12+i*3.4),2.4,'#ffffff',.6+i*.03,.9);
+    }
+    s+=tx(80,100,'ensaïmada · mit saïm gebacken',.9,{ta:'middle',fs:8,fill:C.inkSoft});
+    // 2 · Quarto mit Mandeleis
+    s+=sh('M206 84 L286 84 L280 56 L212 56 Z',C.orLt,.3);
+    s+=sh('M212 56 L280 56 L276 46 L216 46 Z',C.sky,.36);
+    s+=ci(246,34,15,C.maresLt,.44);
+    s+=ci(240,30,5,'#ffffff',.5,.7);
+    s+=ld('M206 84 H286',.34,.8,1);
+    s+=tx(246,100,'quarto amb gelat d’ametla',.9,{ta:'middle',fs:8,fill:C.inkSoft});
+    // 3 · Granissat d’ametla
+    s+=sh('M62 200 L98 200 L104 138 L56 138 Z',C.blauPl,.6,.55);
+    s+=sh('M58 152 L102 152 L98 200 L62 200 Z',C.maresLt,.66,.95);
+    s+=rc(84,116,4,40,C.terra,.72);
+    s+=ld('M56 138 L62 200 H98 L104 138',.62,1.1,1.2);
+    s+=tx(80,216,'granissat d’ametla',.95,{ta:'middle',fs:8,fill:C.inkSoft});
+    // 4 · Pa amb oli mit Ramallet-Tomate
+    s+=sh('M198 186 q 6 -34 48 -34 q 42 0 48 34 Z',C.maresDk,.7);
+    s+=sh('M206 178 q 6 -22 40 -22 q 34 0 40 22 Z',C.or,.76,.9);
+    s+=ci(232,168,9,C.terra,.84);
+    s+=ci(252,172,7,C.terraLt,.88);
+    s+=ci(232,168,3,C.terraLt,.92,.8);
+    s+=el(246,152,7,4,C.verd,.96,.9);
+    s+=tx(246,216,'pa amb oli · tomàtiga de ramellet',1,{ta:'middle',fs:8,fill:C.inkSoft});
+    return s+close;
+  }
+
+  /* ── Vorsatzblatt: die Rosette als Windrose, dazu die Zeichen ─ */
+  if(type==='endpapier'){
+    let s=open;
+    s+=rc(0,0,320,206,C.maresLt,0,.5);
+    const cx=92, cy=100, R=68;
+    s+=ci(cx,cy,R,C.maresLt,.05);
+    for(let i=0;i<8;i++){
+      const a=(i/8)*Math.PI*2-Math.PI/2, b=a+Math.PI/8;
+      const p=(r,ang)=>`${(cx+r*Math.cos(ang)).toFixed(1)} ${(cy+r*Math.sin(ang)).toFixed(1)}`;
+      s+=sh(`M${p(0,0)} L${p(R,a)} L${p(R*.34,b)} Z`,i%2?C.blau:C.blauDk,.14+i*.05);
+      s+=sh(`M${p(0,0)} L${p(R,a)} L${p(R*.34,a-Math.PI/8)} Z`,i%2?C.blauLt:C.or,.18+i*.05);
+    }
+    s+=ci(cx,cy,10,C.terra,.62);
+    s+=ci(cx,cy,4,C.maresLt,.68);
+    s+=ld(`M${cx-R-6} ${cy} a${R+6} ${R+6} 0 1 0 ${(R+6)*2} 0 a${R+6} ${R+6} 0 1 0 ${-(R+6)*2} 0`,.1,1.5,1.2);
+    s+=tx(cx,20,'N',.7,{ta:'middle',fs:13,fill:C.terra});
+    s+=tx(cx,192,'S',.74,{ta:'middle',fs:11,fill:C.inkSoft});
+    s+=tx(cx+R+12,104,'E',.78,{ta:'middle',fs:11,fill:C.inkSoft});
+    s+=tx(cx-R-12,104,'O',.82,{ta:'middle',fs:11,fill:C.inkSoft});
+    // Zeichenerklärung
+    s+=ci(196,42,9,C.maresLt,.9);
+    s+=ld('M187 42 a9 9 0 1 0 18 0 a9 9 0 1 0 -18 0',.92,.8,1.2);
+    s+=tx(212,46,'Station der Runde',.96,{fs:9.5,fill:C.ink});
+    s+=sh('M196 68 l3 7 l7.5 .5 l-6 4.6 l2 7.4 l-6.5 -4.3 l-6.5 4.3 l2 -7.4 l-6 -4.6 l7.5 -.5 Z',C.terra,1);
+    s+=tx(212,84,'Sie sind hier',1.04,{fs:9.5,fill:C.ink});
+    s+=ld('M186 118 H208',1.08,.7,2.4,C.terra);
+    s+=tx(212,122,'der Weg, 2,4 km',1.12,{fs:9.5,fill:C.ink});
+    s+=rc(186,140,22,7,C.blau,1.16,.6);
+    s+=tx(212,148,'Sa Riera, verlegt',1.2,{fs:9.5,fill:C.ink});
+    s+=rc(186,164,22,7,C.mares,1.24);
+    s+=tx(212,172,'Häuserblöcke',1.28,{fs:9.5,fill:C.ink});
+    return s+close;
+  }
+
+  return open+close;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   DIE STATIONEN
+   ══════════════════════════════════════════════════════════════ */
+const sites=[
+  { id:'seu', num:'I', rn:'I', art:'seu', cap:'die Südflanke über dem Parc de la Mar — Strebewerk, Fialen, Chorrosette',
+    name:'La Seu', local:'Catedral de Santa Maria de Mallorca',
+    meta:'Baubeginn 1229/30 · Mittelschiff 44 m · Rosette 13 m, 1.236 Glasstücke',
+    lat:39.5666, lng:2.6486,
+    lookLabel:'Vor Ort', factLabel:'Aus der Chronik',
+    look:`Gehen Sie zuerst außen an der Mauer über dem <em>Parc de la Mar</em> entlang, ehe Sie hineingehen: von hier sieht man, dass die Kathedrale eine Wand ist, keine Kirche. Drinnen dann die Zahlen nachprüfen — die achteckigen Pfeiler messen nur anderthalb Meter im Durchmesser und tragen 44 Meter Gewölbe. Über dem Altar hängt der siebeneckige <em>Baldachin</em>, den Antoni Gaudí zwischen 1904 und 1914 entwarf. Und ganz rechts hinten, in der Kapelle des Heiligen Sakraments, die gebrannte Tonwand von Miquel Barceló: Fische, Brote, aufgerissener Ton.`,
+    fact:`Jaume I. landete 1229 auf der Insel und nahm die Stadt am 31. Dezember; die Kirche wuchs auf dem Grund der Hauptmoschee, und gebaut wurde daran über vierhundert Jahre. Die Westfassade, die Sie heute sehen, ist jung: das <strong>Erdbeben von 1851</strong> brachte sie zum Einsturz, der Madrider Architekt Juan Bautista Peyronnet setzte sie neu. Zweimal im Jahr — am <em>2. Februar</em> und am <em>11. November</em> — steht die Morgensonne so, dass die große Rosette ihr Bild auf die Westwand wirft, direkt unter die kleine: Für ein paar Minuten hängt eine Acht aus Licht in der Luft.` },
+
+  { id:'almudaina', num:'II', rn:'II', art:'almudaina', cap:'Zinnen, der Engel als Wetterfahne, Hufeisenbögen am Fuß',
+    name:'Palau de l’Almudaina', local:'Königspalast · S’Hort del Rei',
+    meta:'maurischer Alcázar · ab 1309 unter Jaume II. gotisch umgebaut',
+    lat:39.5665, lng:2.6470,
+    lookLabel:'Vor Ort', factLabel:'Aus der Chronik',
+    look:`Der Palast steht Wand an Wand mit der Kathedrale, und der Reiz liegt darin, die beiden Bauzeiten zu trennen. Suchen Sie unten an der Seeseite die <em>Hufeisenbögen</em> — sie sind maurisch. Oben auf dem Turm dreht sich ein vergoldeter Engel im Wind; er gibt dem Turm den Namen. Im Innenhof mit den Palmen liegt die Kapelle <em>Santa Anna</em> mit einem romanischen Portal, das älter wirkt als alles ringsum. Unterhalb der Mauer der Garten S’Hort del Rei, kühl, mit Wasserläufen und einer Skulptur von Joan Miró.`,
+    fact:`Der Name kommt aus dem Arabischen: <em>al-mudayna</em>, die kleine Stadt — eine Zitadelle in der Stadt. Als Jaume II. 1309 den Alcázar der Statthalter zum Königspalast umbauen ließ, riss er ihn nicht ab, sondern zog eine gotische Haut über den maurischen Kern, Bäder inbegriffen. Deshalb steht hier keine Ruine, sondern ein Haus, das seit tausend Jahren durchgehend bewohnt wird: Es ist bis heute offizielle Residenz der spanischen Königsfamilie, die im Sommer hier Empfänge gibt. An solchen Tagen bleibt der Palast zu.` },
+
+  { id:'llotja', num:'III', rn:'III', art:'llotja', cap:'links die Seefassade, rechts einer der sechs gewundenen Pfeiler',
+    name:'Sa Llotja', local:'Llotja dels Mercaders · die Handelsbörse',
+    meta:'1426–1447 · Guillem Sagrera · sechs gedrehte Pfeiler, keine Kapitelle',
+    lat:39.5684, lng:2.6434,
+    lookLabel:'Vor Ort', factLabel:'Aus der Chronik',
+    look:`Von außen ein Kaufhaus, das sich als Burg verkleidet: vier achteckige Ecktürmchen, Zinnen, hohe Maßwerkfenster. Über dem Portal steht der <em>Schutzengel der Kaufleute</em> mit einer Schriftrolle. Gehen Sie hinein, wenn eine Ausstellung läuft — der Eintritt ist dann frei, und darum geht es hier: ein einziger Saal, sechs gedrehte Pfeiler, sonst nichts. Legen Sie den Kopf in den Nacken und suchen Sie die Kapitelle. Es gibt keine. Die Rippen wachsen aus dem gedrehten Schaft heraus wie Wedel aus einem Palmstamm.`,
+    fact:`Gebaut hat sie <strong>Guillem Sagrera</strong> aus Felanitx, im Auftrag des Kaufmannskollegiums, ab 1426. Über die Bezahlung kam es zum Streit; Sagrera ging, bevor der Bau fertig war, und Guillem Vilasclar vollendete ihn. Sagrera selbst zog nach Neapel, wo er für Alfons den Großmütigen den Baronensaal des Castel Nuovo baute — dieselbe Handschrift, tausend Kilometer weiter. Gehandelt wurde hier mit Gold und Silber, Seide, Gewürzen, oft lange bevor die Ware im Hafen lag: Man kaufte, was noch auf See war.` },
+
+  { id:'cort', num:'IV', rn:'IV', art:'cort', cap:'das weit vorstehende Gesims, die Uhr „En Figuera“ — und der Ölbaum',
+    name:'Plaça de Cort', local:'Ajuntament de Palma · Sa Olivera',
+    meta:'Rathausfassade 1649–1680 · Ölbaum 1989 aus Pollença versetzt',
+    lat:39.5697, lng:2.6501,
+    lookLabel:'Vor Ort', factLabel:'Aus der Chronik',
+    look:`Der Platz ist klein, das Rathaus ist es nicht. Treten Sie weit genug zurück, um das <em>Dachgesims</em> zu sehen: eine Holzkonstruktion, die meterweit über den Platz ragt und auf geschnitzten Konsolen sitzt — Schatten als Bautechnik. In der Mitte des Giebels hängt die Uhr, die in Palma <em>En Figuera</em> heißt. Davor steht der Ölbaum: sechs Meter hoch, der Stamm zu einem Knoten verdreht. Die Bank ringsum ist der beste Platz der Altstadt, um eine Viertelstunde nichts zu tun.`,
+    fact:`Die Fassade entstand zwischen 1649 und 1680 nach Entwürfen von Pere Bauçà, Miquel Oliver und Bartomeu Calafat — Barock, aber ein zurückhaltender, mit manieristischen Zügen. Der Ölbaum ist der jüngere Zuzug und der ältere Bewohner: Er wuchs bei Pollença im Norden der Insel und wurde 1989 hierher versetzt; sein Alter wird auf <em>fünf- bis sechshundert Jahre</em> geschätzt. Wilde Ölbäume wachsen so langsam, dass ein Stamm dieses Umfangs mehrere Jahrhunderte gebraucht hat — man sieht einer mallorquinischen Trockenlandschaft beim Stehen zu.` },
+
+  { id:'francesc', num:'V', rn:'V', art:'francesc', cap:'Barockportal und Rosette; unten der trapezförmige Kreuzgang',
+    name:'Sant Francesc', local:'Basílica i claustre de Sant Francesc',
+    meta:'gegründet 1281 · Kreuzgang 14.–16. Jh. · Grab des Ramon Llull, 1487',
+    lat:39.5696, lng:2.6521,
+    lookLabel:'Vor Ort', factLabel:'Aus der Chronik',
+    look:`Vor der Kirche steht Juníper Serra in Bronze, der von hier aus nach Kalifornien ging — ein Denkmal, das heute mehr Fragen aufwirft, als es beantwortet. Drinnen: erst den <em>Kreuzgang</em>, dann die Kirche. Der Kreuzgang ist kein Rechteck, sondern ein Trapez, und keine Seite gleicht der anderen; in der Mitte Orangenbäume und ein Brunnen. In der Kirche links vom Hochaltar liegt hoch in der Wand der Alabastersarg des <em>Ramon Llull</em>. Zählen Sie die Nischen darunter: sieben, und alle leer.`,
+    fact:`Die sieben Nischen waren für die sieben freien Künste gedacht und wurden nie gefüllt — der Bildhauer Francesc Sagrera vollendete den Sarg 1487, die Figuren kamen nie. Der Mann darin, Ramon Llull (um 1232–1316), schrieb Latein, Katalanisch und Arabisch und erfand eine <em>Ars</em>: Scheiben aus Papier und Metall, die man gegeneinander drehte, um aus Grundbegriffen alle wahren Sätze zu erzeugen. Leibniz las ihn vierhundert Jahre später mit Gewinn. Es ist nicht übertrieben, in diesem Seitenschiff einen Vorfahren der formalen Logik liegen zu sehen.` },
+
+  { id:'major', num:'VI', rn:'VI', art:'major', cap:'links die Arkadenfront, rechts das Trencadís-Gesicht von 1909',
+    name:'Plaça Major', local:'mit Can Forteza Rey um die Ecke',
+    meta:'Sitz der Inquisition bis 1823 · Platz ab 1823 angelegt · Markt bis 1951',
+    lat:39.5714, lng:2.6497,
+    lookLabel:'Vor Ort', factLabel:'Aus der Chronik',
+    look:`Ein Rechteck aus ockerfarbenen Häusern, ringsum Arkaden, in der Mitte Straßenmusik und Kunsthandwerksstände. Bleiben Sie nicht stehen, sondern verlassen Sie den Platz an der südöstlichen Ecke zur <em>Plaça del Marquès del Palmer</em>: Dort steht <em>Can Forteza Rey</em> von 1909. Über dem Eingang hängt ein Gesicht aus zerschlagenen Kacheln — <em>trencadís</em> —, darüber Schmiedeeisen wie Seetang. Schauen Sie bis zum Giebel hinauf; die besten Teile des Hauses sind die, für die man den Kopf heben muss.`,
+    fact:`Der Platz ist ein Loch mit Geschichte. Hier stand das Konvent von Sant Felip Neri, in dem bis <strong>1823</strong> das mallorquinische Inquisitionsgericht saß; nach dessen Auflösung wurde alles abgetragen, und in die Lücke schrieb das 19. Jahrhundert seinen ordentlichen Platz — in Etappen, über Jahrzehnte. Bis <em>1951</em> war er der zentrale Markt der Stadt. In den siebziger Jahren hat man ihn ausgehoben und ein vierstöckiges Parkhaus daruntergesetzt: Wer über die Kacheln geht, steht auf einem Deckel.` },
+
+  { id:'born', num:'VII', rn:'VII', art:'born', cap:'Platanen, eine der Sphingen von 1833 — und der Fluss darunter',
+    name:'Es Born', local:'Passeig del Born · das Ende der Runde',
+    meta:'Bett des Torrent de Sa Riera bis ins 17. Jh. · Sphingen seit 1833',
+    lat:39.5700, lng:2.6459,
+    lookLabel:'Vor Ort', factLabel:'Aus der Chronik',
+    look:`Setzen Sie sich. Der Born ist zum Sitzen gebaut: Steinbänke unter Platanen, in der Mitte ein breiter Pflasterstreifen, an beiden Enden eine <em>Sphinx</em> auf ihrem Sockel. Achten Sie auf die Breite — sie ist nicht entworfen, sondern übernommen: Sie stehen im Flussbett, die Häuserzeilen links und rechts sitzen auf den alten Ufern. Am oberen Ende lohnt der <em>Casal Solleric</em>, ein Stadtpalast von 1763, dessen Innenhof man auch ohne Ausstellung betreten darf. Danach die Runde in einem Café beschließen.`,
+    fact:`Bis ins 17. Jahrhundert floss hier der <em>Torrent de Sa Riera</em> mitten durch die Stadt, und er tat es schlecht: Beim großen Hochwasser von <strong>1403</strong> ertranken nach den Chroniken Tausende. Nach der Flut von 1613 verlegte man den Lauf endgültig nach außerhalb der Mauern, schüttete das Bett zu und bekam so eine Promenade geschenkt. Der Name ist älter als sie: In dem trockenen Bett hielt man Turniere, und <em>born</em> hieß der stumpfe Holzknauf an der Lanzenspitze. Man spaziert auf einem Turnierplatz auf einem Flussbett.` },
+
+  { id:'tresen', num:null, rn:'✦', art:'tresen', isExtras:true, cap:'was zwischen zwei Stationen in die Hand gehört',
+    name:'Am Tresen', local:'Ensaïmada, quarto, granissat, pa amb oli',
+    meta:'Eingelegtes Blatt · Ca’n Joan de s’Aigo, seit 1700 · Carrer de Can Sanç 10',
+    lookLabel:'Zu bestellen', factLabel:'Zur Sache',
+    look:`Zwischen Sant Francesc und der Plaça Major, in einer Gasse hinter Santa Eulàlia, liegt <em>Ca’n Joan de s’Aigo</em> — Marmortische, Fliesen, Kronleuchter, seit 1700. Bestellen Sie dort nicht das Naheliegende: nicht die Ensaïmada allein, sondern einen <em>quarto</em>, den luftigen Biskuit, mit einer Kugel <em>Mandeleis</em> darauf. Dazu im Sommer ein <em>granissat d’ametla</em>, geraspeltes Eis mit Mandelmilch. Und mittags irgendwo ein <em>pa amb oli</em>: Brot, Öl, Salz und eine Ramallet-Tomate, die man selbst aufs Brot reibt.`,
+    fact:`Das Haus verdankt seinen Namen dem Wasser und dem Schnee. Joan Thomàs aus Valldemossa lagerte um 1700 Schnee aus der Tramuntana in gemauerten <em>cases de neu</em> und presste daraus die ersten Sorbets der Insel — Eis war ein Bergprodukt, ehe es ein Küchengerät war. Joan Miró saß hier regelmäßig. Und die Ensaïmada heißt nach ihrem Fett: <em>saïm</em> ist Schweineschmalz, weshalb sie weder vegetarisch noch, wie oft behauptet, arabischen Ursprungs sein kann. Seit 1996 ist sie als „Ensaïmada de Mallorca" geschützt.` }
+];
+
+/* ══════════════════════════════════════════════════════════════
+   KARTE — Nordwesten der Altstadt bis zur Bucht
+   ══════════════════════════════════════════════════════════════ */
+const MAP_BBOX={ minLat:39.5640, maxLat:39.5730, minLng:2.6412, maxLng:2.6548 };
+const MAP_W=320, MAP_H=275;
+function projectToMap(lat,lng){
+  const x=((lng-MAP_BBOX.minLng)/(MAP_BBOX.maxLng-MAP_BBOX.minLng))*MAP_W;
+  const y=MAP_H-((lat-MAP_BBOX.minLat)/(MAP_BBOX.maxLat-MAP_BBOX.minLat))*MAP_H;
+  return {x,y};
+}
+
+/* ══════════════════════════════════════════════════════════════
+   AUFBAU
+   ══════════════════════════════════════════════════════════════ */
+const pagesEl=document.getElementById('pages');
+let pageEls=[], currentPage=0, totalPages=0, animating=false;
+
+function leaf(html,cls){ const p=document.createElement('div'); p.className='page '+(cls||''); p.innerHTML=`<div class="leaf-inner">${html}</div>`; return p; }
+
+function buildAll(){
+  // UMSCHLAG
+  pagesEl.appendChild(leaf(`
+    <div class="place">Mallorca · Ciutat de Palma</div>
+    <div class="plate"><div class="plate-frame">${illustrationSVG('rosassa')}</div></div>
+    <div class="rule"></div>
+    <h1>Palma</h1>
+    <div class="sub">Licht und Marès — die Altstadt-Runde</div>
+    <div class="rule"></div>
+    <p style="max-width:342px;font-style:italic;color:var(--ink-soft);margin-top:4px;line-height:1.5">
+      Kathedrale · Almudaina · Sa Llotja · Cort · Sant Francesc · Plaça Major · Es Born.
+      Rund 2,4 Kilometer, reine Gehzeit 45 bis 60 Minuten — mit Schauen und Sitzen ein halber Tag.</p>
+    <div class="exlibris">◆ nach dem Stein gezeichnet · MMXXVI ◆</div>
+    <div class="begin">umblättern →</div>`, 'cover'));
+
+  // INHALT
+  let toc=`<h2>Die Runde</h2><p class="lede">Sieben Stationen in der Reihenfolge, in der man sie trifft, und ein eingelegtes Blatt für zwischendurch.</p><ul>`;
+  sites.forEach((s,i)=>{
+    const dist=s.isExtras?'':`<span class="di" data-id="${s.id}"></span>`;
+    toc+=`<li data-goto="${i+3}"><span class="rn">${s.rn}</span><span class="tt"><span class="nm">${s.name}</span><br><span class="sb">${s.local}</span></span>${dist}</li>`;
+  });
+  toc+=`</ul><div class="foot">Oben links den Standort antippen, dann stehen hier die Entfernungen. Gehzeit 45 bis 60 Minuten; wer die Kathedrale und den Palast von innen ansieht, ist drei bis vier Stunden unterwegs.</div>`;
+  pagesEl.appendChild(leaf(toc,'toc'));
+
+  // KARTE
+  pagesEl.appendChild(leaf(`
+    <h2>Der Weg</h2>
+    <div class="lede">Die durchgezogene Linie ist die Runde, von der Kathedrale am Wasser bis hinauf zum Born. Auf eine Ziffer tippen, um hinzublättern; auf freie Fläche tippen, um sich von Hand zu setzen.</div>
+    <div class="map-holder"><svg id="map-svg" viewBox="0 0 ${MAP_W} ${MAP_H}" preserveAspectRatio="xMidYMid meet"></svg></div>
+    <div class="maphint">Der Stern sind Sie · die Gassen sind schematisch, die Lage der Stationen ist gerundet</div>`, 'mapleaf'));
+
+  // STATIONEN
+  sites.forEach(s=>{
+    const lookLbl=s.lookLabel||'Vor Ort';
+    const factLbl=s.factLabel||'Aus der Chronik';
+    const chap=s.num?`Station ${s.num}`:'Eingelegtes Blatt';
+    pagesEl.appendChild(leaf(`
+      <div class="plate"><div class="plate-frame">${illustrationSVG(s.art)}</div><div class="plate-cap">${s.cap}</div></div>
+      <div class="chap">${chap}</div>
+      <h1 class="title">${s.name}</h1>
+      <div class="local">${s.local}</div>
+      <div class="meta">${s.meta}</div>
+      <div class="sec"><span class="lbl">${lookLbl}</span><p class="drop">${s.look}</p></div>
+      <div class="sec fact"><span class="lbl">${factLbl}</span><p>${s.fact}</p></div>`));
+  });
+
+  // VORSATZBLATT
+  pagesEl.appendChild(leaf(`
+    <div class="plate"><div class="plate-frame">${illustrationSVG('endpapier')}</div><div class="plate-cap">Norden, und die Zeichen der Karte</div></div>
+    <div class="chap">Vorsatzblatt</div>
+    <h1 class="title">Praktisches</h1>
+    <div class="meta">Die einzige Seite, die altert · Stand August 2026</div>
+    <div class="sec"><span class="lbl">Die Runde</span><p>Rund <em>2,4 Kilometer</em> vom Kathedralenvorplatz bis ans obere Ende des Born, reine Gehzeit 45 bis 60 Minuten. Wer Kathedrale, Almudaina und den Kreuzgang von Sant Francesc von innen sieht, rechnet mit <em>drei bis vier Stunden</em>. Alles ist gepflastert und weitgehend eben; das einzige Gefälle liegt zwischen Kathedrale und Plaça Major. Anfahrt mit dem Bus bis Antoni Maura oder Plaça de la Reina, mit dem Zug bis Plaça d’Espanya und von dort zehn Minuten zu Fuß bergab.</p></div>
+    <div class="sec fact"><span class="lbl">Der Vormittag</span><p>Früh anfangen. Die Kathedrale öffnet für Besucher am Vormittag und schließt über Mittag; sonntags ist sie dem Gottesdienst vorbehalten. Ein Vorschlag: gegen <em>10 Uhr</em> in die Seu, um 11.30 Uhr in die Almudaina, gegen Mittag an der Llotja vorbei zum Ölbaum auf Cort. Nach dem Mittagessen Sant Francesc — der Kreuzgang liegt dann im Schatten —, danach die Plaça Major, und den Born für die Stunde vor dem Abendessen aufheben, wenn halb Palma dort spazieren geht.</p></div>
+    <div class="sec"><span class="lbl">Eintritt</span><p>Kathedrale und Diözesanmuseum kosten rund <em>10 €</em>, ermäßigt weniger, Kinder frei; die Terrassen unter dem Dach werden getrennt und nur mit Führung verkauft und sind oft Wochen im Voraus ausgebucht. Die Almudaina wird vom Patrimonio Nacional betrieben und ist deutlich günstiger, kann aber bei Staatsbesuchen kurzfristig schließen. <em>Sa Llotja</em> ist bei Ausstellungen frei zugänglich, sonst zu. Kreuzgang und Basilika von Sant Francesc kosten einen kleinen Eintritt. Zeiten und Preise wechseln — vor dem Besuch kurz nachsehen.</p></div>
+    <div class="sec fact"><span class="lbl">Mitzunehmen</span><p>Schuhe, die gegen Pflaster gewappnet sind, und für die Kirchen bedeckte Schultern und Knie — das wird an der Seu tatsächlich kontrolliert. Wasser: In der Altstadt stehen Trinkbrunnen, aber nicht viele. Zwischen 14 und 17 Uhr steht die Sonne senkrecht in den Gassen und es gibt kaum Schatten; das ist die Stunde für einen Innenraum oder den Kreuzgang. Und Kleingeld für den Ölbaum-Platz, wo die besten Straßenmusiker der Insel spielen.</p></div>
+    <div class="aside">Die Punkte auf der Karte sind <b>gerundet</b>, die Gassen schematisch. Palmas Altstadt ist ein Knäuel — im Zweifel den Türmen folgen, nicht dem Punkt.</div>`));
+
+  pageEls=[...pagesEl.querySelectorAll('.page')];
+  totalPages=pageEls.length;
+  pageEls.forEach((p,i)=>{ p.dataset.page=i; });
+  pagesEl.querySelectorAll('[data-goto]').forEach(el=> el.addEventListener('click',()=>goTo(parseInt(el.dataset.goto))));
+
+  buildMap(); makeSwifts();
+  pageEls[0].classList.add('is-current');
+  updateChrome();
+}
+
+/* ── die Falzies über den Türmen ─────────────────────────────── */
+function makeSwifts(){
+  const box=document.getElementById('swifts');
+  for(let i=0;i<7;i++){
+    const d=document.createElement('div'); d.className='swift';
+    const w=14+((i*23)%16);
+    d.style.width=w+'px'; d.style.height=(w*0.4).toFixed(0)+'px';
+    d.style.left=(-10+((i*37)%40))+'%';
+    d.style.top=(8+((i*29)%46))+'%';
+    d.style.setProperty('--dx',(70+((i*61)%60))+'vw');
+    d.style.setProperty('--dy',((((i*43)%80)-40))+'px');
+    d.style.animationDuration=(11+((i*17)%14))+'s';
+    d.style.animationDelay=(-(i*4.7))+'s';
+    box.appendChild(d);
+  }
+}
+
+/* ── Kartenzeichnung ─────────────────────────────────────────── */
+let manualPos=null, gpsPos=null, gpsActive=false;
+function buildMap(){
+  const svg=document.getElementById('map-svg'); if(!svg) return;
+  svg.innerHTML='';
+  const add=(t,a)=>{ const n=document.createElementNS(NS,t); for(const k in a)n.setAttribute(k,a[k]); svg.appendChild(n); return n; };
+  add('rect',{x:0,y:0,width:MAP_W,height:MAP_H,fill:'#f2e6c8'});
+
+  // die Bucht im Süden
+  const shore=projectToMap(39.5653,2.6480).y;
+  add('rect',{x:0,y:shore,width:MAP_W,height:MAP_H-shore,fill:C.blau,opacity:.85});
+  for(let i=0;i<4;i++) add('rect',{x:0,y:shore+9+i*9,width:MAP_W,height:2,fill:C.blauPl,opacity:.5});
+  // Parc de la Mar: das Wasserbecken vor der Kathedrale
+  const pm=projectToMap(39.5658,2.6489);
+  add('ellipse',{cx:pm.x,cy:pm.y,rx:34,ry:7,fill:C.blauLt,opacity:.8});
+
+  // Häuserblöcke — das Knäuel, schematisch
+  const blocks=[[18,44],[52,32],[96,38],[140,30],[186,40],[226,30],[268,44],[300,62],
+                [26,84],[70,74],[112,80],[158,70],[204,82],[248,74],[292,92],
+                [34,124],[78,114],[124,122],[170,110],[212,124],[256,114],[296,130],
+                [42,160],[88,152],[132,164],[178,150],[220,162],[262,152],[300,168],
+                [56,196],[104,190],[150,200],[196,188],[240,198],[284,192]];
+  blocks.forEach((b,i)=>{
+    add('rect',{x:b[0],y:b[1],width:20+((i*7)%12),height:13+((i*5)%9),
+      fill:C.mares,stroke:C.maresDk,'stroke-width':.6,opacity:.75,
+      transform:`rotate(${((i*13)%16)-8} ${b[0]+10} ${b[1]+7})`});
+  });
+
+  // das alte Flussbett: Born und Rambla, als heller Streifen
+  const b0=projectToMap(39.5686,2.6459), b1=projectToMap(39.5726,2.6470);
+  add('path',{d:`M${b0.x} ${b0.y} L${b1.x} ${b1.y}`,stroke:C.blau,'stroke-width':13,opacity:.28,'stroke-linecap':'round',fill:'none'});
+  add('path',{d:`M${b0.x} ${b0.y} L${b1.x} ${b1.y}`,stroke:C.maresLt,'stroke-width':7,opacity:.9,'stroke-linecap':'round',fill:'none'});
+
+  // die Seepromenade unter den Mauern
+  const s0=projectToMap(39.5678,2.6420), s1=projectToMap(39.5661,2.6500);
+  add('path',{d:`M${s0.x} ${s0.y} Q ${(s0.x+s1.x)/2} ${s0.y+16} ${s1.x} ${s1.y}`,
+    stroke:C.maresDk,'stroke-width':4,fill:'none',opacity:.8,'stroke-linecap':'round'});
+
+  const lbl=(x,y,t,col,sz,ta,it)=>{ const e=document.createElementNS(NS,'text');
+    e.setAttribute('x',x); e.setAttribute('y',y); e.setAttribute('fill',col||C.inkSoft);
+    e.setAttribute('font-family',"'Spectral',serif"); e.setAttribute('font-size',sz||9);
+    e.setAttribute('font-style',it?'italic':'normal'); e.setAttribute('opacity','.95');
+    if(ta) e.setAttribute('text-anchor',ta); e.textContent=t; svg.appendChild(e); };
+  lbl(160,MAP_H-9,'Badia de Palma',C.maresLt,10.5,'middle',true);
+  lbl(b1.x+8,b1.y+4,'↑ La Rambla',C.blau,9);
+  lbl(6,16,'← Es Baluard',C.inkFaint,9);
+  lbl(MAP_W-6,16,'Mercat de l’Olivar →',C.inkFaint,9,'end');
+  lbl(pm.x+40,pm.y+3,'Parc de la Mar',C.blauDk,8.5);
+
+  // die Runde
+  const ORDER=['seu','almudaina','llotja','cort','francesc','major','born'];
+  const rp=ORDER.map(id=>sites.find(s=>s.id===id)).filter(Boolean).map(s=>projectToMap(s.lat,s.lng));
+  let route='';
+  rp.forEach((p,i)=>{ route+=(i?'L':'M')+p.x.toFixed(1)+' '+p.y.toFixed(1)+' '; });
+  add('path',{d:route,fill:'none',stroke:C.terra,'stroke-width':2.4,opacity:.85,'stroke-linejoin':'round','stroke-linecap':'round'});
+
+  // Nadeln
+  const NUDGE={ almudaina:[-14,-9], cort:[-2,-12] };
+  sites.filter(s=>!s.isExtras&&s.lat).forEach(s=>{
+    const p=projectToMap(s.lat,s.lng), n=NUDGE[s.id];
+    const x=n?p.x+n[0]:p.x, y=n?p.y+n[1]:p.y;
+    const pin=document.createElementNS(NS,'g'); pin.setAttribute('class','map-pin'); pin.style.cursor='pointer';
+    pin.innerHTML=`<circle cx="${x}" cy="${y}" r="10.5" fill="#f2e6c8" stroke="${C.ink}" stroke-width="1.4"/>`+
+                  `<text x="${x}" y="${y+3.4}" text-anchor="middle" font-family="'Marcellus SC',serif" font-size="9" fill="${C.terra}">${s.rn}</text>`;
+    if(n) pin.innerHTML=`<path d="M${p.x} ${p.y} L${x} ${y}" stroke="${C.inkFaint}" stroke-width=".8" stroke-dasharray="2 2"/>`+pin.innerHTML;
+    pin.addEventListener('click',e=>{ e.stopPropagation(); const idx=sites.findIndex(v=>v.id===s.id); goTo(idx+3); });
+    svg.appendChild(pin);
+  });
+
+  // Maßstab und Norden
+  add('path',{d:`M16 ${MAP_H-16} h55`,stroke:C.ink,'stroke-width':1.4,fill:'none'});
+  add('path',{d:`M16 ${MAP_H-20} v8 M71 ${MAP_H-20} v8`,stroke:C.ink,'stroke-width':1.2,fill:'none'});
+  lbl(28,MAP_H-24,'200 m',C.maresLt,9);
+  add('path',{d:`M${MAP_W-22} 52 v-26 M${MAP_W-27} 32 l5 -8 l5 8`,stroke:C.ink,'stroke-width':1.4,fill:'none','stroke-linecap':'round'});
+  lbl(MAP_W-22,66,'N',C.terra,11,'middle');
+
+  const you=document.createElementNS(NS,'g'); you.setAttribute('id','you-marker'); svg.appendChild(you); drawYou();
+  svg.addEventListener('click',e=>{
+    if(e.target.closest('.map-pin')) return;
+    const pt=svg.createSVGPoint(); pt.x=e.clientX; pt.y=e.clientY;
+    const sp=pt.matrixTransform(svg.getScreenCTM().inverse());
+    const lng=MAP_BBOX.minLng+(sp.x/MAP_W)*(MAP_BBOX.maxLng-MAP_BBOX.minLng);
+    const lat=MAP_BBOX.minLat+((MAP_H-sp.y)/MAP_H)*(MAP_BBOX.maxLat-MAP_BBOX.minLat);
+    manualPos={lat,lng}; gpsActive=true; drawYou(); updateDistances(); setGpsLabel('Gesetzt');
+  });
+}
+function drawYou(){
+  const you=document.getElementById('you-marker'); if(!you) return; you.innerHTML='';
+  const pos=gpsPos||manualPos; if(!pos) return;
+  const p=projectToMap(pos.lat,pos.lng);
+  you.innerHTML=`<circle cx="${p.x}" cy="${p.y}" r="15" fill="${C.terra}" opacity="0.16"/>`+
+    `<path d="M${p.x} ${p.y-9} l2.6 6.4 l6.8 .4 l-5.4 4.2 l1.9 6.6 l-5.9 -3.8 l-5.9 3.8 l1.9 -6.6 l-5.4 -4.2 l6.8 -.4 Z" fill="${C.terra}" stroke="#f2e6c8" stroke-width="1"/>`;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   NAVIGATION — das Umblättern
+   ══════════════════════════════════════════════════════════════ */
+const reduce=window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+function goTo(target){
+  if(target<0||target>=totalPages||target===currentPage||animating) return;
+  if(speaking) stopSpeech();
+  const fwd=target>currentPage;
+  const out=pageEls[currentPage], inc=pageEls[target];
+  animating=true;
+  pageEls.forEach(p=>{ if(p!==out&&p!==inc) p.classList.remove('is-current','turn-out','turn-in'); });
+
+  if(reduce){
+    out.classList.remove('is-current','turn-out','turn-in');
+    inc.classList.remove('turn-out','turn-in'); inc.classList.add('is-current');
+    currentPage=target; endTurn(inc); return;
+  }
+
+  if(fwd){
+    out.classList.remove('is-current');
+    inc.classList.remove('turn-out','turn-in'); inc.classList.add('is-current');
+    out.classList.add('turn-out');
+  }else{
+    out.classList.remove('is-current');
+    inc.classList.remove('is-current','turn-out'); inc.classList.add('turn-in');
+    void inc.offsetWidth;
+    requestAnimationFrame(()=>{ inc.classList.remove('turn-in'); inc.classList.add('is-current'); });
+  }
+  currentPage=target; updateChrome();
+  window.setTimeout(()=>endTurn(inc), 740);
+}
+function endTurn(inc){
+  animating=false;
+  pageEls.forEach(p=>{ if(p!==inc) p.classList.remove('turn-out','turn-in'); });
+  const sc=inc.querySelector('.leaf-inner'); if(sc) sc.scrollTop=0;
+  updateChrome();
+}
+function updateChrome(){
+  document.getElementById('progress').textContent=String(currentPage+1).padStart(2,'0')+' / '+String(totalPages).padStart(2,'0');
+  document.getElementById('prev').disabled=currentPage===0;
+  document.getElementById('next').disabled=currentPage===totalPages-1;
+}
+document.getElementById('prev').addEventListener('click',()=>goTo(currentPage-1));
+document.getElementById('next').addEventListener('click',()=>goTo(currentPage+1));
+document.addEventListener('keydown',e=>{ if(e.key==='ArrowRight')goTo(currentPage+1); else if(e.key==='ArrowLeft')goTo(currentPage-1); });
+let tsx=0,tsy=0;
+document.addEventListener('touchstart',e=>{ tsx=e.touches[0].clientX; tsy=e.touches[0].clientY; },{passive:true});
+document.addEventListener('touchend',e=>{ const dx=e.changedTouches[0].clientX-tsx, dy=e.changedTouches[0].clientY-tsy; if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)*1.5){ if(dx<0)goTo(currentPage+1); else goTo(currentPage-1); } },{passive:true});
+
+/* ══════════════════════════════════════════════════════════════
+   STANDORT
+   ══════════════════════════════════════════════════════════════ */
+const gpsBtn=document.getElementById('gps'); let watchId=null;
+function setGpsLabel(t){ document.getElementById('gps-label').textContent=t; }
+gpsBtn.addEventListener('click',()=>{ if(gpsBtn.dataset.fallback==='demo'){ demoPlace(); return; } startGps(); });
+function startGps(){
+  if(!navigator.geolocation){ setGpsLabel('Kein GPS'); gpsBtn.dataset.fallback='demo'; return; }
+  gpsBtn.classList.add('locating'); setGpsLabel('Suche…');
+  navigator.geolocation.getCurrentPosition(onGps,onGpsErr,{enableHighAccuracy:true,timeout:12000,maximumAge:30000});
+  if(watchId===null) watchId=navigator.geolocation.watchPosition(onGps,()=>{},{enableHighAccuracy:true,maximumAge:5000,timeout:30000});
+}
+function onGps(pos){ gpsActive=true; gpsBtn.classList.remove('locating'); gpsBtn.classList.add('on'); gpsPos={lat:pos.coords.latitude,lng:pos.coords.longitude}; setGpsLabel('Geortet'); drawYou(); updateDistances(); }
+function onGpsErr(err){ gpsBtn.classList.remove('locating'); let m='GPS-Fehler'; if(err.code===1)m='Gesperrt'; else if(err.code===2)m='Kein Signal'; else if(err.code===3)m='Zeit aus'; setGpsLabel(m); setTimeout(()=>{ if(!gpsActive){ setGpsLabel('An der Seu'); gpsBtn.dataset.fallback='demo'; } },2000); }
+function demoPlace(){ gpsActive=true; gpsBtn.classList.add('on'); gpsBtn.dataset.fallback=''; manualPos={lat:39.5666,lng:2.6486}; gpsPos=null; setGpsLabel('An der Seu'); drawYou(); updateDistances(); goTo(2); }
+function haversine(a,b,c,d){ const R=6371000,tr=x=>x*Math.PI/180; const dLat=tr(c-a),dLng=tr(d-b); const h=Math.sin(dLat/2)**2+Math.cos(tr(a))*Math.cos(tr(c))*Math.sin(dLng/2)**2; return 2*R*Math.asin(Math.sqrt(h)); }
+function fmt(m){ return m<950?Math.round(m/10)*10+' m':(m/1000).toFixed(1).replace('.',',')+' km'; }
+function updateDistances(){ const pos=gpsPos||manualPos; if(!pos) return; document.querySelectorAll('.di').forEach(sp=>{ const s=sites.find(x=>x.id===sp.dataset.id); if(!s||!s.lat) return; sp.textContent=fmt(haversine(pos.lat,pos.lng,s.lat,s.lng)); }); }
+
+/* ══════════════════════════════════════════════════════════════
+   VORLESEN
+   ══════════════════════════════════════════════════════════════ */
+const ttsBtn=document.getElementById('tts'); let speaking=false, voicePref=null;
+function pickVoice(){
+  const v=window.speechSynthesis?window.speechSynthesis.getVoices():[]; if(!v.length)return null;
+  const prefs=[x=>x.lang==='de-DE'&&/natural|neural|enhanced|premium/i.test(x.name),
+               x=>x.lang==='de-DE', x=>x.lang.startsWith('de')];
+  for(const t of prefs){ const f=v.find(t); if(f)return f; }
+  return v[0];
+}
+if(window.speechSynthesis){ window.speechSynthesis.addEventListener('voiceschanged',()=>{ voicePref=pickVoice(); }); voicePref=pickVoice(); }
+function stripHtml(h){ const t=document.createElement('div'); t.innerHTML=h; return t.textContent||''; }
+function stopSpeech(){ if(window.speechSynthesis)window.speechSynthesis.cancel(); speaking=false; ttsBtn.classList.remove('on'); document.getElementById('tts-label').textContent='Vorlesen'; }
+ttsBtn.addEventListener('click',()=>{
+  if(!window.speechSynthesis) return;
+  if(speaking){ stopSpeech(); return; }
+  const page=pageEls[currentPage], parts=[];
+  const t=page.querySelector('.title,.cover h1,h2'); if(t)parts.push(stripHtml(t.innerHTML));
+  const loc=page.querySelector('.local'); if(loc)parts.push(stripHtml(loc.innerHTML));
+  page.querySelectorAll('.sec').forEach(sec=>{ const l=sec.querySelector('.lbl'),p=sec.querySelector('p'); if(l)parts.push(stripHtml(l.innerHTML)+'.'); if(p)parts.push(stripHtml(p.innerHTML)); });
+  const text=parts.join('. '); if(!text.trim())return;
+  window.speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(text); if(voicePref)u.voice=voicePref; u.lang='de-DE'; u.rate=.95; u.pitch=1;
+  u.onend=stopSpeech; u.onerror=stopSpeech; window.speechSynthesis.speak(u);
+  speaking=true; ttsBtn.classList.add('on'); document.getElementById('tts-label').textContent='Halt';
+});
+
+buildAll();
+</script>
+</body>
+</html>
