@@ -214,6 +214,26 @@
     font-size:.74rem; color:var(--ink-soft);
     margin-top:.55em; padding-top:.5em; border-top:1px solid var(--ink-faint);
   }
+  /* Verweise nach draußen — die einzigen Stellen, an denen das Heft
+     das Netz braucht. Bewusst klein: die Seite soll offline vollständig
+     bleiben, der Link ist eine Zugabe, keine Voraussetzung. */
+  .golinks{ display:flex; flex-wrap:wrap; gap:8px; margin-top:10px; }
+  .golink{
+    display:inline-flex; align-items:center; gap:6px;
+    min-height:32px; padding:6px 11px;
+    font-family:'Marcellus SC',serif; font-size:.7rem; letter-spacing:.08em;
+    color:var(--blau-dk); text-decoration:none;
+    background:rgba(28,92,150,.09);
+    border:1px solid rgba(28,92,150,.38); border-radius:2px;
+    transition:background .2s, border-color .2s;
+  }
+  .golink:hover{ background:rgba(28,92,150,.18); border-color:var(--blau); }
+  .golink:active{ transform:translateY(1px); }
+  .golink svg{ width:12px; height:12px; flex:none; }
+  .golink.walk{ color:var(--terra); background:rgba(184,73,42,.09); border-color:rgba(184,73,42,.38); }
+  .golink.walk:hover{ background:rgba(184,73,42,.18); border-color:var(--terra); }
+  .mapleaf .golinks{ justify-content:center; margin-top:9px; }
+
   .sec{ margin-top:16px; }
   .lbl{
     display:inline-block; font-family:'Marcellus SC', serif;
@@ -854,12 +874,44 @@ const sites=[
     fact:`Bis ins 17. Jahrhundert floss hier der <em>Torrent de Sa Riera</em> mitten durch die Stadt, und er tat es schlecht: Beim großen Hochwasser von <strong>1403</strong> ertranken nach den Chroniken Tausende. Nach der Flut von 1613 verlegte man den Lauf endgültig nach außerhalb der Mauern, schüttete das Bett zu und bekam so eine Promenade geschenkt. Der Name ist älter als sie: In dem trockenen Bett hielt man Turniere, und <em>born</em> hieß der stumpfe Holzknauf an der Lanzenspitze. Man spaziert auf einem Turnierplatz auf einem Flussbett.` },
 
   { id:'tresen', num:null, rn:'✦', art:'tresen', isExtras:true, cap:'was zwischen zwei Stationen in die Hand gehört',
+    gmaps:'Ca’n Joan de s’Aigo, Carrer de Can Sanç 10, 07001 Palma',
     name:'Am Tresen', local:'Ensaïmada, quarto, granissat, pa amb oli',
     meta:'Eingelegtes Blatt · Ca’n Joan de s’Aigo, seit 1700 · Carrer de Can Sanç 10',
     lookLabel:'Zu bestellen', factLabel:'Zur Sache',
     look:`Zwischen Sant Francesc und der Plaça Major, in einer Gasse hinter Santa Eulàlia, liegt <em>Ca’n Joan de s’Aigo</em> — Marmortische, Fliesen, Kronleuchter, seit 1700. Bestellen Sie dort nicht das Naheliegende: nicht die Ensaïmada allein, sondern einen <em>quarto</em>, den luftigen Biskuit, mit einer Kugel <em>Mandeleis</em> darauf. Dazu im Sommer ein <em>granissat d’ametla</em>, geraspeltes Eis mit Mandelmilch. Und mittags irgendwo ein <em>pa amb oli</em>: Brot, Öl, Salz und eine Ramallet-Tomate, die man selbst aufs Brot reibt.`,
     fact:`Das Haus verdankt seinen Namen dem Wasser und dem Schnee. Joan Thomàs aus Valldemossa lagerte um 1700 Schnee aus der Tramuntana in gemauerten <em>cases de neu</em> und presste daraus die ersten Sorbets der Insel — Eis war ein Bergprodukt, ehe es ein Küchengerät war. Joan Miró saß hier regelmäßig. Und die Ensaïmada heißt nach ihrem Fett: <em>saïm</em> ist Schweineschmalz, weshalb sie weder vegetarisch noch, wie oft behauptet, arabischen Ursprungs sein kann. Seit 1996 ist sie als „Ensaïmada de Mallorca" geschützt.` }
 ];
+
+/* ══════════════════════════════════════════════════════════════
+   VERWEISE NACH GOOGLE MAPS
+   Koordinaten statt Namen: ein Name kann auf das falsche Lokal
+   zeigen, ein Punkt nicht. Ausnahme ist das Café — dort ist die
+   Anschrift die genauere Auskunft, samt Öffnungszeiten.
+   ══════════════════════════════════════════════════════════════ */
+const PIN_SVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 1118 0z"/><circle cx="12" cy="10" r="3"/></svg>';
+const WALK_SVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="4" r="2"/><path d="M13 8l-4 4 2 4 1 6M13 8l4 3M11 16l-3 5"/></svg>';
+
+function mapsQuery(s){ return s.gmaps ? encodeURIComponent(s.gmaps) : `${s.lat},${s.lng}`; }
+function goLinks(s){
+  if(!s.lat && !s.gmaps) return '';
+  const q=mapsQuery(s);
+  const see=`https://www.google.com/maps/search/?api=1&query=${q}`;
+  const walk=`https://www.google.com/maps/dir/?api=1&destination=${q}&travelmode=walking`;
+  return `<div class="golinks">
+    <a class="golink" href="${see}" target="_blank" rel="noopener noreferrer">${PIN_SVG}In Google Maps</a>
+    <a class="golink walk" href="${walk}" target="_blank" rel="noopener noreferrer">${WALK_SVG}Fußweg dorthin</a>
+  </div>`;
+}
+/* Die ganze Runde am Stück — Start Kathedrale, Ziel Born, fünf Zwischenpunkte.
+   Mehr Wegpunkte lässt die Maps-URL-Schnittstelle nicht zu. */
+function routeLink(){
+  const order=['seu','almudaina','llotja','cort','francesc','major','born']
+    .map(id=>sites.find(s=>s.id===id)).filter(Boolean);
+  const pt=s=>`${s.lat},${s.lng}`;
+  const via=order.slice(1,-1).map(pt).join('|');
+  return `https://www.google.com/maps/dir/?api=1&origin=${pt(order[0])}`+
+         `&destination=${pt(order[order.length-1])}&waypoints=${encodeURIComponent(via)}&travelmode=walking`;
+}
 
 /* ══════════════════════════════════════════════════════════════
    KARTE — Nordwesten der Altstadt bis zur Bucht
@@ -909,6 +961,7 @@ function buildAll(){
     <h2>Der Weg</h2>
     <div class="lede">Die durchgezogene Linie ist die Runde, von der Kathedrale am Wasser bis hinauf zum Born. Auf eine Ziffer tippen, um hinzublättern; auf freie Fläche tippen, um sich von Hand zu setzen.</div>
     <div class="map-holder"><svg id="map-svg" viewBox="0 0 ${MAP_W} ${MAP_H}" preserveAspectRatio="xMidYMid meet"></svg></div>
+    <div class="golinks"><a class="golink walk" href="${routeLink()}" target="_blank" rel="noopener noreferrer">${WALK_SVG}Die ganze Runde in Google Maps</a></div>
     <div class="maphint">Der Stern sind Sie · die Gassen sind schematisch, die Lage der Stationen ist gerundet</div>`, 'mapleaf'));
 
   // STATIONEN
@@ -922,6 +975,7 @@ function buildAll(){
       <h1 class="title">${s.name}</h1>
       <div class="local">${s.local}</div>
       <div class="meta">${s.meta}</div>
+      ${goLinks(s)}
       <div class="sec"><span class="lbl">${lookLbl}</span><p class="drop">${s.look}</p></div>
       <div class="sec fact"><span class="lbl">${factLbl}</span><p>${s.fact}</p></div>`));
   });
