@@ -1,0 +1,1381 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Palma Aquarium · Die Becken — ein Rundgang</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400&family=Jost:wght@300;400;500&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  /* ══════════════════════════════════════════════════════════════
+     PALMA AQUARIUM — DIE BECKEN
+     Kein Buch aus Papier: eine Folge beleuchteter Scheiben in
+     einer dunklen Halle. Jede Seite ist ein Becken — Acryl im
+     Stahlrahmen, Wasser dahinter, Licht von oben. Die Tafeln sind
+     das, was man durch die Scheibe sieht: dunkle Silhouetten vor
+     blauem Wasser, mit einem Lichtsaum an der Oberkante.
+     Dunkel gehalten, weil der Rundgang dunkel ist — ein weiß
+     leuchtendes Telefon blendet vor dem Haibecken alle anderen.
+     Drei Tinten: Glaslicht, Türkis, Tiefe. Dazu Korallenrot,
+     sparsam, für Regeln und Standort.
+     ══════════════════════════════════════════════════════════════ */
+  :root{
+    --abyss:    #03121c;
+    --hall:     #061e2c;
+    --water-hi: #12557a;
+    --water:    #0a3550;
+    --water-dk: #04182a;
+    --glass:    #e2f2f7;   /* Textfarbe, Glaslicht */
+    --glass-2:  #a9ccd9;
+    --glass-3:  #6b8f9f;
+    --cyan:     #5fc9d6;
+    --cyan-dk:  #2b8ea0;
+    --coral:    #e2683c;   /* Akzent: Regeln, Standort, zweites Kapitel */
+    --coral-lt: #f08a5c;
+    --steel:    #16303d;   /* Rahmen */
+    --steel-lt: #2c5568;
+    --brass:    #c9a35a;
+    --shadow:   rgba(0,8,14,.72);
+  }
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  html,body{ height:100%; }
+  body{
+    font-family:'Lora', Georgia, serif;
+    color:var(--glass);
+    background:var(--abyss);
+    overflow:hidden;
+    -webkit-font-smoothing:antialiased;
+    -webkit-tap-highlight-color:transparent;
+  }
+
+  /* ── die Halle ───────────────────────────────────────────────── */
+  .hall{
+    position:fixed; inset:0; z-index:0;
+    background:
+      radial-gradient(ellipse 78% 52% at 50% 42%, #0d3b56 0%, #072536 46%, #03121c 82%),
+      var(--abyss);
+  }
+  /* Kaustiken — das Netz aus Licht, das über Boden und Wand wandert */
+  .caustics{
+    position:fixed; inset:-8%; z-index:1; pointer-events:none; opacity:.20; mix-blend-mode:screen;
+    background-image:
+      radial-gradient(ellipse 30% 12% at 22% 18%, rgba(150,230,245,.55), transparent 62%),
+      radial-gradient(ellipse 26% 9%  at 68% 30%, rgba(120,210,235,.45), transparent 64%),
+      radial-gradient(ellipse 34% 11% at 44% 62%, rgba(140,225,240,.40), transparent 66%),
+      radial-gradient(ellipse 22% 8%  at 80% 76%, rgba(120,205,230,.42), transparent 66%);
+    animation:drift 19s ease-in-out infinite alternate;
+  }
+  @keyframes drift{
+    0%  { transform:translate3d(-2%,-1%,0) scale(1); }
+    100%{ transform:translate3d(3%,2%,0) scale(1.07); }
+  }
+  .vignette{
+    position:fixed; inset:0; z-index:8; pointer-events:none;
+    background:radial-gradient(ellipse 118% 104% at 50% 46%, transparent 44%, rgba(1,8,14,.6) 88%, rgba(1,6,11,.86) 100%);
+  }
+  .bubbles{ position:fixed; inset:0; z-index:6; pointer-events:none; overflow:hidden; }
+  .bub{
+    position:absolute; bottom:-30px; border-radius:50%;
+    border:1px solid rgba(190,235,245,.5);
+    background:radial-gradient(circle at 34% 30%, rgba(225,248,255,.42), rgba(150,215,235,.06) 62%);
+    animation:rise linear infinite;
+  }
+  @keyframes rise{
+    0%  { transform:translate3d(0,0,0) scale(.7); opacity:0; }
+    12% { opacity:.55; }
+    82% { opacity:.42; }
+    100%{ transform:translate3d(var(--dx,12px),var(--dy,-108vh),0) scale(1); opacity:0; }
+  }
+
+  /* ── die Scheibe im Stahlrahmen ──────────────────────────────── */
+  #stage{
+    position:fixed; inset:0; z-index:2;
+    display:flex; align-items:center; justify-content:center;
+    padding:max(58px,calc(env(safe-area-inset-top) + 46px)) 12px max(84px,calc(env(safe-area-inset-bottom) + 78px));
+  }
+  #frame{ position:relative; width:min(452px,100%); height:100%; max-height:880px; }
+  .rim{
+    position:absolute; inset:-10px; border-radius:6px; z-index:0;
+    background:linear-gradient(150deg, var(--steel-lt) 0%, var(--steel) 42%, #0b1e29 100%);
+    box-shadow:0 24px 54px var(--shadow), inset 0 1px 0 rgba(190,225,240,.16);
+  }
+  .rim::after{  /* die Silikonfuge, die jede Scheibe im Haus hat */
+    content:''; position:absolute; inset:8px; border-radius:3px;
+    box-shadow:inset 0 0 0 2px rgba(4,16,24,.85), inset 0 0 14px rgba(0,0,0,.5);
+  }
+  .bolt{
+    position:absolute; width:9px; height:9px; border-radius:50%; z-index:5;
+    background:radial-gradient(circle at 34% 32%, #7f9fae, #24404e 70%, #0d1e28);
+    box-shadow:0 1px 2px rgba(0,0,0,.6);
+  }
+  .bolt.tl{ left:-5px; top:-5px; } .bolt.tr{ right:-5px; top:-5px; }
+  .bolt.bl{ left:-5px; bottom:-5px; } .bolt.br{ right:-5px; bottom:-5px; }
+  /* Reflex auf dem Acryl — liegt über allem, verrät die Scheibe */
+  .pane-glare{
+    position:absolute; inset:0; z-index:6; pointer-events:none; border-radius:2px; overflow:hidden;
+  }
+  .pane-glare::before{
+    content:''; position:absolute; left:-40%; top:-60%; width:80%; height:220%;
+    background:linear-gradient(100deg, transparent 34%, rgba(214,244,252,.09) 48%, transparent 62%);
+    transform:rotate(9deg);
+  }
+
+  #pages{ position:absolute; inset:0; z-index:1; overflow:hidden; border-radius:2px; }
+
+  /* Die Seite ist die Scheibe. Gescrollt wird im untransformierten
+     Kind — sonst rendert mobiles WebKit den Scrollcontainer weg. */
+  .page{
+    position:absolute; inset:0; z-index:1; overflow:hidden; border-radius:2px;
+    opacity:0; visibility:hidden; pointer-events:none;
+    transform:translate3d(30px,0,0) scale(.988);
+    transition:transform .52s cubic-bezier(.3,.02,.2,1), opacity .38s ease;
+    background:
+      linear-gradient(180deg, var(--water-hi) 0%, var(--water) 34%, var(--water-dk) 88%, #030f19 100%);
+  }
+  .page.is-current{ opacity:1; visibility:visible; pointer-events:auto; z-index:20; transform:none; }
+  .page.turn-out{ opacity:0; visibility:visible; z-index:30; transform:translate3d(-34px,0,0) scale(.976); }
+  .page.turn-in { opacity:0; visibility:visible; z-index:30; transform:translate3d(-34px,0,0) scale(.976); }
+  /* Licht von oben, Schwebstoffe, ein Hauch Korn */
+  .page::after{
+    content:''; position:absolute; inset:0; pointer-events:none; z-index:0; opacity:.5;
+    background-image:
+      linear-gradient(184deg, rgba(180,235,250,.16) 0%, transparent 26%),
+      radial-gradient(ellipse 60% 22% at 26% 4%, rgba(190,240,252,.16), transparent 70%),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' seed='7'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)' opacity='.22'/%3E%3C/svg%3E");
+  }
+  .leaf-inner{
+    position:absolute; inset:0; z-index:1;
+    overflow-y:auto; overflow-x:hidden;
+    -webkit-overflow-scrolling:touch; overscroll-behavior:contain; scrollbar-width:none;
+    padding:20px 20px 96px;
+  }
+  .leaf-inner::-webkit-scrollbar{ display:none; }
+
+  /* ── die Tafel: ein Fenster im Fenster ───────────────────────── */
+  .plate{ position:relative; margin:2px 0 10px; }
+  .plate-frame{
+    position:relative; overflow:hidden; border-radius:2px;
+    border:1px solid rgba(150,205,222,.45);
+    background:linear-gradient(180deg, #10527a 0%, #08324c 46%, #041a2a 100%);
+    box-shadow:0 6px 20px rgba(0,10,18,.55), inset 0 0 26px rgba(4,20,34,.75);
+  }
+  .plate-frame svg{ display:block; width:100%; height:auto; }
+  .plate-cap{
+    font-family:'Jost',sans-serif; font-weight:300; font-size:.74rem; letter-spacing:.05em;
+    color:var(--glass-3); text-align:center; margin-top:7px; line-height:1.35;
+  }
+
+  /* Tafel-Animationen: die Silhouetten treten ein, die Linien
+     zeichnen sich, das Licht steht schräg im Wasser. */
+  .tank .fg{ opacity:0; }
+  .tank .ln{ fill:none; stroke-linecap:round; stroke-linejoin:round; stroke-dasharray:1; stroke-dashoffset:1; }
+  .page.is-current .tank .fg{ animation:fgin .82s cubic-bezier(.2,.75,.3,1) forwards; animation-delay:var(--del,0s); }
+  .page.is-current .tank .ln{ animation:draw var(--dur,1.5s) cubic-bezier(.45,0,.2,1) forwards; animation-delay:var(--del,0s); }
+  @keyframes fgin{ from{ opacity:0; transform:translateY(5px);} to{ opacity:1; transform:none; } }
+  @keyframes draw{ to{ stroke-dashoffset:0; } }
+  .tank .sw{ animation:sway var(--dur,17s) ease-in-out infinite alternate; animation-delay:var(--del,0s); }
+  @keyframes sway{ from{ transform:translateX(var(--x0,-16px)); } to{ transform:translateX(var(--x1,16px)); } }
+  .tank .beam{ animation:beam 7s ease-in-out infinite alternate; }
+  @keyframes beam{ from{ opacity:.30; } to{ opacity:.62; } }
+  .tank .pulse{ animation:pulseg 4.5s ease-in-out infinite; transform-box:fill-box; transform-origin:center; }
+  @keyframes pulseg{ 0%,100%{ transform:scaleY(1); } 50%{ transform:scaleY(.9); } }
+
+  /* ── Typographie ─────────────────────────────────────────────── */
+  .chap{
+    font-family:'Jost',sans-serif; font-weight:400; letter-spacing:.26em; text-transform:uppercase;
+    font-size:.66rem; color:var(--cyan); margin-top:4px;
+  }
+  h1.title{
+    font-family:'Bodoni Moda', Georgia, serif; font-weight:400;
+    font-size:clamp(1.95rem,7.8vw,2.5rem); line-height:1.06; color:var(--glass);
+    margin:.08em 0 .04em; letter-spacing:.005em;
+  }
+  .local{ font-family:'Lora',serif; font-style:italic; font-size:1.02rem; color:var(--cyan); }
+  /* Das Beckenschild: im Haus eine gravierte Platte neben der Scheibe */
+  .meta{
+    display:block; margin-top:11px; padding:7px 10px;
+    font-family:'Jost',sans-serif; font-weight:300; font-size:.7rem; letter-spacing:.09em;
+    text-transform:uppercase; color:var(--glass-2);
+    background:linear-gradient(160deg, rgba(30,62,80,.85), rgba(10,28,40,.85));
+    border:1px solid rgba(150,205,222,.28); border-left:2px solid var(--brass);
+    box-shadow:inset 0 1px 0 rgba(200,235,248,.1);
+  }
+  .golinks{ display:flex; flex-wrap:wrap; gap:8px; margin-top:10px; }
+  .golink{
+    display:inline-flex; align-items:center; gap:6px; min-height:34px; padding:7px 11px;
+    font-family:'Jost',sans-serif; font-size:.7rem; letter-spacing:.1em; text-transform:uppercase;
+    color:var(--cyan); text-decoration:none;
+    background:rgba(95,201,214,.09); border:1px solid rgba(95,201,214,.36); border-radius:2px;
+    transition:background .2s, border-color .2s;
+  }
+  .golink:hover{ background:rgba(95,201,214,.18); border-color:var(--cyan); }
+  .golink:active{ transform:translateY(1px); }
+  .golink svg{ width:12px; height:12px; flex:none; }
+  .golink.warm{ color:var(--coral-lt); background:rgba(226,104,60,.1); border-color:rgba(226,104,60,.4); }
+  .golink.warm:hover{ background:rgba(226,104,60,.2); border-color:var(--coral); }
+
+  .sec{ margin-top:17px; }
+  .lbl{
+    display:inline-block; font-family:'Jost',sans-serif; font-weight:400;
+    letter-spacing:.19em; text-transform:uppercase; font-size:.68rem;
+    color:var(--cyan); border-bottom:1.5px solid var(--cyan-dk); padding-bottom:3px; margin-bottom:9px;
+  }
+  .sec.fact .lbl{ color:var(--coral-lt); border-color:rgba(226,104,60,.6); }
+  .sec p{ font-size:1.08rem; line-height:1.66; color:var(--glass); font-weight:400; }
+  .sec p em{ font-style:italic; color:var(--cyan); }
+  .sec p strong{ font-weight:600; color:var(--coral-lt); font-style:normal; }
+  .drop::first-letter{
+    font-family:'Bodoni Moda',serif; font-size:3.1em; line-height:.8; float:left;
+    padding:7px 9px 0 0; color:var(--cyan);
+  }
+  .aside{
+    margin-top:15px; padding:10px 12px; border-left:3px solid var(--coral);
+    background:rgba(226,104,60,.1);
+    font-size:.96rem; line-height:1.46; color:var(--glass-2); font-style:italic;
+  }
+  .aside b{ font-weight:600; color:var(--coral-lt); font-style:normal; }
+
+  /* ── UMSCHLAG ────────────────────────────────────────────────── */
+  .cover .leaf-inner{ display:flex; flex-direction:column; align-items:center; text-align:center; padding-top:26px; }
+  .cover .plate{ width:100%; }
+  .cover .place{ font-family:'Jost',sans-serif; letter-spacing:.34em; text-transform:uppercase; font-size:.68rem; color:var(--cyan); }
+  .cover h1{
+    font-family:'Bodoni Moda',serif; font-weight:400; letter-spacing:.02em;
+    font-size:clamp(2.3rem,10.4vw,3.1rem); line-height:1.02; color:var(--glass); margin:.1em 0;
+  }
+  .cover .sub{ font-family:'Jost',sans-serif; font-weight:300; font-size:.92rem; letter-spacing:.1em; color:var(--glass-2); }
+  .cover .rule{ width:62%; height:1px; background:linear-gradient(90deg,transparent,var(--cyan-dk),transparent); margin:14px 0; }
+  .cover .lede{ max-width:346px; font-style:italic; color:var(--glass-2); line-height:1.55; font-size:1rem; }
+  .cover .exlibris{
+    margin-top:18px; font-family:'Jost',sans-serif; letter-spacing:.15em; text-transform:uppercase;
+    font-size:.6rem; color:var(--glass-3); border:1px solid rgba(150,205,222,.3); padding:6px 12px;
+  }
+  .cover .begin{
+    margin-top:15px; font-family:'Jost',sans-serif; letter-spacing:.14em; text-transform:uppercase;
+    font-size:.76rem; color:var(--coral-lt); animation:blinkslow 2.6s ease-in-out infinite;
+  }
+  @keyframes blinkslow{ 0%,100%{opacity:.45} 50%{opacity:1} }
+
+  /* ── INHALT ──────────────────────────────────────────────────── */
+  .toc h2{ font-family:'Bodoni Moda',serif; font-weight:400; font-size:1.95rem; color:var(--glass); }
+  .toc .lede{ font-style:italic; color:var(--glass-2); margin:4px 0 8px; font-size:1rem; line-height:1.5; }
+  .toc ul{ list-style:none; }
+  .toc li{
+    display:flex; align-items:baseline; gap:12px; padding:10px 2px; cursor:pointer;
+    border-bottom:1px solid rgba(150,205,222,.16); transition:padding-left .2s, background .2s;
+  }
+  .toc li:hover{ background:rgba(95,201,214,.09); padding-left:8px; }
+  .toc .rn{ font-family:'Jost',sans-serif; color:var(--cyan); min-width:34px; font-size:.82rem; letter-spacing:.08em; }
+  .toc .tt{ flex:1; }
+  .toc .nm{ font-family:'Jost',sans-serif; font-weight:400; letter-spacing:.03em; font-size:.98rem; color:var(--glass); }
+  .toc .sb{ font-style:italic; font-size:.88rem; color:var(--glass-3); }
+  .toc .di{ font-family:'Jost',sans-serif; font-size:.66rem; letter-spacing:.1em; text-transform:uppercase; color:var(--coral-lt); white-space:nowrap; }
+  .toc .foot{ margin-top:14px; font-size:.93rem; font-style:italic; color:var(--glass-3); text-align:center; line-height:1.45; }
+
+  /* ── PLAN ────────────────────────────────────────────────────── */
+  .planleaf .leaf-inner{ display:flex; flex-direction:column; }
+  .planleaf h2{ font-family:'Bodoni Moda',serif; font-weight:400; font-size:1.85rem; color:var(--glass); }
+  .planleaf .lede{ font-style:italic; color:var(--glass-2); font-size:.95rem; margin-bottom:9px; line-height:1.5; }
+  .plan-holder{
+    position:relative; width:100%; aspect-ratio:320 / 268; border:1px solid rgba(150,205,222,.4);
+    background:linear-gradient(170deg,#0a2c42,#04182a);
+    box-shadow:inset 0 0 24px rgba(2,12,22,.8);
+  }
+  #plan-svg{ width:100%; height:100%; display:block; touch-action:manipulation; }
+  .plan-node{ cursor:pointer; }
+  .planhint{ text-align:center; font-size:.9rem; font-style:italic; color:var(--glass-3); margin-top:8px; line-height:1.45; }
+
+  /* ── feste Bedienelemente ────────────────────────────────────── */
+  .topbar{
+    position:fixed; z-index:12; top:0; left:0; right:0; display:flex; justify-content:space-between;
+    padding:max(12px,env(safe-area-inset-top)) 16px 0; pointer-events:none;
+  }
+  .chip{
+    pointer-events:auto; cursor:pointer;
+    font-family:'Jost',sans-serif; letter-spacing:.11em; text-transform:uppercase; font-size:.64rem;
+    color:var(--glass); background:rgba(4,22,34,.8);
+    border:1px solid rgba(95,201,214,.42); border-radius:2px; padding:8px 11px;
+    display:flex; align-items:center; gap:7px; backdrop-filter:blur(4px);
+    transition:background .2s, border-color .2s;
+  }
+  .chip:active{ transform:translateY(1px); }
+  .chip .dot{ width:7px; height:7px; border-radius:50%; background:var(--cyan); }
+  .chip.on{ background:rgba(226,104,60,.85); border-color:var(--coral-lt); }
+  .chip.on .dot{ background:#fff; }
+  .chip.tts.on{ background:rgba(43,142,160,.9); border-color:var(--cyan); }
+
+  .nav{
+    position:fixed; z-index:12; left:0; right:0; bottom:max(16px,env(safe-area-inset-bottom));
+    display:flex; align-items:center; justify-content:center; gap:16px; pointer-events:none;
+  }
+  .nav button{
+    pointer-events:auto; cursor:pointer; width:52px; height:52px; border-radius:50%;
+    border:1.5px solid rgba(95,201,214,.6); background:rgba(6,32,46,.94); color:var(--cyan);
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 3px 12px rgba(0,0,0,.55); transition:transform .15s, opacity .2s;
+  }
+  .nav button:active{ transform:scale(.9); }
+  .nav button:disabled{ opacity:.26; cursor:default; }
+  .nav button svg{ width:20px; height:20px; }
+  .progress{
+    pointer-events:auto; cursor:pointer;
+    font-family:'Jost',sans-serif; letter-spacing:.13em; color:var(--glass-2);
+    background:rgba(4,22,34,.8); border:1px solid rgba(95,201,214,.32); border-radius:18px;
+    padding:9px 15px; font-size:.66rem; min-width:80px; text-align:center;
+  }
+
+  @media (max-width:360px){ .sec p{ font-size:1.02rem; } h1.title{ font-size:1.8rem; } }
+  @media (prefers-reduced-motion:reduce){
+    .page{ transition:none; }
+    .tank .fg{ opacity:1; } .tank .ln{ stroke-dashoffset:0; }
+    .page.is-current .tank .fg, .page.is-current .tank .ln{ animation:none; }
+    .caustics,.bub,.tank .sw,.tank .beam,.tank .pulse,.cover .begin{ animation:none; }
+  }
+</style>
+</head>
+<body>
+<div class="hall"></div>
+<div class="caustics"></div>
+<div class="bubbles" id="bubbles"></div>
+<div class="vignette"></div>
+
+<div class="topbar">
+  <div class="chip here" id="here"><span class="dot"></span><span id="here-label">Hier bin ich</span></div>
+  <div class="chip tts" id="tts"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13 3a4 4 0 00-2-3.46v6.92A4 4 0 0016 12z"/></svg><span id="tts-label">Vorlesen</span></div>
+</div>
+
+<div id="stage">
+  <div id="frame">
+    <div class="rim"></div>
+    <div id="pages"></div>
+    <div class="pane-glare"></div>
+    <div class="bolt tl"></div><div class="bolt tr"></div>
+    <div class="bolt bl"></div><div class="bolt br"></div>
+  </div>
+</div>
+
+<div class="nav">
+  <button id="prev" aria-label="Zurück"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button>
+  <div class="progress" id="progress">01 / 13</div>
+  <button id="next" aria-label="Weiter"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
+</div>
+
+<script>
+/* ══════════════════════════════════════════════════════════════
+   PALMA AQUARIUM — DIE BECKEN · Maschinerie
+   ══════════════════════════════════════════════════════════════ */
+const NS='http://www.w3.org/2000/svg';
+
+/* Drei Tinten plus Wasser. Silhouetten stehen dunkel vor dem Licht,
+   die Kanten bekommen einen hellen Saum — so sieht ein Tier in
+   einem von oben beleuchteten Becken tatsächlich aus. */
+const C={
+  glass:'#e2f2f7', glass2:'#a9ccd9', glass3:'#7fa3b3',
+  cyan:'#5fc9d6', cyanDk:'#2b8ea0', teal:'#3f8fa6',
+  dark:'#062232', darker:'#03141f', mid:'#0b3a56',
+  sand:'#0a2a3c', brass:'#c9a35a',
+  coral:'#e2683c', coralLt:'#f08a5c',
+  weed:'#2f7d74', weedLt:'#54a894'
+};
+
+const D=v=>(+v).toFixed(2);
+
+/* ── Bausteine einer Tafel ───────────────────────────────────── */
+function fg(d,fill,del,op){                     // Silhouette, tritt ein
+  return `<path class="fg" style="--del:${D(del)}s" d="${d}" fill="${fill}"${op===undefined?'':` fill-opacity="${op}"`}/>`;
+}
+function fgc(cx,cy,r,fill,del,op){
+  return `<circle class="fg" style="--del:${D(del)}s" cx="${cx}" cy="${cy}" r="${r}" fill="${fill}"${op===undefined?'':` fill-opacity="${op}"`}/>`;
+}
+function fge(cx,cy,rx,ry,fill,del,op,rot){
+  const tr=rot?` transform="rotate(${rot} ${cx} ${cy})"`:'';
+  return `<ellipse class="fg" style="--del:${D(del)}s" cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="${fill}"${op===undefined?'':` fill-opacity="${op}"`}${tr}/>`;
+}
+function ln(d,del,dur,w,col,op){                // Linie, zeichnet sich
+  return `<path class="ln" pathLength="1" style="--del:${D(del)}s;--dur:${dur||1.3}s" d="${d}" stroke="${col||C.glass2}" stroke-width="${w||1}"${op===undefined?'':` stroke-opacity="${op}"`}/>`;
+}
+function tx(x,y,t,del,o){
+  o=o||{};
+  return `<text class="fg" style="--del:${D(del)}s" x="${x}" y="${y}" fill="${o.fill||C.glass3}" font-family="${o.ff||"'Jost',sans-serif"}" font-size="${o.fs||8.5}" font-style="${o.fi||'normal'}" text-anchor="${o.ta||'start'}" letter-spacing="${o.ls===undefined?0.6:o.ls}">${t}</text>`;
+}
+function sway(inner,dur,x0,x1,del){              // langsames Treiben
+  return `<g class="sw" style="--dur:${dur}s;--x0:${x0}px;--x1:${x1}px;--del:${D(del||0)}s">${inner}</g>`;
+}
+
+/* Lichtschächte: drei schräge Bahnen von der Oberkante */
+function beams(h,k){
+  let s='';
+  const set=[[36,18,.30],[128,26,.24],[236,15,.22]];
+  set.forEach((b,i)=>{
+    s+=`<path class="beam" style="animation-delay:${(i*1.7).toFixed(1)}s" d="M${b[0]} 0 l${b[1]} 0 l${b[1]*2.4+34} ${h} l${-b[1]*1.6-18} 0 Z" fill="#8fe0f2" fill-opacity="${b[2]}"/>`;
+  });
+  return s;
+}
+/* Sandgrund — liegt in jeder Tafel auf derselben Höhe */
+function floorSand(y,del,x0,x1){
+  x0=x0===undefined?0:x0; x1=x1===undefined?320:x1;
+  const w=x1-x0;
+  const top=`M${x0} ${y+6} q ${w*.14} -8 ${w*.28} -2 q ${w*.16} 8 ${w*.32} -4 q ${w*.2} -9 ${w*.4} 3`;
+  let s=fg(`${top} L${x1} 206 L${x0} 206 Z`,C.sand,del);
+  s+=ln(top,del+.1,1.5,1,C.glass2,.35);
+  return s;
+}
+/* Maßstabsbalken — jede Tafel sagt, wie groß ist, was man sieht */
+function scaleBar(x,y,w,label,del){
+  return ln(`M${x} ${y} h${w}`,del,.8,1.2,C.glass2,.75)
+       + ln(`M${x} ${y-4} v8 M${x+w} ${y-4} v8`,del+.1,.5,1.2,C.glass2,.75)
+       + tx(x+w/2,y-7,label,del+.15,{ta:'middle',fs:8,fill:C.glass2,ls:1});
+}
+/* Beschriftung im unteren Band — Graphik endet bei y=176 */
+function label(x,y,t,del,it,col){
+  return tx(x,y,t,del,{ta:'middle',fs:8,fi:it?'italic':'normal',fill:col||C.glass3});
+}
+function leader(x1,y1,x2,y2,del){
+  return `<path class="ln" pathLength="1" style="--del:${D(del)}s;--dur:.9s" d="M${x1} ${y1} L${x2} ${y2}" stroke="${C.glass3}" stroke-width=".7" stroke-dasharray="1" stroke-dashoffset="1" opacity=".5"/>`;
+}
+
+/* ── Fische ──────────────────────────────────────────────────── */
+function fish(x,y,l,h,fill,del,op){
+  const t=l*.76;
+  return fg(`M${x} ${y} c ${t*.2} ${-h} ${t*.78} ${-h} ${t} 0 c ${-t*.22} ${h} ${-t*.78} ${h} ${-t} 0 Z`,fill,del,op)
+       + fg(`M${x+t} ${y} l ${l-t} ${-h*.95} l 0 ${h*1.9} Z`,fill,del+.04,op);
+}
+function shoal(x,y,n,l,fill,del,op){
+  let s='';
+  for(let i=0;i<n;i++){
+    const dx=(i%5)*(l*1.5)+((i*7)%3)*4, dy=Math.floor(i/5)*(l*.75)+((i*11)%4)*2;
+    s+=fish(x+dx,y+dy,l,l*.34,fill,del+i*.04,op);
+  }
+  return s;
+}
+
+/* Der Hai — Schnauze rechts, Länge 108 im eigenen Maß, über
+   transform skaliert. Sandtiger: schiefes Gebiss, immer sichtbar. */
+function shark(x,y,sc,del,fill){
+  const f=fill||C.dark;
+  let s=fg(`M6 14 C 20 3 54 -2 100 14 C 54 30 20 25 6 14 Z`,f,del);
+  s+=fg(`M6 14 L -8 -1 L 1 14 L -8 29 Z`,f,del+.06);
+  s+=fg(`M44 5 L 57 -10 L 63 6 Z`,f,del+.1);
+  s+=fg(`M22 8 L 30 0 L 34 9 Z`,f,del+.14);
+  s+=fg(`M62 19 L 52 33 L 74 21 Z`,f,del+.16);
+  s+=fg(`M26 20 L 30 28 L 38 21 Z`,f,del+.18);
+  s+=ln(`M58 9 q -2.5 5 0 10 M62 9 q -2.5 5 0 10 M66 9 q -2.5 5 0 10 M70 9 q -2.5 5 0 9 M74 10 q -2 4 0 8`,del+.3,1.1,.9,C.glass2,.5);
+  s+=ln(`M86 16 q 7 2 12 -2`,del+.42,.8,.9,C.glass,.7);
+  s+=ln(`M88 16 v-2.5 M91 16.5 v-2.5 M94 16 v-2.5`,del+.5,.5,.7,C.glass,.55);
+  s+=fgc(84,9.5,1.6,C.glass,del+.44);
+  s+=ln(`M6 14 C 20 3 54 -2 100 14`,del+.2,1.4,1,C.glass,.55);
+  return `<g transform="translate(${x} ${y}) scale(${sc})">${s}</g>`;
+}
+
+/* Rochen von unten — Spannweite 124, Kopf oben */
+function rayBelow(x,y,sc,del,fill){
+  const f=fill||C.dark;
+  let s=fg(`M62 0 C 84 3 108 20 121 45 L112 47 C 96 39 80 35 62 35 C 44 35 28 39 12 47 L3 45 C 16 20 40 3 62 0 Z`,f,del);
+  s+=fg(`M59 34 q 2 30 -1 50 l 4 0 q 3 -22 2 -50 Z`,f,del+.08);
+  s+=ln(`M62 0 C 84 3 108 20 121 45`,del+.2,1.3,1,C.glass,.45);
+  s+=ln(`M50 20 q 12 -5 24 0`,del+.36,.9,1.3,C.glass,.8);
+  s+=fgc(54,11,1.7,C.glass,del+.44,.85); s+=fgc(70,11,1.7,C.glass,del+.48,.85);
+  s+=ln(`M44 26 q 3 4 2 8 M39 27 q 3 4 2 8 M34 29 q 3 4 2 7 M80 26 q -3 4 -2 8 M85 27 q -3 4 -2 8 M90 29 q -3 4 -2 7`,del+.56,1,.9,C.glass2,.45);
+  return `<g transform="translate(${x} ${y}) scale(${sc})">${s}</g>`;
+}
+
+/* Meeresschildkröte von der Seite — Panzerlänge 88 im eigenen Maß */
+function turtle(x,y,sc,del,fill){
+  const f=fill||C.dark;
+  let s=fg(`M12 20 C 20 4 64 -2 82 12 C 90 18 86 30 74 34 C 52 42 22 38 12 28 Z`,f,del);
+  s+=fg(`M82 12 c 11 -4 20 0 22 7 c -1 7 -10 10 -20 8 c -7 -2 -9 -11 -2 -15 Z`,f,del+.08);
+  s+=fg(`M28 32 C 20 46 4 54 -4 52 C 2 41 12 33 22 29 Z`,f,del+.12);
+  s+=fg(`M56 36 C 58 48 50 56 42 57 C 42 48 46 40 52 34 Z`,f,del+.16);
+  s+=fg(`M18 12 C 26 2 46 -2 60 1 C 44 2 30 6 20 14 Z`,f,del+.2);
+  s+=ln(`M22 16 q 20 20 42 14 M40 6 q 8 24 5 30 M58 7 q 1 20 7 24`,del+.4,1.4,.9,C.glass2,.5);
+  s+=fgc(99,17,1.5,C.glass,del+.5);
+  s+=ln(`M12 20 C 20 4 64 -2 82 12`,del+.3,1.2,1,C.glass,.45);
+  return `<g transform="translate(${x} ${y}) scale(${sc})">${s}</g>`;
+}
+
+/* Ohrenqualle — Schirmbreite 44, die vier Ringe im Schirm */
+function jelly(x,y,sc,del,phase){
+  let s=`<g class="pulse" style="animation-delay:${(phase||0).toFixed(1)}s">`;
+  s+=fg(`M0 0 C 1 -19 43 -19 44 0 C 33 7 11 7 0 0 Z`,'#bfe6f0',del,.3);
+  s+=ln(`M0 0 C 1 -19 43 -19 44 0`,del+.14,1.2,1.2,C.glass,.85);
+  // die vier Ringe: Keimdrüsen, im Schirm liegend
+  [[15,-5.5],[29,-5.5],[18,-11],[26,-11]].forEach((g,i)=>{
+    s+=ln(`M${g[0]-3.6} ${g[1]} a 3.6 3.2 0 1 1 7.2 0 a 3.6 3.2 0 1 1 -7.2 0`,del+.34+i*.05,.9,1.1,C.cyan,.9);
+  });
+  s+=ln(`M13 4 q 3 15 -2 23 M20 5 q 1 15 4 21 M26 5 q 2 14 7 19 M31 3 q 5 11 11 15`,del+.5,1.4,.9,C.glass2,.55);
+  for(let i=0;i<15;i++) s+=ln(`M${(i*3+1).toFixed(1)} ${(i%2?1.6:.8)} v${5+(i%4)*3}`,del+.6+i*.02,.9,.6,C.glass2,.38);
+  s+=`</g>`;
+  return `<g transform="translate(${x} ${y}) scale(${sc})">${s}</g>`;
+}
+
+/* Krake — Mantel, zwei Augen, acht Arme, die sich aufrollen */
+function octopus(x,y,sc,del,fill){
+  const f=fill||C.dark;
+  let s=fg(`M20 32 C 18 8 60 2 70 24 C 78 42 62 56 44 56 C 28 56 22 46 20 32 Z`,f,del);
+  s+=ln(`M22 26 C 24 8 58 4 68 22`,del+.2,1.2,1,C.glass,.4);
+  const arms=[[30,54,-20,24,1],[38,56,-11,30,-1],[46,57,3,32,1],[54,55,16,28,-1],
+              [60,50,24,18,1],[24,48,-24,14,-1],[64,44,24,6,1],[20,40,-24,2,-1]];
+  arms.forEach((a,i)=>{
+    const [ax,ay,dx,dy,c]=a;
+    s+=ln(`M${ax} ${ay} q ${dx*.55} ${dy*.7} ${dx} ${dy}`,del+.24+i*.05,1.2,3.6,f,1);
+    s+=ln(`M${ax+dx} ${ay+dy} q ${c*8} ${4} ${c*11} ${-4}`,del+.4+i*.05,.9,2,f,1);
+  });
+  // Augen: helle Kuppel, dunkler Querspalt — so steht die Pupille wirklich
+  s+=fge(34,32,5.6,4.4,C.glass2,del+.5,.9);
+  s+=fge(54,29,5.6,4.4,C.glass2,del+.54,.9);
+  s+=ln(`M30.5 32.5 h7 M50.5 29.5 h7`,del+.62,.6,1.8,'#04202f',1);
+  return `<g transform="translate(${x} ${y}) scale(${sc})">${s}</g>`;
+}
+
+/* Muräne — Kopf aus der Spalte, Maul offen */
+function moray(x,y,sc,del,fill){
+  const f=fill||'#0e4257';                       // heller als der Fels, sonst verschwindet sie darin
+  let s=fg(`M0 24 C 12 8 34 4 54 8 L74 12 L56 22 C 40 28 16 34 0 32 Z`,f,del);
+  s+=ln(`M44 12 q 16 0 28 -1`,del+.3,1,1.3,C.glass,.85);
+  s+=ln(`M46 19 q 14 2 25 -6`,del+.4,1,1.2,C.glass,.7);
+  s+=ln(`M52 12 v3 M57 12 v3 M62 12 v2.6 M67 11.5 v2.6`,del+.5,.5,.7,C.glass,.6);
+  s+=fgc(38,13,1.7,C.glass,del+.46);
+  s+=ln(`M0 24 C 12 8 34 4 54 8`,del+.2,1.2,1,C.glass,.5);
+  return `<g transform="translate(${x} ${y}) scale(${sc})">${s}</g>`;
+}
+
+/* Ein Piranha — hochrückig, kurz */
+function piranha(x,y,sc,del,fill){
+  const f=fill||C.dark;
+  let s=fg(`M2 14 C 4 4 16 -2 28 -1 C 40 0 47 7 47 14 C 47 22 38 28 26 29 C 12 30 1 24 2 14 Z`,f,del);
+  s+=fg(`M46 14 l 13 -9 l 0 19 Z`,f,del+.05);
+  s+=fg(`M24 -1 l 6 -8 l 8 9 Z`,f,del+.08);
+  s+=ln(`M6 18 q 8 4 15 3`,del+.3,.8,1,C.glass,.65);
+  s+=fgc(11,11,1.6,C.glass,del+.34);
+  s+=ln(`M2 14 C 4 4 16 -2 28 -1 C 40 0 47 7 47 14`,del+.2,1.1,.9,C.glass,.4);
+  return `<g transform="translate(${x} ${y}) scale(${sc})">${s}</g>`;
+}
+
+/* Ein Taucher — Flossen, Flasche, Maske */
+function diver(x,y,sc,del){
+  const f='#02101a';
+  let s=fg(`M14 14 C 26 10 36 16 38 26 L44 46 L34 50 L26 32 C 16 32 10 24 14 14 Z`,f,del);
+  s+=fg(`M8 16 l -8 4 l 8 18 l 8 -5 Z`,f,del+.06);
+  s+=fgc(20,10,6.4,f,del+.1);
+  s+=fg(`M36 24 C 46 26 52 32 54 40 L48 42 C 44 36 40 32 34 30 Z`,f,del+.14);
+  s+=fg(`M34 50 L44 68 L34 72 L26 54 Z`,f,del+.18);
+  s+=fg(`M34 72 l 16 5 l -3 6 l -16 -6 Z`,f,del+.22);
+  s+=ln(`M15 8 q 8 -2 11 2`,del+.4,.7,1.4,C.glass2,.6);
+  s+=ln(`M10 20 q 6 6 4 14`,del+.5,.8,.9,C.glass2,.35);
+  return `<g transform="translate(${x} ${y}) scale(${sc})">${s}</g>`;
+}
+
+/* Eine Besucherin vor der Scheibe — der Maßstab des Hauses */
+function visitor(x,y,sc,del){
+  const f='#02101a';
+  // Schultern, Taille, zwei Beine — 18 breit, 92 hoch
+  let s=fg(`M13 25 q7 -4 14 0 q3 4 2 12 l-2 20 l2 35 l-6 0 l-3 -24 l-3 24 l-6 0 l2 -35 l-2 -20 q-1 -8 2 -12 Z`,f,del);
+  s+=fgc(20,16,7.5,f,del+.05);
+  s+=ln(`M13 27 q-4 6 -3 18 l1 12`,del+.24,.9,3.4,f,1);
+  s+=ln(`M27 27 q4 6 3 18 l-1 12`,del+.28,.9,3.4,f,1);
+  s+=ln(`M14 88 l-1 -34 l-2 -20`,del+.4,1.2,1,C.glass2,.28);
+  return `<g transform="translate(${x} ${y}) scale(${sc})">${s}</g>`;
+}
+
+/* Hand und Unterarm von oben, wie sie ins offene Becken greifen */
+function handIn(x,y,sc,del,rot){
+  const f='#02101a';
+  let s=fg(`M20 -34 L54 -34 L58 24 L16 24 Z`,f,del);                       // Unterarm
+  s+=fg(`M16 22 q 21 -7 42 0 l 3 28 q -24 8 -48 0 Z`,f,del+.08);           // Handteller
+  const fing=[[24,48,-5,28],[34,50,-1,30],[44,50,3,28],[53,46,8,23]];      // vier Finger
+  fing.forEach((g,i)=>{
+    s+=ln(`M${g[0]} ${g[1]} q ${g[2]*.4} ${g[3]*.6} ${g[2]} ${g[3]}`,del+.16+i*.06,.9,6.4,f,1);
+  });
+  s+=ln(`M17 32 q -9 5 -14 15`,del+.42,.8,7.4,f,1);                        // Daumen
+  s+=ln(`M22 -30 q 5 26 -1 48`,del+.55,1.1,1,C.glass2,.22);                // Lichtkante am Arm
+  return `<g transform="translate(${x} ${y}) scale(${sc}) rotate(${rot||0})">${s}</g>`;
+}
+
+/* Seestern mit runden Armen */
+function starfish(cx,cy,R,del,col){
+  const c=col||C.dark;
+  let d='';
+  for(let i=0;i<10;i++){
+    const a=(i/10)*Math.PI*2-Math.PI/2, r=i%2?R*.42:R;
+    d+=(i?'L':'M')+(cx+r*Math.cos(a)).toFixed(1)+' '+(cy+r*Math.sin(a)).toFixed(1)+' ';
+  }
+  d+='Z';
+  let s=`<path class="fg" style="--del:${D(del)}s" d="${d}" fill="${c}" stroke="${c}" stroke-width="9" stroke-linejoin="round" stroke-linecap="round"/>`;
+  s+=`<path class="ln" pathLength="1" style="--del:${D(del+.25)}s;--dur:1.7s" d="${d}" fill="none" stroke="${C.glass}" stroke-width=".9" stroke-opacity=".45" stroke-linejoin="round"/>`;
+  for(let i=0;i<5;i++){
+    const a=(i/5)*Math.PI*2-Math.PI/2;
+    for(let k=1;k<=3;k++){
+      const r=R*(.32+k*.19);
+      s+=fgc((cx+r*Math.cos(a)).toFixed(1),(cy+r*Math.sin(a)).toFixed(1),1.5,C.glass2,del+.4+i*.04+k*.03,.55);
+    }
+  }
+  return s;
+}
+function urchin(cx,cy,r,del){
+  let s=fgc(cx,cy,r,C.dark,del);
+  let sp='';
+  for(let i=0;i<34;i++){
+    const a=(i/34)*Math.PI*2, l=r*(.55+((i*7)%4)*.12);
+    sp+=`M${(cx+r*.85*Math.cos(a)).toFixed(1)} ${(cy+r*.85*Math.sin(a)).toFixed(1)} l${(l*Math.cos(a)).toFixed(1)} ${(l*Math.sin(a)).toFixed(1)} `;
+  }
+  s+=ln(sp,del+.15,1.5,1.2,C.dark,.95);
+  s+=ln(`M${cx-r*.5} ${cy-r*.4} a ${r*.6} ${r*.5} 0 0 1 ${r} 0`,del+.4,.9,.9,C.glass2,.4);
+  return s;
+}
+function cucumber(x,y,sc,del){
+  let s=fg(`M0 14 q 8 -14 30 -14 q 24 0 32 11 q 5 8 -6 13 q -24 9 -46 3 q -13 -4 -10 -13 Z`,C.dark,del);
+  s+=ln(`M6 8 l 3 -6 M16 3 l 2 -6 M28 0 l 1 -6 M40 2 l 3 -5 M50 8 l 5 -4`,del+.2,1,1.6,C.dark,1);
+  s+=ln(`M4 12 q 12 -11 30 -11 q 20 0 28 9`,del+.35,1.2,1,C.glass,.45);
+  return `<g transform="translate(${x} ${y}) scale(${sc})">${s}</g>`;
+}
+
+/* ── Korallen ────────────────────────────────────────────────── */
+function acropora(x,y,h,del){
+  let out=[], n=0;
+  (function branch(bx,by,ang,len,w,depth,d){
+    const ex=bx+Math.cos(ang)*len, ey=by-Math.sin(ang)*len;
+    out.push(ln(`M${bx.toFixed(1)} ${by.toFixed(1)} Q ${(bx+Math.cos(ang+.22)*len*.6).toFixed(1)} ${(by-Math.sin(ang+.22)*len*.6).toFixed(1)} ${ex.toFixed(1)} ${ey.toFixed(1)}`,d,1.1,w,C.teal,.95));
+    if(depth<=0){ out.push(fgc(ex.toFixed(1),ey.toFixed(1),w*.7,C.cyan,d+.45,.85)); return; }
+    const spread=.34+(n++%3)*.12;
+    branch(ex,ey,ang+spread,len*.72,w*.7,depth-1,d+.12);
+    branch(ex,ey,ang-spread*.85,len*.76,w*.7,depth-1,d+.16);
+    if(depth===3) branch(ex,ey,ang+.04,len*.62,w*.62,depth-1,d+.2);
+  })(x,y,Math.PI/2,h*.3,7.5,4,del);
+  return out.join('');
+}
+function plateCoral(x,y,w,del){
+  let s='';
+  for(let i=0;i<3;i++){
+    const yy=y-i*13, ww=w-i*8, xx=x+i*4;
+    s+=fg(`M${xx} ${yy} q ${ww*.28} -11 ${ww*.55} -5 q ${ww*.26} 6 ${ww*.45} -3 l -3 9 q ${-ww*.2} 8 ${-ww*.45} 2 q ${-ww*.28} -6 ${-ww*.55} 4 Z`,C.teal,del+i*.14,.9);
+    s+=ln(`M${xx} ${yy} q ${ww*.28} -11 ${ww*.55} -5 q ${ww*.26} 6 ${ww*.45} -3`,del+.2+i*.14,1.3,1,C.glass2,.45);
+  }
+  return s;
+}
+function trumpetCoral(x,y,del){
+  let s=fg(`M${x-6} ${y+2} q 26 -10 54 0 q -4 6 -27 6 q -23 0 -27 -6 Z`,'#0a3145',del);
+  for(let i=0;i<6;i++){
+    const xx=x+i*9, h=16+((i*5)%3)*9;
+    s+=ln(`M${xx} ${y} v${-h}`,del+.1+i*.05,1,5.2,C.teal,.95);
+    s+=fgc(xx,y-h,4.6,C.cyan,del+.35+i*.05,.85);
+    s+=ln(`M${xx-4.6} ${y-h-1} l -3.4 -3 M${xx+4.6} ${y-h-1} l 3.4 -3 M${xx} ${y-h-4.6} v -4`,del+.5+i*.05,.6,.8,C.glass,.55);
+  }
+  return s;
+}
+function anemone(cx,cy,r,del){
+  let s=fg(`M${cx-r*.55} ${cy+r*1.5} q ${r*.55} -${r*.7} ${r*1.1} 0 Z`,C.coral,del,.5);
+  s+=fgc(cx,cy,r*.62,C.coral,del+.05,.55);
+  let t='';
+  for(let i=0;i<18;i++){
+    const a=(i/18)*Math.PI*2;
+    t+=`M${(cx+r*.55*Math.cos(a)).toFixed(1)} ${(cy+r*.55*Math.sin(a)).toFixed(1)} q ${(r*.7*Math.cos(a)).toFixed(1)} ${(r*.7*Math.sin(a)).toFixed(1)} ${(r*1.15*Math.cos(a+.28)).toFixed(1)} ${(r*1.15*Math.sin(a+.28)).toFixed(1)} `;
+  }
+  s+=ln(t,del+.15,1.5,1.5,C.coralLt,.75);
+  return s;
+}
+/* Anemonenfisch — hell, damit er vor dem Orange steht */
+function clownfish(x,y,l,del){
+  const h=l*.4;
+  let s=fg(`M${x} ${y} c ${l*.16} ${-h} ${l*.6} ${-h} ${l*.76} 0 c ${-l*.17} ${h} ${-l*.6} ${h} ${-l*.76} 0 Z`,C.glass,del,.95);
+  s+=fg(`M${x+l*.76} ${y} l ${l*.24} ${-h*.9} l 0 ${h*1.8} Z`,C.glass,del+.04,.95);
+  s+=ln(`M${x+l*.2} ${y-h*.62} v${h*1.24} M${x+l*.46} ${y-h*.7} v${h*1.4}`,del+.2,.7,2.4,C.dark,.85);
+  return s;
+}
+
+/* Seegras: Posidonia — Bänder, nicht Fäden */
+function weed(x,y,h,n,del){
+  let s='';
+  for(let i=0;i<n;i++){
+    const b=(i%3)-1, hh=h*(.7+((i*13)%5)/10);
+    s+=ln(`M${x+i*7} ${y} q ${b*9} ${-hh*.55} ${b*5+2} ${-hh}`,del+i*.03,1.3,2.2,i%2?C.weed:C.weedLt,.85);
+  }
+  return sway(s,13+n%5,-5,5,del);
+}
+
+/* Baumfarn für den Dschungel */
+function treeFern(x,y,h,del){
+  let s=ln(`M${x} ${y} q -3 ${-h*.5} 0 ${-h}`,del,1.1,3.4,'#1e5c46',.95);
+  for(let i=0;i<7;i++){
+    const yy=y-h-i*1.6, sp=30-i*3.2, dr=-8-i*1.6;
+    s+=ln(`M${x} ${yy} q ${-sp*.5} ${dr*.5} ${-sp} ${dr}`,del+.14+i*.05,1.1,1.8,i%2?'#2f7d5e':'#57a878',.92);
+    s+=ln(`M${x} ${yy} q ${sp*.5} ${dr*.5} ${sp} ${dr}`,del+.16+i*.05,1.1,1.8,i%2?'#2f7d5e':'#57a878',.92);
+  }
+  return s;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   DIE TAFELN
+   Jede zeigt, woran das Becken vor Ort zu erkennen ist —
+   und was darin zu suchen sich lohnt. Graphik bis y=176,
+   darunter das Band für Namen und Maßstab.
+   ══════════════════════════════════════════════════════════════ */
+function illustrationSVG(type){
+  const W=320, H=206;
+  const open=`<svg viewBox="0 0 ${W} ${H}" xmlns="${NS}"><g class="tank">`;
+  const close=`</g></svg>`;
+
+  /* ── UMSCHLAG: die große Scheibe ─────────────────────────────── */
+  if(type==='cover'){
+    let s=open+beams(H,1);
+    s+=floorSand(170,.2);
+    s+=sway(shark(140,44,1.3,.5),26,-24,24,0);
+    s+=sway(shark(96,120,.6,.9),20,18,-18,.4);
+    s+=shoal(196,128,10,11,C.dark,1.1,.7);
+    s+=visitor(30,100,1,1.35);
+    s+=scaleBar(150,192,140,'≈ 3 m',1.7);
+    return s+close;
+  }
+
+  /* ── I · MITTELMEER ──────────────────────────────────────────── */
+  if(type==='mittelmeer'){
+    let s=open+beams(H,2);
+    s+=floorSand(152,.15);
+    s+=fg(`M0 158 L10 92 L46 68 L92 96 L112 158 Z`,'#062634',.3);
+    s+=ln(`M10 92 L46 68 L92 96`,.5,1.2,1,C.glass2,.35);
+    s+=fg(`M20 108 q 30 -8 56 4 q -18 14 -38 12 q -18 -2 -18 -16 Z`,'#020c14',.6);   // die Spalte
+    s+=moray(24,102,.82,.8);
+    s+=weed(128,158,70,13,.4);
+    s+=octopus(228,86,.9,.9);
+    s+=shoal(146,36,8,10,C.dark,.9,.5);
+    s+=label(52,186,'Muraena helena',1.5,true);
+    s+=label(162,186,'Posidonia oceanica',1.55,true);
+    s+=label(266,186,'Octopus vulgaris',1.6,true);
+    s+=scaleBar(236,26,61,'1 m',1.65);
+    return s+close;
+  }
+
+  /* ── II · TOCA TOCA ──────────────────────────────────────────── */
+  if(type==='tocatoca'){
+    /* Von oben gesehen — so steht man auch davor: ein flaches
+       offenes Rund, in das man hineinschaut und hineinlangt. */
+    let s=open;
+    s+=fge(160,98,140,72,'#0e4a68',.1,.95);                       // Beckenrand
+    s+=fge(160,100,130,63,'#0c3f5c',.2,1);                        // Wasser
+    s+=ln(`M30 98 a 130 63 0 0 1 260 0 a 130 63 0 0 1 -260 0`,.3,2,1.6,C.glass,.6);
+    s+=ln(`M20 98 a 140 72 0 0 1 280 0 a 140 72 0 0 1 -280 0`,.25,2,1.4,C.glass2,.4);
+    s+=fge(160,118,104,38,C.sand,.45,.75);                        // Sandgrund
+    s+=ln(`M58 92 q 30 -10 60 -2 q 30 8 60 0 q 28 -8 58 2`,.55,1.6,1.1,C.cyan,.4);
+    s+=starfish(84,110,27,.9);
+    s+=urchin(168,122,15,1.05);
+    s+=cucumber(206,116,.92,1.15);
+    s+=handIn(214,0,.95,.65,-24);
+    s+=label(84,186,'Seestern',1.5);
+    s+=label(168,186,'Seeigel',1.55);
+    s+=label(250,186,'Seegurke',1.6);
+    s+=scaleBar(24,30,36,'10 cm',1.65);
+    return s+close;
+  }
+
+  /* ── III · TROPISCHE MEERE ───────────────────────────────────── */
+  if(type==='korallen'){
+    let s=open+beams(H,3);
+    s+=floorSand(158,.15);
+    s+=fg(`M14 164 q 34 -14 70 -2 q -14 10 -36 10 q -24 0 -34 -8 Z`,'#0a3145',.25);
+    s+=fg(`M116 162 q 30 -10 58 0 q -12 8 -30 8 q -20 0 -28 -8 Z`,'#0a3145',.28);
+    s+=acropora(48,160,80,.35);
+    s+=plateCoral(124,156,80,.7);
+    s+=trumpetCoral(238,158,.95);
+    s+=anemone(196,92,13,1.1);
+    s+=clownfish(184,98,20,1.45);
+    s+=shoal(74,38,10,10,C.dark,.7,.45);
+    s+=label(52,186,'Geweihkoralle',1.5);
+    s+=label(158,186,'Salatblattkoralle',1.55);
+    s+=label(264,186,'Trompetenkoralle',1.6);
+    s+=label(160,198,'Anemone mit Anemonenfisch',1.65);
+    s+=scaleBar(24,30,40,'20 cm',1.7);
+    return s+close;
+  }
+
+  /* ── IV · DIE GÄRTEN ─────────────────────────────────────────── */
+  if(type==='gaerten'){
+    let s=open;
+    s+=fg(`M0 0 L320 0 L320 54 L0 54 Z`,'#1c74a0',.1,.8);
+    s+=fgc(276,24,12,'#f2e2a8',.2,.85);
+    // Agaven und eine Palme am Beckenrand
+    for(let i=0;i<7;i++){
+      const x=16+i*13;
+      s+=ln(`M${x} 54 q ${(i%2?7:-7)} -13 ${(i%2?3:-3)} -24`,.3+i*.04,1.1,2.6,'#2f7d5e',.9);
+    }
+    s+=ln(`M296 54 v-22`,.4,.9,3,'#3f6d4a',.9);
+    for(let i=0;i<5;i++){
+      const d=[[-22,-12],[-13,-20],[0,-24],[13,-20],[22,-12]][i];
+      s+=ln(`M296 32 q ${d[0]*.5} ${d[1]*.8} ${d[0]} ${d[1]}`,.45+i*.04,1,2.4,i%2?'#2f7d5e':'#57a878',.9);
+    }
+    // Beckenrand aus Stein
+    s+=fg(`M0 54 L320 54 L320 62 L0 62 Z`,'#123a4f',.5,.9);
+    s+=ln(`M0 66 q 24 -6 48 0 q 24 6 48 0 q 24 -6 48 0 q 24 6 48 0 q 24 -6 48 0 q 24 6 48 0 q 20 -5 32 0`,.6,1.9,1.4,C.cyan,.75);
+    s+=floorSand(168,.6);
+    s+=sway(rayBelow(70,80,.92,.7),19,-14,14,0);
+    s+=sway(turtle(214,104,.7,.95),24,12,-12,.3);
+    s+=fish(14,138,30,10,C.dark,1.15,.7);
+    s+=ln(`M18 134 q 13 -4 24 0`,1.5,.9,1.2,C.brass,.75);
+    s+=label(160,186,'Rochen von unten — Maul und Nasenlöcher,',1.55);
+    s+=label(160,197,'die Augen sitzen oben auf dem Rücken',1.6);
+    s+=scaleBar(186,170,111,'1 m Spannweite',1.65);
+    return s+close;
+  }
+
+  /* ── V · DER DSCHUNGEL ───────────────────────────────────────── */
+  if(type==='dschungel'){
+    let s=open;
+    // Luftraum: Grün, nach oben hin dichter
+    s+=fg(`M0 0 L320 0 L320 118 L0 118 Z`,'#0d4a4a',.1,.6);
+    s+=fg(`M0 0 L320 0 L320 24 q -60 14 -110 4 q -50 -10 -104 6 q -54 16 -106 -2 Z`,'#0a3a34',.15,.8);
+    // der Fels, über den es fällt
+    s+=fg(`M120 0 L214 0 L212 22 q -44 12 -92 2 Z`,'#093026',.2,.95);
+    // das Wasser: ein Vorhang, kein Bündel
+    s+=fg(`M132 20 q 34 -8 68 0 L206 116 q -46 10 -92 0 Z`,C.glass,.35,.2);
+    for(let i=0;i<7;i++){
+      const x=140+i*8.6;
+      s+=ln(`M${x} ${22+(i%3)*3} q ${(i%2?4:-4)} 44 ${(i%2?2:-2)} ${92-(i%3)*6}`,.4+i*.05,1.6,i%2?2.6:1.4,C.glass,i%2?.55:.35);
+    }
+    // Aufschlag und Gischt
+    s+=fgc(152,116,18,C.glass,.9,.14); s+=fgc(176,120,13,C.glass,1,.12); s+=fgc(164,112,22,C.glass,.95,.08);
+    // das Maß: sieben Meter
+    s+=ln(`M226 20 v96`,.5,1.4,.9,C.glass3,.55);
+    s+=ln(`M222 20 h8 M222 116 h8`,.7,.6,.9,C.glass3,.55);
+    s+=tx(232,72,'7 m',.75,{fs:9.5,fill:C.glass2,ls:1.2});
+    s+=treeFern(40,118,40,.5);
+    s+=treeFern(292,118,30,.7);
+    s+=fgc(78,66,4.4,C.coralLt,1.1,.85); s+=fgc(84,61,3.6,C.coralLt,1.15,.7); s+=fgc(72,61,3.6,C.coralLt,1.2,.7);
+    s+=ln(`M78 71 q 5 15 -1 27`,1.05,1,1.4,'#2f7d5e',.9);
+    // die Wasserlinie und darunter der Schwarm
+    s+=ln(`M0 124 q 26 -5 52 0 q 26 5 52 0 q 26 -5 52 0 q 26 5 52 0 q 26 -5 52 0 q 26 5 60 0`,.85,1.9,1.5,C.cyan,.75);
+    s+=fg(`M0 126 L320 126 L320 176 L0 176 Z`,'#05202a',.9,.55);
+    const pos=[[18,146],[70,158],[118,142],[168,160],[214,146],[258,162],[272,140]];
+    pos.forEach((p,i)=>{ s+=piranha(p[0],p[1],.66,1.05+i*.06,"#0a2f3f"); });
+    s+=label(160,190,'Pygocentrus · Serrasalmus',1.55,true);
+    s+=scaleBar(24,32,39,'25 cm',1.6);
+    return s+close;
+  }
+
+  /* ── VI · BIG BLUE ───────────────────────────────────────────── */
+  if(type==='bigblue'){
+    let s=open+beams(H,4);
+    s+=floorSand(172,.15);
+    s+=ln(`M22 14 v154`,.3,1.4,1,C.glass3,.55);
+    for(let i=0;i<=8;i++){
+      const y=14+i*18.1;
+      s+=ln(`M18 ${y} h${i%2?5:9}`,.4+i*.03,.5,1,C.glass3,.55);
+      if(i%2===0&&i<8) s+=tx(30,y+3,i+' m',.5+i*.03,{fs:7.5,fill:C.glass3,ls:.4});
+    }
+    s+=ln(`M18 168 h9`,.7,.5,1.2,C.cyan,.9);
+    s+=tx(30,171,'8,5 m',.75,{fs:8,fill:C.cyan,ls:.6});
+    s+=sway(shark(190,34,.92,.5),23,-22,22,0);
+    s+=sway(shark(80,80,1.06,.75),27,20,-20,.5);
+    s+=sway(shark(178,118,.68,1),21,-16,16,.3);
+    s+=sway(shark(56,150,.52,1.2),25,14,-14,.8);
+    s+=shoal(146,64,10,9,C.dark,1.1,.45);
+    s+=shoal(222,142,10,8,C.dark,1.2,.4);
+    s+=diver(268,96,.86,1.4);
+    s+=label(160,192,'vier Haiarten, elf große Tiere, über tausend Fische',1.6);
+    
+    return s+close;
+  }
+
+  /* ── VII · DAS MEDUSARIO ─────────────────────────────────────── */
+  if(type==='medusen'){
+    let s=open;
+    // Zylinder: zwei Ellipsen und zwei Mantellinien
+    s+=fg(`M60 32 L60 152 A100 15 0 0 0 260 152 L260 32 Z`,'#0b3f5e',.1,.8);
+    s+=fg(`M60 32 A100 15 0 0 1 260 32 A100 15 0 0 1 60 32 Z`,'#12608a',.15,.5);
+    s+=fgc(160,146,68,C.coral,.4,.14);
+    s+=fgc(160,52,76,C.cyan,.45,.1);
+    s+=ln(`M60 32 A100 15 0 0 0 260 32`,.3,1.4,1.3,C.cyan,.85);
+    s+=ln(`M60 32 A100 15 0 0 1 260 32`,.4,1.4,1,C.cyan,.35);
+    s+=ln(`M60 152 A100 15 0 0 0 260 152`,.45,1.4,1.3,C.cyan,.55);
+    s+=ln(`M60 32 v120 M260 32 v120`,.5,1.3,1.2,C.glass2,.45);
+    s+=jelly(84,58,.92,.7,0);
+    s+=jelly(156,46,.68,.85,1.2);
+    s+=jelly(190,88,.86,1,2.1);
+    s+=jelly(92,110,.62,1.15,.6);
+    s+=jelly(144,126,.5,1.3,1.7);
+    s+=label(160,186,'Aurelia aurita · Ohrenqualle',1.5,true);
+    s+=scaleBar(264,36,40,'25 cm',1.6);
+    return s+close;
+  }
+
+  /* ── VIII · DIE AUFFANGSTATION ───────────────────────────────── */
+  if(type==='station'){
+    let s=open;
+    s+=fg(`M26 84 q 134 -20 268 0 q 12 44 0 84 q -134 20 -268 0 q -12 -40 0 -84 Z`,'#0c4362',.15,.9);
+    s+=ln(`M26 84 q 134 -20 268 0 q 12 44 0 84 q -134 20 -268 0 q -12 -40 0 -84 Z`,.3,1.9,1.4,C.glass2,.5);
+    s+=ln(`M42 94 q 118 -16 236 0`,.5,1.3,1,C.cyan,.35);
+    s+=sway(turtle(84,104,1.02,.7),21,-10,10,0);
+    s+=fg(`M212 12 h86 v32 h-86 Z`,C.coral,.9,.92);
+    s+=tx(255,36,'112',1.05,{ta:'middle',fs:21,fill:'#05131c',ls:2.6});
+    s+=label(255,58,'Notruf für gestrandete Tiere',1.15,false,C.coralLt);
+    s+=label(160,192,'Caretta caretta · Unechte Karettschildkröte',1.5,true);
+    s+=scaleBar(26,32,94,'1 m Panzer',1.55);
+    return s+close;
+  }
+
+  /* ── EINGELEGT · HINTER DEM GLAS ─────────────────────────────── */
+  if(type==='technik'){
+    let s=open;
+    // Schaubecken links im Schnitt
+    s+=fg(`M20 26 L184 26 L184 138 L20 138 Z`,'#0c4767',.1,.9);
+    s+=ln(`M20 26 L20 138 L184 138 L184 26`,.2,1.7,1.4,C.glass,.7);
+    s+=ln(`M26 26 v112`,.4,1,2.2,C.cyan,.85);
+    s+=tx(34,40,'Acrylscheibe',.5,{fs:8,fill:C.cyan});
+    s+=ln(`M22 46 q 40 -6 80 0 q 40 6 80 0`,.5,1.4,1.1,C.cyan,.55);
+    s+=fg(`M22 118 q 40 -8 80 -2 q 40 6 80 -2 L182 136 L22 136 Z`,C.sand,.55);
+    s+=fish(104,80,30,10,C.dark,.7,.85);
+    s+=weed(38,120,26,5,.6);
+    // Überlauf nach rechts
+    s+=ln(`M184 42 h26 q10 0 10 12 v34`,.75,1.3,1.8,C.glass2,.75);
+    s+=ln(`M214 90 l-4 -6 l8 0 Z`,.95,.6,1,C.glass2,.75);
+    // Filterbecken
+    s+=fg(`M198 96 L302 96 L302 154 L198 154 Z`,'#08304a',.85,.92);
+    s+=ln(`M198 96 L302 96 L302 154 L198 154 Z`,.95,1.5,1.2,C.glass2,.65);
+    s+=tx(250,108,'Filterbecken',1.05,{ta:'middle',fs:8,fill:C.glass2});
+    s+=ln(`M210 148 v-30 a7 7 0 0 1 14 0 v30`,1.1,1.2,1.4,C.cyan,.85);
+    for(let i=0;i<8;i++) s+=fgc(213+((i*5)%9),142-i*3.4,1.4,C.glass,1.25+i*.03,.8);
+    s+=fgc(252,130,12,C.teal,1.2,.5);
+    s+=ln(`M242 130 h20 M252 120 v20`,1.35,.9,1.1,C.glass,.7);
+    s+=fgc(286,132,9,C.teal,1.25,.5);
+    s+=ln(`M286 124 v16 M280 132 h12`,1.4,.8,1.1,C.glass,.6);
+    // Rücklauf
+    s+=ln(`M198 124 h-36 q-10 0 -10 -12 v-4`,1.45,1.4,1.8,C.glass2,.65);
+    s+=ln(`M152 110 l-5 6 l10 0 Z`,1.65,.6,1,C.glass2,.65);
+    s+=leader(217,150,196,170,1.5);
+    s+=label(190,181,'Abschäumer',1.55);
+    s+=leader(252,142,258,176,1.55);
+    s+=label(252,194,'Sandfilter · UV · Pumpe',1.6);
+    s+=label(84,181,'Schaubecken im Schnitt',1.5);
+    return s+close;
+  }
+
+  /* ── SCHLUSSTAFEL: alles im selben Maßstab ───────────────────── */
+  if(type==='massstab'){
+    let s=open;
+    /* Ein Maßstab: 1 Meter = 52 Bildpunkte, und ein Mensch dazwischen.
+       Ohne die Figur sagt eine Zahl über einem Hai nicht viel. */
+    const base=158, M=46;
+    s+=tx(160,30,'ALLE IM SELBEN MASSSTAB',.35,{ta:'middle',fs:10,fill:C.cyan,ls:2.4});
+    s+=tx(160,45,'ungefähre Maße ausgewachsener Tiere',.45,{ta:'middle',fs:8,fill:C.glass3});
+    s+=scaleBar(114,64,2*M,'2 m',.6);
+    s+=ln(`M6 ${base} h308`,.7,1.6,1.2,C.glass2,.45);
+    s+=shark(2,base-42,1.28,.8);                     // 3 m
+    s+=visitor(152,base-80,.97,.95);                 // 1,75 m
+    s+=turtle(188,base-29,.5,1.1);                   // 1 m Panzer
+    s+=rayBelow(246,base-34,.38,1.2);                // 1 m Spannweite
+    s+=jelly(300,base-12,.31,1.3,0);                 // 30 cm
+    s+=label(70,186,'Sandtigerhai · 3 m',1.45);
+    s+=label(211,186,'Caretta · 1 m',1.5);
+    s+=label(284,186,'Rochen · 1 m',1.55);
+    s+=leader(166,base+2,152,190,1.56);
+    s+=label(146,199,'Mensch · 1,75 m',1.58);
+    s+=leader(306,base+2,286,190,1.6);
+    s+=label(268,199,'Qualle · 30 cm',1.62);
+    return s+close;
+  }
+
+  return open+tx(160,100,'—',0,{ta:'middle'})+close;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   DIE STATIONEN
+   Reihenfolge des Rundgangs. Der Weg ist eine Einbahnstraße;
+   die Beschilderung im Haus kann sich ändern, die Folge der
+   Räume nicht.
+   ══════════════════════════════════════════════════════════════ */
+const sites=[
+  { id:'mediterrani', rn:'I', num:'I', art:'mittelmeer',
+    name:'Das Mittelmeer',
+    local:'El Viejo Mundo — die erste Halle',
+    meta:'Beginn des Rundgangs · Posidonia, Fels, Höhle · Touchscreen an jedem großen Becken',
+    cap:'Fig. I — Posidoniawiese mit Muräne und Krake',
+    plan:[136,50],
+    look:`Der Rundgang beginnt mit dem Meer, das draußen vor der Tür liegt. Suchen Sie zuerst die Wiese aus schmalen grünen Bändern: Das ist keine Alge, sondern <em>Posidonia oceanica</em>, eine Blütenpflanze mit Wurzeln, Blüten und Früchten. Dann die Felsspalten — die Muräne steckt meist bis zu den Kiemen darin und öffnet und schließt das Maul; sie droht nicht, sie atmet. Der Krake sitzt oft in der dunkelsten Ecke, dicht unter dem Beckenrand. Wer eine Minute wartet, sieht ihn die Haut wechseln: erst die Farbe, dann die Struktur, beides in Sekundenbruchteilen.`,
+    fact:`Die Wiesen aus Posidonia sind der Grund, warum das Wasser vor Mallorca so klar ist: Die Pflanze hält den Sand fest, filtert das Wasser und gibt Sauerstoff ab. Zwischen Ibiza und Formentera wächst eine Kolonie, die sich über Kilometer hinweg klont und deren Alter auf Zehntausende von Jahren geschätzt wird — eines der ältesten bekannten Lebewesen der Erde. Die braunen Blattpolster, die im Winter an der Playa liegen und pflichtschuldig weggeräumt werden, sind ihr Laub; sie schützen den Strand vor dem Abtrag durch die Winterstürme. Was hier im ersten Becken steht, ist weniger Dekoration als Fundament.` },
+
+  { id:'tocatoca', rn:'II', num:'II', art:'tocatoca',
+    name:'Toca Toca',
+    local:'Das Berührungsbecken',
+    meta:'Offenes Flachbecken · nur mit Betreuung · Seesterne, Seeigel, Seegurken',
+    cap:'Fig. II — Stachelhäuter im offenen Becken',
+    plan:[252,50],
+    look:`Ein flaches, offenes Becken, an dem immer jemand vom Haus steht — ohne diese Person bleibt die Hand draußen. Vorher die Hände nass machen, dann zwei Finger, flach auflegen, nichts hochheben. Am Seeigel bewegen sich die Stacheln einzeln und langsam auf die Berührung zu. Die Seegurke wird unter der Hand erst hart und dann wieder weich. Und wenn ein Seestern an der Scheibe hochkriecht, sehen Sie ihn von unten an: Hunderte durchsichtige Füßchen, die sich reihum vorschieben und festsaugen. Kein Tier wird aus dem Wasser genommen.`,
+    fact:`Die Tiere im Toca Toca laufen mit Wasser. Stachelhäuter — Seestern, Seeigel, Seegurke — haben weder Blut noch Muskeln im gewohnten Sinn, sondern ein Kanalsystem, das Meerwasser durch den Körper pumpt und jedes Saugfüßchen einzeln unter Druck setzt. Damit öffnet ein Seestern eine Muschel: kein Ruck, sondern stundenlanger, gleichmäßiger Zug, bis der Schließmuskel ermüdet. Die Seegurke wiederum schaltet ihr Bindegewebe binnen Sekunden von weich auf steif — eine Eigenschaft, die in der Materialforschung seit Jahren nachgebaut werden soll. Es ist das einzige Becken im Haus, in dem man Physiologie anfassen kann.` },
+
+  { id:'tropics', rn:'III', num:'III', art:'korallen',
+    name:'Die tropischen Meere',
+    local:'Mares tropicals — Indik, Atlantik, Pazifik',
+    meta:'Größte Sammlung lebender Korallen Europas · über 70 Arten',
+    cap:'Fig. III — Steinkorallen, Anemone, Riffbewohner',
+    plan:[240,112],
+    look:`Drei Ozeane hintereinander. Das Licht ist auffällig blau; in diesem Bereich des Spektrums arbeiten die Algen am besten, die in den Korallen wohnen. Gehen Sie nah heran und warten Sie: Aus dem harten Kalkgerüst treten die Polypen aus, jeder ein Tier mit einem Kranz von Tentakeln. Vergleichen Sie zwei Nachbarn — die Salatblattkoralle wächst in gewellten Platten, die Trompetenkoralle in dicken Röhren mit runden Köpfen. Über siebzig Arten stehen hier, die größte lebende Korallensammlung Europas. Wo eine Anemone wächst, suchen Sie den Fisch, der unbehelligt zwischen ihren Nesselarmen sitzt.`,
+    fact:`Eine Steinkoralle ist eine Wohngemeinschaft: Das Tier baut das Kalkskelett, in seinen Zellen leben einzellige Algen — Zooxanthellen —, die über Photosynthese den größten Teil der Nahrung liefern. Wird das Wasser zu warm, stößt die Koralle ihre Untermieter ab, bleibt weiß zurück und verhungert langsam. Das ist die Korallenbleiche, und sie ist der Grund, weshalb Schauaquarien untereinander Ableger tauschen, statt Riffe abzusammeln. Ein solches Becken hält deshalb nicht nur Temperatur und Salzgehalt konstant, sondern auch das Lichtspektrum: Für die Alge ist die Lampe die Sonne, und sie merkt jeden Ausfall.` },
+
+  { id:'jardins', rn:'IV', num:'IV', art:'gaerten',
+    name:'Die Gärten',
+    local:'Els jardins — draußen, auf halber Strecke',
+    meta:'Freilandbecken · Rochen, Schildkröten, Karpfen, Goldbrassen · im Sommer Schnorcheln ab 8 Jahren',
+    cap:'Fig. IV — Rochen von unten, wie er an der Scheibe vorbeizieht',
+    plan:[96,112],
+    look:`Auf halber Strecke führt der Weg ins Freie: mediterrane Bepflanzung, dazwischen offene Becken. Am Rochenbecken lohnt das Warten. Die Tiere gleiten dicht am Rand entlang, und wenn eines sich dreht, sieht man die Unterseite — was dort wie ein Gesicht aussieht, sind Maul und Nasenlöcher; die Augen sitzen oben auf dem Rücken. Der Rochen sieht seine Beute also gar nicht. Er ertastet sie elektrisch: Die Poren rund um das Maul messen die Muskelspannung von allem, was sich im Sand verkriecht. Im Sommer darf man ab acht Jahren mit Schnorchel selbst hinein.`,
+    fact:`Nebenan schwimmen Karpfen und Goldbrassen, und die Goldbrasse — <em>Sparus aurata</em>, auf jeder Karte der Insel <em>dorada</em> — trägt ihren Namen zwischen den Augen: ein goldener Querstreifen über der Stirn. Sie beginnt ihr Leben als Männchen und wird mit zwei bis drei Jahren zum Weibchen; auf dem Teller ist das niemandem anzusehen. Ein Speisefisch im Schaubecken ist ohnehin die ehrlichste Station des Hauses. Der Rundgang zeigt hier zuerst das Meer, das man zu kennen glaubt, und erst danach das, was man nur aus Filmen kennt.` },
+
+  { id:'jungla', rn:'V', num:'V', art:'dschungel',
+    name:'Der Dschungel',
+    local:'La jungla — Amazonas unter Glas',
+    meta:'Wasserfall aus 7 Metern · Baumfarne und Orchideen · Piranhas, Geierschildkröte',
+    cap:'Fig. V — Wasserfall, Baumfarn, Piranhaschwarm im Becken darunter',
+    plan:[76,174],
+    look:`Hinter der Tür schlägt die Luft um: warm, gesättigt, die Brille beschlägt. Aus sieben Metern Höhe fällt Wasser in ein Becken, darüber stehen Baumfarne und Orchideen. Suchen Sie den Piranhaschwarm — meist steht er reglos im Schatten, alle Köpfe in dieselbe Richtung, und kommt nur zur Fütterung in Bewegung. Am Grund liegt eine Geierschildkröte, auf den Schildern als <em>tortuga caimán</em> geführt; sie kann sehr lange dort liegen, ohne aufzutauchen. Wer im Hochsommer aus dem Garten hereinkommt, bleibt hier ein paar Minuten länger als geplant.`,
+    fact:`Der Ruf der Piranhas geht auf eine Inszenierung zurück. Als Theodore Roosevelt 1913 den Rio Aripuanã bereiste, hatten seine Gastgeber einen Flussabschnitt abgeriegelt, Hunderte Fische darin tagelang hungern lassen und warfen dann eine tote Kuh ins Wasser. Roosevelt sah, was er sehen sollte, und schrieb, das sei der grimmigste Fisch der Welt — das Buch wurde ein Bestseller und das Bild blieb hängen. Tatsächlich fressen die meisten Arten Fische, Insekten, Früchte und Aas, und sie stehen, wie hier zu besichtigen, die längste Zeit des Tages einfach still.` },
+
+  { id:'bigblue', rn:'VI', num:'VI', art:'bigblue',
+    name:'Big Blue',
+    local:'El Gran Blau — das tiefste Haibecken Europas',
+    meta:'8,5 m tief · 33 × 25 m · rund 3,5 Millionen Liter · vier Haiarten, elf große Tiere',
+    cap:'Fig. VI — vier Haie in vier Tiefen; die Leiter links misst die Tiefe, nicht die Tiere',
+    plan:[228,174],
+    look:`Setzen Sie sich hin. Das Becken ist 8,5 Meter tief, und wer davorsteht und weitergeht, hat es nicht gesehen. Zählen Sie die Haiarten — es sind vier, elf große Tiere, dazu über tausend andere Fische. Achten Sie auf den Sandtigerhai mit dem schiefen, immer sichtbaren Gebiss: Er hängt fast bewegungslos im Wasser. Er ist die einzige Haiart, die an der Oberfläche Luft schluckt und im Magen behält, um wie ein Taucher austariert zu schweben. Zählen Sie die fünf Kiemenspalten. Und suchen Sie die Schiffshalter, die kopfüber am Bauch mitfahren. Einmal am Tag wird gefüttert.`,
+    fact:`Von den fünf Millionen Litern des Hauses stehen rund 3,5 Millionen in diesem einen Becken: 33 Meter lang, 25 breit und mit 8,5 Metern das tiefste Haibecken Europas. Die Tiefe ist kein Selbstzweck. Haie dieser Größe brauchen eine Wassersäule, in der sie steigen und sinken können, sonst kreisen sie ihr Leben lang in derselben Ebene. Wer will, geht selbst hinein — mit Tauchschein oder ohne, stets mit Instruktor; über der Oberfläche fährt ein Boot mit Glasboden. Und Kinder zwischen sechs und sechzehn dürfen vor der Scheibe übernachten.` },
+
+  { id:'medusario', rn:'VII', num:'VII', art:'medusen',
+    name:'Das Medusario',
+    local:'Medusario — der Zylinder',
+    meta:'Rundbecken · rund 50 Ohrenquallen · wechselndes Farblicht · Bank davor',
+    cap:'Fig. VII — Aurelia aurita, Schirm mit den vier Ringen',
+    plan:[210,236],
+    look:`Ein rundes Becken, farbig ausgeleuchtet, davor eine Bank — das Haus rechnet damit, dass man bleibt. Drinnen treiben rund fünfzig Ohrenquallen, <em>Aurelia aurita</em>, dieselbe Art, die im Sommer vor der Playa steht. Suchen Sie die vier hufeisenförmigen Ringe im durchsichtigen Schirm: Das sind die Keimdrüsen, und sie haben dem Tier auf Deutsch den Namen gegeben. Sehen Sie dem Schirm beim Pulsieren zu — zusammenziehen, Wasser ausstoßen, gleiten. Das Becken ist rund, weil eine Qualle nicht rückwärts schwimmen kann; in einer Ecke bliebe sie hängen. Eine sanfte Strömung hält sie in der Mitte.`,
+    fact:`Die Qualle ist nur der kurze, sichtbare Teil eines längeren Lebens. Aus dem Ei wird eine Larve, aus der Larve ein winziger Polyp, der jahrelang auf einem Stein, einer Kaimauer oder einer Muschelschale sitzt und sich klont. Wird das Wasser kühler, schnürt er sich ab wie ein Stapel Teller, und jede Scheibe schwimmt als junge Qualle davon. Ein quallenreicher Sommer im Mittelmeer hat seine Ursache also im Winter davor. Ohne Gehirn, ohne Herz, zu über neunzig Prozent aus Wasser: Was hier so ruhig kreist, ist eines der ältesten Baumuster im Tierreich.` },
+
+  { id:'fundacio', rn:'VIII', num:'VIII', art:'station',
+    name:'Die Auffangstation',
+    local:'Fundació Palma Aquarium — Centre de Recuperació',
+    meta:'Meeresschildkröten der Balearen · Notruf 112 · nicht Teil des Rundgangs',
+    cap:'Fig. VIII — Rehabilitationsbecken, und die Nummer, die zählt',
+    plan:null, isExtras:true,
+    look:`Hinter dem Rundgang liegt der Teil, der auf keinem Plan steht: Das Haus betreibt für die Balearen die Auffangstation für Meeresfauna. Behandelt werden vor allem Unechte Karettschildkröten, <em>Caretta caretta</em> — verschluckte Angelhaken, Schnittwunden von Schiffsschrauben, Tiere, die sich in Netzresten verfangen haben. Wer am Strand eine Schildkröte findet, ruft <strong>112</strong> an: nicht zurück ins Wasser schieben, kein Wasser übergießen, nur beschatten und Abstand halten, bis jemand kommt. Dieselbe Nummer gilt für Spuren im Sand — auf Mallorca sind zuletzt wieder Gelege gefunden worden.`,
+    fact:`Die meisten Meldungen kommen von Fischern. Im April 2026 barg Jaume Cuart vor dem Cap de Formentor eine Karettschildkröte; sie wurde in der Station aufgepäppelt und später vor Calvià wieder freigelassen — sie hieß Crista. Im Juli ging Nura an der Platja de Palma zurück ins Wasser, nach Monaten tierärztlicher Behandlung. Jede Freilassung findet öffentlich statt, und das hat einen Grund: Sie transportiert das Nützlichste, was ein Schauaquarium zu bieten hat, nämlich eine Telefonnummer, die funktioniert. Für die Tiere ist die Station kein Zuhause, sondern eine Zwischenstation.` },
+
+  { id:'technik', rn:'—', num:null, art:'technik',
+    name:'Hinter dem Glas',
+    local:'Wie ein Becken funktioniert',
+    meta:'Eingelegtes Blatt · 55 Becken · 5 Millionen Liter · rund 8.000 Tiere aus 700 Arten',
+    cap:'Schnitt durch ein Schaubecken mit Filterkreislauf',
+    plan:null, isExtras:true,
+    lookLabel:'Was man sieht', factLabel:'Was man nicht sieht',
+    look:`Alles hinter der Scheibe erscheint größer und näher, als es ist: Wasser bricht das Licht, ein Fisch wirkt um etwa ein Drittel größer und liegt scheinbar ein Viertel dichter an der Scheibe. Wer Größen schätzen will, braucht einen festen Bezug im Becken — eine Steinkante, eine Fuge in der Acrylscheibe. Zwei Regeln nimmt man am besten gleich mit: nicht ans Glas klopfen, weil die Scheibe Schall ins Wasser weit besser überträgt als in die Luft, und den Blitz aus lassen. Er nützt hinter Acryl ohnehin nichts und wirft nur das eigene Spiegelbild zurück.`,
+    fact:`Zu jedem Schaubecken gehört ein zweites, das niemand sieht: Vorratsbehälter, Pumpen, Sandfilter, Eiweißabschäumer, UV-Klärer, Kühlung. Das Wasser eines großen Beckens läuft mehrmals pro Stunde durch diese Anlage; was die Tiere ausscheiden, bauen Bakterienkulturen auf den Filtern in unschädliche Stoffe um — ein neues Becken ist deshalb erst nach Wochen bezugsfertig, nicht nach einem Nachmittag. Neuzugänge kommen zuerst in Quarantäne. Gefüttert wird täglich, Haie, Rochen, Schildkröten und Piranhas zu festen Zeiten. Insgesamt hält der Betrieb 55 Becken, fünf Millionen Liter und rund 8.000 Tiere aus 700 Arten in Balance.` }
+];
+
+/* ══════════════════════════════════════════════════════════════
+   VERWEISE NACH DRAUSSEN
+   Ein Punkt statt eines Namens: Das Haus liegt in einem Viertel
+   voller ähnlich klingender Adressen.
+   ══════════════════════════════════════════════════════════════ */
+const HOUSE={ lat:39.53139, lng:2.72944 };
+const PIN_SVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 1118 0z"/><circle cx="12" cy="10" r="3"/></svg>';
+const BUS_SVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 16V6a2 2 0 012-2h12a2 2 0 012 2v10M4 16h16M4 16v3M20 16v3M6 11h12"/><circle cx="8" cy="19" r="1"/><circle cx="16" cy="19" r="1"/></svg>';
+const HOUSE_LINK=`https://www.google.com/maps/search/?api=1&query=${HOUSE.lat},${HOUSE.lng}`;
+const TRANSIT_LINK=`https://www.google.com/maps/dir/?api=1&destination=${HOUSE.lat},${HOUSE.lng}&travelmode=transit`;
+
+/* ══════════════════════════════════════════════════════════════
+   AUFBAU
+   ══════════════════════════════════════════════════════════════ */
+const pagesEl=document.getElementById('pages');
+let pageEls=[], currentPage=0, totalPages=0, animating=false;
+let hereIdx=null;                       // die Station, an der man steht
+
+const FIRST=3;                          // Umschlag, Inhalt, Plan
+const walk=sites.filter(s=>!s.isExtras);
+
+function leaf(html,cls){
+  const p=document.createElement('div');
+  p.className='page '+(cls||'');
+  p.innerHTML=`<div class="leaf-inner">${html}</div>`;
+  return p;
+}
+
+function buildAll(){
+  // UMSCHLAG
+  pagesEl.appendChild(leaf(`
+    <div class="place">Can Pastilla · Platja de Palma</div>
+    <div class="plate"><div class="plate-frame">${illustrationSVG('cover')}</div></div>
+    <div class="rule"></div>
+    <h1>Palma Aquarium</h1>
+    <div class="sub">Die Becken — ein Rundgang</div>
+    <div class="rule"></div>
+    <p class="lede">Fünfundfünfzig Becken, fünf Millionen Liter Meerwasser, rund 8.000 Tiere aus 700 Arten.
+      Dieses Heft geht sie in der Reihenfolge des Hauses durch und sagt bei jedem, worauf zu achten ist.
+      Zwei bis drei Stunden, drinnen, im Dunkeln.</p>
+    <div class="exlibris">◆ nach den Scheiben gezeichnet · MMXXVI ◆</div>
+    <div class="begin">weiter →</div>`, 'cover'));
+
+  // INHALT
+  let toc=`<h2>Der Rundgang</h2>
+    <p class="lede">Sieben Stationen in der Reihenfolge, in der man sie trifft, dazu die Auffangstation und ein eingelegtes Blatt über die Technik.</p><ul>`;
+  sites.forEach((s,i)=>{
+    toc+=`<li data-goto="${i+FIRST}"><span class="rn">${s.rn}</span><span class="tt"><span class="nm">${s.name}</span><br><span class="sb">${s.local}</span></span><span class="di" data-id="${s.id}"></span></li>`;
+  });
+  toc+=`</ul><div class="foot">Oben links „Hier bin ich“ antippen, dann steht in dieser Liste, was noch kommt.
+    Die Anzeige unten in der Mitte führt jederzeit hierher zurück.</div>`;
+  pagesEl.appendChild(leaf(toc,'toc'));
+
+  // PLAN
+  pagesEl.appendChild(leaf(`
+    <h2>Der Weg durchs Haus</h2>
+    <div class="lede">Der Rundgang ist eine Einbahnstraße: vom Mittelmeer über die Tropen nach draußen in die Gärten,
+      durch den Dschungel hinunter zum Haibecken und zuletzt zu den Quallen. Auf eine Ziffer tippen, um hinzublättern.</div>
+    <div class="plan-holder"><svg id="plan-svg" viewBox="0 0 320 268" preserveAspectRatio="xMidYMid meet"></svg></div>
+    <div class="golinks">
+      <a class="golink" href="${HOUSE_LINK}" target="_blank" rel="noopener noreferrer">${PIN_SVG}Das Haus in Google Maps</a>
+      <a class="golink warm" href="${TRANSIT_LINK}" target="_blank" rel="noopener noreferrer">${BUS_SVG}Hinkommen</a>
+    </div>
+    <div class="planhint">Schematisch — die Räume liegen so zueinander, die Maße stimmen nicht</div>`, 'planleaf'));
+
+  // STATIONEN
+  sites.forEach(s=>{
+    const lookLbl=s.lookLabel||'Am Becken';
+    const factLbl=s.factLabel||'Dahinter';
+    const chap=s.num?`Station ${s.num}`:'Eingelegtes Blatt';
+    pagesEl.appendChild(leaf(`
+      <div class="plate"><div class="plate-frame">${illustrationSVG(s.art)}</div><div class="plate-cap">${s.cap}</div></div>
+      <div class="chap">${chap}</div>
+      <h1 class="title">${s.name}</h1>
+      <div class="local">${s.local}</div>
+      <div class="meta">${s.meta}</div>
+      <div class="sec"><span class="lbl">${lookLbl}</span><p class="drop">${s.look}</p></div>
+      <div class="sec fact"><span class="lbl">${factLbl}</span><p>${s.fact}</p></div>`));
+  });
+
+  // PRAKTISCHES
+  pagesEl.appendChild(leaf(`
+    <div class="plate"><div class="plate-frame">${illustrationSVG('massstab')}</div><div class="plate-cap">Alle im selben Maßstab — vom Piranha zum Sandtigerhai</div></div>
+    <div class="chap">Letztes Blatt</div>
+    <h1 class="title">Praktisches</h1>
+    <div class="meta">Die einzige Seite, die altert · Stand August 2026 · vor dem Besuch kurz nachsehen</div>
+    <div class="golinks">
+      <a class="golink" href="${HOUSE_LINK}" target="_blank" rel="noopener noreferrer">${PIN_SVG}In Google Maps</a>
+      <a class="golink warm" href="${TRANSIT_LINK}" target="_blank" rel="noopener noreferrer">${BUS_SVG}Verbindung suchen</a>
+    </div>
+    <div class="sec"><span class="lbl">Hinkommen</span><p>Carrer de Manuela de los Herreros i Sorà 21, Can Pastilla, rund fünfhundert Meter hinter der Playa de Palma. Vom Flughafen fünf Minuten mit dem Auto, aus der Stadt zehn; es gibt einen eigenen Parkplatz. Mit dem Bus fährt die <em>Linie 23</em> vom Zentrum bis vor die Tür, dazu die Linie 35 und die TIB-Linie 520. Wer an der Playa wohnt, geht besser zu Fuß — der Weg ist flach und kürzer als die Wartezeit.</p></div>
+    <div class="sec fact"><span class="lbl">Öffnung und Eintritt</span><p>In der Sommersaison bis zum <em>1. November 2026</em> täglich 9.30 bis 18.30 Uhr, letzter Einlass um 17 Uhr; im Winter kürzer und am Wochenende länger als werktags. Der Eintritt lag zuletzt bei rund <em>30,50 €</em> für Erwachsene und 19,50 € für Kinder, mit balearischem Wohnsitz deutlich weniger; unter drei Jahren frei. Online ist es günstiger als an der Kasse. Für Tauchgang, Schnorcheln im Rochenbecken und Übernachtung vor dem Haibecken ist eine Anmeldung nötig.</p></div>
+    <div class="sec"><span class="lbl">Wann</span><p>Gleich zur Öffnung oder in der letzten Stunde vor dem letzten Einlass — dazwischen stehen die Reisebusse vor dem Big Blue. Rechnen Sie mit <em>zwei bis drei Stunden</em>, und fragen Sie am Eingang nach der Tafel mit den Fütterungszeiten; danach lässt sich der Rundgang gut einteilen. Ein Regentag ist hier der beste Tag. An heißen Nachmittagen ist der Dschungel die einzige Station, die wärmer ist als draußen.</p></div>
+    <div class="sec fact"><span class="lbl">Mitnehmen</span><p>Etwas mit Ärmeln: Die Hallen sind klimatisiert, der Weg führt zwischendurch ins Freie und wieder hinein. Die Gärten sind sonnig und ohne viel Schatten. Für das Rochenbecken im Sommer Badesachen und ein Handtuch. Und für die Kamera gilt, was für die Augen gilt — kein Blitz, und lieber die Belichtungszeit lang als das Motiv scharf: Vor dem Big Blue funktioniert ohnehin nur, wer stillhält.</p></div>
+    <div class="aside">Das Haus wurde <b>2007</b> eröffnet und gehört zu Coral World International. Zeiten, Preise und Fütterungszeiten ändern sich häufiger als alles andere in diesem Heft — der Rest steht in den Becken.</div>`));
+
+  pageEls=[...pagesEl.querySelectorAll('.page')];
+  totalPages=pageEls.length;
+  pageEls.forEach((p,i)=>{ p.dataset.page=i; });
+  pagesEl.querySelectorAll('[data-goto]').forEach(el=> el.addEventListener('click',()=>goTo(parseInt(el.dataset.goto))));
+
+  buildPlan(); makeBubbles();
+  pageEls[0].classList.add('is-current');
+  updateChrome();
+}
+
+/* ── Blasen in der Halle ─────────────────────────────────────── */
+function makeBubbles(){
+  const box=document.getElementById('bubbles');
+  for(let i=0;i<16;i++){
+    const b=document.createElement('div'); b.className='bub';
+    const sz=4+((i*13)%10);
+    b.style.width=sz+'px'; b.style.height=sz+'px';
+    b.style.left=(3+((i*23)%94))+'%';
+    b.style.setProperty('--dx',(((i*17)%40)-20)+'px');
+    b.style.setProperty('--dy','-114vh');
+    b.style.animationDuration=(14+((i*7)%16))+'s';
+    b.style.animationDelay=(-(i*2.9))+'s';
+    box.appendChild(b);
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   DER PLAN — kein GPS. Drinnen weiß kein Satellit, wo man steht;
+   die Station setzt man selbst, mit einem Fingertipp.
+   ══════════════════════════════════════════════════════════════ */
+function buildPlan(){
+  const svg=document.getElementById('plan-svg'); if(!svg) return;
+  svg.innerHTML='';
+  const add=(t,a)=>{ const n=document.createElementNS(NS,t); for(const k in a)n.setAttribute(k,a[k]); svg.appendChild(n); return n; };
+  const lbl=(x,y,t,col,sz,ta,ls)=>{
+    const e=document.createElementNS(NS,'text');
+    e.setAttribute('x',x); e.setAttribute('y',y); e.setAttribute('fill',col||C.glass3);
+    e.setAttribute('font-family',"'Jost',sans-serif"); e.setAttribute('font-size',sz||8.5);
+    e.setAttribute('letter-spacing',ls===undefined?'.6':ls);
+    if(ta)e.setAttribute('text-anchor',ta); e.textContent=t; svg.appendChild(e); return e;
+  };
+
+  // Grundfläche des Hauses
+  add('rect',{x:6,y:6,width:308,height:256,rx:3,fill:'#062a3e',stroke:'rgba(150,205,222,.3)','stroke-width':1});
+
+  /* Die Räume liegen in vier Bändern, im Zickzack — so, wie der
+     Weg tatsächlich läuft: hin, zurück, hin, zurück. */
+  const rooms=[
+    [14, 22, 58,42,'Eingang',   null,'in'],
+    [84, 22,104,42,'Mittelmeer','I'],
+    [200,22,104,42,'Toca Toca', 'II'],
+    [176,84,128,42,'Tropen',    'III'],
+    [28, 84,136,42,'Gärten',    'IV','out'],
+    [14,146,124,42,'Dschungel', 'V'],
+    [152,146,152,42,'Big Blue', 'VI'],
+    [150,208,120,42,'Medusario','VII'],
+    [14,208,120,42,'Ausgang',   null,'out2']
+  ];
+  rooms.forEach(r=>{
+    add('rect',{x:r[0],y:r[1],width:r[2],height:r[3],rx:3,
+      fill:r[6]==='out'?'rgba(84,168,148,.16)':(r[5]?'rgba(18,85,122,.4)':'rgba(10,42,60,.55)'),
+      stroke:r[6]==='out'?'rgba(120,200,175,.4)':'rgba(150,205,222,.28)','stroke-width':.9});
+    lbl(r[0]+r[2]/2, r[1]+12, r[4], r[6]==='out'?'#8fd0bb':C.glass2, 8.5, 'middle');
+  });
+  lbl(43,54,'▸',C.coralLt,12,'middle');
+  lbl(74,247,'◂ Shop · Kino',C.glass3,7.5,'middle');
+
+  // Der Weg: eine Einbahnstraße im Zickzack
+  const route='M43 50 H252 V112 H96 V174 H228 V236 H74';
+  add('path',{d:route,fill:'none',stroke:C.cyan,'stroke-width':2,'stroke-dasharray':'5 4',
+    opacity:.7,'stroke-linejoin':'round','stroke-linecap':'round'});
+  [[190,50,0],[252,86,90],[168,112,180],[96,148,90],[152,174,0],[228,210,90],[144,236,180]].forEach(a=>{
+    add('path',{d:'M0 0 L-8 -4.6 L-8 4.6 Z',fill:C.cyan,opacity:.85,
+      transform:`translate(${a[0]} ${a[1]}) rotate(${a[2]})`});
+  });
+
+  // Die Stationen
+  walk.forEach(s=>{
+    const g=document.createElementNS(NS,'g'); g.setAttribute('class','plan-node'); g.style.cursor='pointer';
+    g.innerHTML=`<circle cx="${s.plan[0]}" cy="${s.plan[1]}" r="12.5" fill="#04202f" stroke="${C.cyan}" stroke-width="1.5"/>`+
+      `<text x="${s.plan[0]}" y="${s.plan[1]+3.6}" text-anchor="middle" font-family="'Jost',sans-serif" font-size="9" letter-spacing=".5" fill="${C.glass}">${s.rn}</text>`;
+    g.addEventListener('click',e=>{ e.stopPropagation(); goTo(sites.findIndex(v=>v.id===s.id)+FIRST); });
+    svg.appendChild(g);
+  });
+
+  const you=document.createElementNS(NS,'g'); you.setAttribute('id','you-node'); svg.appendChild(you);
+  drawYou();
+}
+function drawYou(){
+  const you=document.getElementById('you-node'); if(!you) return;
+  you.innerHTML='';
+  if(hereIdx===null) return;
+  const s=sites[hereIdx]; if(!s||!s.plan) return;
+  you.innerHTML=`<circle cx="${s.plan[0]}" cy="${s.plan[1]}" r="18" fill="${C.coral}" opacity=".18"/>`+
+    `<circle cx="${s.plan[0]}" cy="${s.plan[1]}" r="15.5" fill="none" stroke="${C.coralLt}" stroke-width="1.6"/>`;
+}
+
+/* ── „Hier bin ich“ — der Standort ohne Satellit ─────────────── */
+const hereBtn=document.getElementById('here');
+function setHereLabel(t){ document.getElementById('here-label').textContent=t; }
+hereBtn.addEventListener('click',()=>{
+  const idx=currentPage-FIRST;
+  if(idx<0||idx>=sites.length||!sites[idx].plan){
+    setHereLabel('Auf einer Station');
+    setTimeout(()=>{ if(hereIdx===null) setHereLabel('Hier bin ich'); else setHereLabel(sites[hereIdx].rn+' · '+sites[hereIdx].name); },1800);
+    return;
+  }
+  if(hereIdx===idx){ hereIdx=null; hereBtn.classList.remove('on'); setHereLabel('Hier bin ich'); }
+  else{ hereIdx=idx; hereBtn.classList.add('on'); setHereLabel(sites[idx].rn+' · '+sites[idx].name); }
+  drawYou(); updateProgressList();
+});
+function updateProgressList(){
+  document.querySelectorAll('.di').forEach(sp=>{
+    const i=sites.findIndex(x=>x.id===sp.dataset.id);
+    if(hereIdx===null||i<0||sites[i].isExtras){ sp.textContent=''; return; }
+    if(i===hereIdx) sp.textContent='hier';
+    else if(i<hereIdx) sp.textContent='vorbei';
+    else sp.textContent='noch '+(i-hereIdx);
+  });
+}
+
+/* ══════════════════════════════════════════════════════════════
+   NAVIGATION
+   ══════════════════════════════════════════════════════════════ */
+const reduce=window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+function goTo(target){
+  if(target<0||target>=totalPages||target===currentPage||animating) return;
+  if(speaking) stopSpeech();
+  const fwd=target>currentPage;
+  const out=pageEls[currentPage], inc=pageEls[target];
+  animating=true;
+  pageEls.forEach(p=>{ if(p!==out&&p!==inc) p.classList.remove('is-current','turn-out','turn-in'); });
+
+  if(reduce){
+    out.classList.remove('is-current','turn-out','turn-in');
+    inc.classList.remove('turn-out','turn-in'); inc.classList.add('is-current');
+    currentPage=target; endTurn(inc); return;
+  }
+
+  if(fwd){
+    out.classList.remove('is-current');
+    inc.classList.remove('turn-out','turn-in'); inc.classList.add('is-current');
+    out.classList.add('turn-out');
+  }else{
+    out.classList.remove('is-current');
+    inc.classList.remove('is-current','turn-out'); inc.classList.add('turn-in');
+    void inc.offsetWidth;
+    requestAnimationFrame(()=>{ inc.classList.remove('turn-in'); inc.classList.add('is-current'); });
+  }
+  currentPage=target; updateChrome();
+  window.setTimeout(()=>endTurn(inc), 560);
+}
+function endTurn(inc){
+  animating=false;
+  pageEls.forEach(p=>{ if(p!==inc) p.classList.remove('turn-out','turn-in'); });
+  const sc=inc.querySelector('.leaf-inner'); if(sc) sc.scrollTop=0;
+  updateChrome();
+}
+function updateChrome(){
+  document.getElementById('progress').textContent=String(currentPage+1).padStart(2,'0')+' / '+String(totalPages).padStart(2,'0');
+  document.getElementById('prev').disabled=currentPage===0;
+  document.getElementById('next').disabled=currentPage===totalPages-1;
+}
+document.getElementById('prev').addEventListener('click',()=>goTo(currentPage-1));
+document.getElementById('next').addEventListener('click',()=>goTo(currentPage+1));
+document.getElementById('progress').addEventListener('click',()=>goTo(1));
+document.addEventListener('keydown',e=>{ if(e.key==='ArrowRight')goTo(currentPage+1); else if(e.key==='ArrowLeft')goTo(currentPage-1); });
+let tsx=0,tsy=0;
+document.addEventListener('touchstart',e=>{ tsx=e.touches[0].clientX; tsy=e.touches[0].clientY; },{passive:true});
+document.addEventListener('touchend',e=>{
+  const dx=e.changedTouches[0].clientX-tsx, dy=e.changedTouches[0].clientY-tsy;
+  if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)*1.5){ if(dx<0)goTo(currentPage+1); else goTo(currentPage-1); }
+},{passive:true});
+
+/* ══════════════════════════════════════════════════════════════
+   VORLESEN — funktioniert offline, sobald eine Stimme geladen ist
+   ══════════════════════════════════════════════════════════════ */
+const ttsBtn=document.getElementById('tts'); let speaking=false, voicePref=null;
+function pickVoice(){
+  const v=window.speechSynthesis?window.speechSynthesis.getVoices():[]; if(!v.length)return null;
+  const prefs=[x=>x.lang==='de-DE'&&/natural|neural|enhanced|premium/i.test(x.name),
+               x=>x.lang==='de-DE', x=>x.lang.startsWith('de')];
+  for(const t of prefs){ const f=v.find(t); if(f)return f; }
+  return v[0];
+}
+if(window.speechSynthesis){
+  window.speechSynthesis.addEventListener('voiceschanged',()=>{ voicePref=pickVoice(); });
+  voicePref=pickVoice();
+}
+function stripHtml(h){ const t=document.createElement('div'); t.innerHTML=h; return t.textContent||''; }
+function stopSpeech(){
+  if(window.speechSynthesis) window.speechSynthesis.cancel();
+  speaking=false; ttsBtn.classList.remove('on'); document.getElementById('tts-label').textContent='Vorlesen';
+}
+ttsBtn.addEventListener('click',()=>{
+  if(!window.speechSynthesis) return;
+  if(speaking){ stopSpeech(); return; }
+  const page=pageEls[currentPage], parts=[];
+  const t=page.querySelector('.title,.cover h1,h2'); if(t)parts.push(stripHtml(t.innerHTML));
+  const loc=page.querySelector('.local'); if(loc)parts.push(stripHtml(loc.innerHTML));
+  page.querySelectorAll('.sec').forEach(sec=>{
+    const l=sec.querySelector('.lbl'), p=sec.querySelector('p');
+    if(l)parts.push(stripHtml(l.innerHTML)+'.');
+    if(p)parts.push(stripHtml(p.innerHTML));
+  });
+  const text=parts.join(' '); if(!text.trim())return;
+  window.speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(text);
+  if(voicePref)u.voice=voicePref; u.lang='de-DE'; u.rate=.95; u.pitch=1;
+  u.onend=stopSpeech; u.onerror=stopSpeech;
+  window.speechSynthesis.speak(u);
+  speaking=true; ttsBtn.classList.add('on'); document.getElementById('tts-label').textContent='Halt';
+});
+
+buildAll();
+</script>
+</body>
+</html>
