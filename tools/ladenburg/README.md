@@ -20,15 +20,23 @@ and `atlas-data` / `stop-data` script elements. Verify both the 3D view and SVG
 fallback after editing. The model uses OSM footprints, tagged or estimated
 heights, and stylised landmark miniatures. Roof forms are illustrative; the
 Roman layer shows evidence locations alongside interpretive 3D forum, basilica,
-bathhouse and burgus models. It is not a surveyed reconstruction of the whole
-Roman town. Rendering is on demand, rather than a perpetual animation loop.
+bathhouse, theatre, temple and burgus models. It is not a surveyed reconstruction
+of the whole Roman town. Rendering is on demand, rather than a perpetual
+animation loop.
 
 “Römische Spuren” creates the architectural geometry lazily on first reveal.
 A/B/D identify the basilica, forum and burgus evidence areas; C remains a museum
 collection. E is explicitly a bathhouse type model at a schematic location,
-with a dashed base outline. The roof/floor controls use actual 3D geometry.
+with a dashed base outline. F/G are freely designed theatre and temple types at
+schematic locations, also marked with dashed buttons. The Roman street grid,
+freely designed wall with gates, 28 small houses, three courtyard houses,
+gardens, market stalls, pottery, cart and people are a freely interpreted city
+scene. They emerge in the Roman time image and disappear before the late-antique
+phase; their phase thresholds are scene transitions, not asserted construction
+dates. Static geometry is batched by material to keep mobile rendering
+inexpensive. The roof/floor controls use actual 3D geometry.
 Selecting a building focuses the camera and scrolls it fully into the phone
-viewport. “Übersicht” returns to all five markers, while “Heute” restores the
+viewport. “Übersicht” returns to all seven markers, while “Heute” restores the
 modern city. The trace layer combines different Roman periods; the burgus is
 late antique. Today’s streets remain an orientation layer. The plan fallback
 keeps the markers, descriptions and sources. `#roman-spuren` opens this view
@@ -51,8 +59,8 @@ The “Von Rom bis heute” view opens in a native full-screen dialog without
 changing the 14-page book. It creates its renderer on first use and pauses the
 atlas renderer while open. An introductory camera flight ends at a bird's-eye
 view; the timeline grows selected buildings through seven historical snapshots.
-Monument buttons focus the baths, forum, basilica and burgus. Roofs can be lifted
-off, and the bath floor can be raised to expose the modeled hypocaust, brick
+Monument buttons focus the baths, forum, basilica, theatre, temple and burgus.
+Roofs can be lifted off, and the bath floor can be raised to expose the modeled hypocaust, brick
 pilae and furnace. On mobile, “Modell drehen” explicitly enables camera gestures.
 Idle or closed scenes stop requesting frames; reduced motion skips the intro.
 

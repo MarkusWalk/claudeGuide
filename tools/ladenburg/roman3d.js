@@ -32,7 +32,7 @@ export function createRomanArchitecture(pt,MONUMENTS){
  const groups=[],roofParts=[],bathFloor=new THREE.Group(),bathWalls=[],bathPillars=new THREE.Group();
  const cube=(parent,x,y,z,w,h,d,mat)=>{const mesh=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);mesh.position.set(x,y+h/2,z);mesh.castShadow=true;mesh.receiveShadow=true;parent.add(mesh);return mesh;};
  const cylinder=(parent,x,y,z,r,h,mat,sides=16)=>{const mesh=new THREE.Mesh(new THREE.CylinderGeometry(r,r,h,sides),mat);mesh.position.set(x,y+h/2,z);mesh.castShadow=true;mesh.receiveShadow=true;parent.add(mesh);return mesh;};
- const addRoof=(parent,x,z,w,d,h,rise)=>{const mesh=new THREE.Mesh(roofGeometry(w,d,h,rise),M.roof);mesh.position.set(x,0,z);mesh.castShadow=true;parent.add(mesh);if(['bath','forum','basilica','burgus'].includes(parent.userData.phase))roofParts.push(mesh);return mesh;};
+ const addRoof=(parent,x,z,w,d,h,rise)=>{const mesh=new THREE.Mesh(roofGeometry(w,d,h,rise),M.roof);mesh.position.set(x,0,z);mesh.castShadow=true;parent.add(mesh);if(['bath','forum','basilica','burgus','temple','theater'].includes(parent.userData.phase))roofParts.push(mesh);return mesh;};
  const addBarrel=(parent,x,z,w,d,y,rise)=>{const mesh=new THREE.Mesh(barrelGeometry(w,d,y,rise),M.roof);mesh.position.set(x,0,z);mesh.castShadow=true;parent.add(mesh);if(['bath','forum','basilica','burgus'].includes(parent.userData.phase))roofParts.push(mesh);return mesh;};
  function phase(id,birth,end=null){const root=new THREE.Group();root.userData.phase=id;scene.add(root);const state={id,root,birth,end,amount:0,target:0};groups.push(state);return root;}
  // The cavalry fort is a schematic first phase, not a surveyed reconstruction.
@@ -105,6 +105,91 @@ export function createRomanArchitecture(pt,MONUMENTS){
  for(const z of [-23,23])cube(burgus,0,.6,z,47,7,2.8,M.stone);
  for(const x of [-22,22])for(const z of [-22,22]){cylinder(burgus,x,.6,z,4.6,12,M.stone,12);for(let i=0;i<6;i++){const a=i/6*Math.PI*2;cube(burgus,x+Math.cos(a)*3.9,12.6,z+Math.sin(a)*3.9,1.8,1.8,1.8,M.stone);}}
  for(const x of [-7,7])for(const z of [-10.12,10.12])cube(burgus,x,9,z,1.3,3,.15,M.dark);
+
+ // Freely interpreted urban fabric. These streets, houses and little scenes
+ // create a coherent diorama, not additional archaeological find locations.
+ const town=phase('romanTown',120,270);town.position.copy(pt([8.6080,49.4719]));
+ const paving=material(0xcdbc98,stoneTex),plaster=material(0xe6c898),ochre=material(0xc69b65),leaf=material(0x63765a),cloth=material(0xa03f2c),linen=material(0xe7cd99),skin=material(0xbc8961);
+ for(const z of [-62,92,260])cube(town,110,.02,z,430,.14,11,paving);
+ for(const x of [65,267])cube(town,x,.02,75,11,.14,507,paving);
+ // Paving joints and raised borders give the streets a readable scale.
+ for(const z of [-62,92,260])for(const edge of [-6,6])cube(town,110,.15,z+edge,430,.24,.65,M.white);
+ for(const x of [65,267])for(const edge of [-6,6])cube(town,x+edge,.15,75,.65,.24,507,M.white);
+ // A freely designed enclosure and gate anchor the miniature's silhouette.
+ for(const x of [-112,370])cube(town,x,.2,75,2.6,5.5,506,M.stone);
+ for(const z of [-178,328]){cube(town,-27,.2,z,168,5.5,2.6,M.stone);cube(town,225.5,.2,z,289,5.5,2.6,M.stone);}
+ for(const [x,z] of [[-112,-178],[370,-178],[-112,328],[370,328],[-112,75],[370,75]]){
+  cube(town,x,.2,z,9,9,9,M.stone);for(const dx of [-3,0,3])for(const dz of [-3,3])cube(town,x+dx,9.2,z+dz,1.5,1.4,1.5,M.white);
+ }
+ for(const z of [-178,328]){
+  for(const x of [53,77]){cube(town,x,.2,z,9,11,10,M.stone);addRoof(town,x,z,11,12,11.2,3);}
+  const gate=new THREE.Mesh(archGeometry(15,8,2.6),M.stone);gate.position.set(65,.2,z-1.3);town.add(gate);cube(town,65,8.2,z,19,2.8,3,M.stone);
+ }
+ function house(x,z,w=22,d=23,h=7,paint=plaster){
+  cube(town,x,.18,z,w,h,d,paint);cube(town,x,.18,z+d/2+.06,w,1.15,.16,M.brick);addRoof(town,x,z,w+2,d+2,h+.2,4);
+  cube(town,x,.2,z+d/2+.12,3.5,4.4,.18,M.wood);
+  for(const xx of [-w*.3,w*.3]){cube(town,x+xx,4,z+d/2+.12,2,1.6,.15,M.dark);cube(town,x+xx,3.85,z+d/2+.2,2.7,.3,.3,M.white);}
+ }
+ const houses=[];
+ for(const x of [92,120,148,176,204,232])houses.push([x,-92,23,25,7+(x%3)]);
+ for(const z of [-122,-91,-25,8,119,153,187,222])houses.push([-61,z,26,24,6+(z%2===0?2:0)]);
+ for(const x of [90,119,148,177,206,235])houses.push([x,289,23,24,7]);
+ for(const z of [-122,-89,-24,9,43,76])houses.push([305,z,25,25,7]);
+ for(const x of [6,35])houses.push([x,129,22,23,6]);
+ houses.forEach(([x,z,w,d,h],i)=>house(x,z,w,d,h,i%4===0?ochre:i%3===0?M.white:plaster));
+ function domus(x,z){
+  cube(town,x,.18,z,57,.3,49,M.stone);cube(town,x,.5,z,24,.18,24,M.floor);
+  for(const dx of [-20,20]){cube(town,x+dx,.5,z,15,7,49,M.white);addRoof(town,x+dx,z,17,51,7.5,3.7);}
+  for(const dz of [-19,19]){cube(town,x,.5,z+dz,26,7,11,plaster);addRoof(town,x,z+dz,28,13,7.5,3.7);}
+  for(const dx of [-12,12])for(const dz of [-9,-3,3,9]){cylinder(town,x+dx,.6,z+dz,.48,4.7,M.white,10);cube(town,x+dx,5.3,z+dz,1.2,.4,1.2,M.white);}
+  cube(town,x,.75,z,9,.25,7,M.white);cube(town,x,1.01,z,7,.06,5,M.water);
+ }
+ domus(12,-109);domus(161,219);domus(328,-140);
+ function tree(x,z,h=12){cylinder(town,x,.2,z,.6,3,M.wood,7);const m=new THREE.Mesh(new THREE.ConeGeometry(3,h,9),leaf);m.position.set(x,3+h/2,z);m.castShadow=true;town.add(m);}
+ for(const [x,z] of [[-86,-145],[-86,-65],[-86,86],[-86,264],[39,-135],[40,211],[90,178],[206,194],[210,235],[364,-150],[364,-110],[294,282],[325,282]])tree(x,z,10+(Math.abs(x)%5));
+ function person(parent,x,z,coat=cloth,y=.35){cylinder(parent,x,y,z,.35,1.25,coat,7);const head=new THREE.Mesh(new THREE.SphereGeometry(.3,7,5),skin);head.position.set(x,y+1.55,z);parent.add(head);}
+ function amphora(parent,x,z,y=.3){const jar=new THREE.Mesh(new THREE.SphereGeometry(.65,8,6),M.brick);jar.scale.set(.8,1.25,.8);jar.position.set(x,y+.8,z);parent.add(jar);cylinder(parent,x,y+1.45,z,.23,.38,M.brick,8);}
+ function stall(parent,x,z,canopy=cloth,y=.3){cube(parent,x,y,z,8,1.25,3,M.wood);for(const dx of [-4,4])for(const dz of [-2,2])cylinder(parent,x+dx,y,z+dz,.16,4,M.wood,6);cube(parent,x,y+4,z,9,.16,5,canopy);for(let i=0;i<5;i++)amphora(parent,x-3+i*1.4,z,y+1.25);person(parent,x,z-3,linen,y);}
+ for(const [x,z] of [[32,84],[13,84],[-7,84],[282,72],[282,51]])stall(town,x,z);
+ // The forum itself now carries its market life into the close-up camera.
+ for(const x of [-24,-11,13,26])stall(forum,x,12,x<0?cloth:linen,1.1);
+ for(const [x,z] of [[-15,-8],[-8,3],[10,-6],[22,-9],[-25,3],[7,8]])person(forum,x,z,x<0?linen:cloth,1.1);
+ for(const [x,z] of [[65,-43],[65,12],[65,68],[65,154],[65,209],[267,-43],[267,105],[249,92],[220,92],[126,-62],[168,-62],[57,260],[149,260],[241,260],[29,92],[-34,92]])person(town,x,z,(x+z)%2?cloth:linen);
+ // A cart and a potter's yard: small discoverable details, all batched below.
+ cube(town,56,.8,179,4,1.4,6,M.wood);for(const x of [53.8,58.2])for(const z of [177,181]){const wheel=cylinder(town,x,.1,z,1.1,.35,M.dark,10);wheel.rotation.z=Math.PI/2;wheel.position.y=1.1;}
+ for(let i=0;i<10;i++)amphora(town,-45+(i%5)*1.7,143+Math.floor(i/5)*2);
+
+ // An original six-column temple type; its position and elevation are free.
+ const temple=phase('temple',150,270);temple.position.copy(pt(MONUMENTS.temple.coords));
+ for(let i=0;i<4;i++)cube(temple,0,i*.55,0,48-i*2,.55,66-i*2,M.stone);
+ cube(temple,0,2.2,2,22,.4,34,M.floor);
+ for(const x of [-10.5,10.5]){cube(temple,x,2.6,2,1,12.6,34,M.white);cube(temple,x,2.6,2,1.05,1.4,34,M.brick);}
+ cube(temple,0,2.6,-14.5,22,12.6,1,M.white);
+ for(const x of [-6.6,6.6])cube(temple,x,2.6,18.5,8.8,12.6,1,M.white);
+ cube(temple,0,11.6,18.5,5,3.6,1,M.white);
+ cube(temple,0,2.6,-8,3,2,3,M.stone);cylinder(temple,0,4.6,-8,.8,3.5,M.bronze,12);const statueHead=new THREE.Mesh(new THREE.SphereGeometry(.6,10,8),M.bronze);statueHead.position.set(0,8.5,-8);temple.add(statueHead);cube(temple,0,6.8,-8,2.5,.65,.6,M.bronze);
+ for(const x of [-19,-11.4,-3.8,3.8,11.4,19])for(const z of [-26,26]){cylinder(temple,x,2.2,z,.82,13,M.white,16);cube(temple,x,2.2,z,2.4,.55,2.4,M.stone);cube(temple,x,14.5,z,2.4,.7,2.4,M.white);}
+ for(const x of [-19,19])for(let z=-18;z<=18;z+=7.2)cylinder(temple,x,2.2,z,.82,13,M.white,16);
+ for(const z of [-27.5,27.5])cube(temple,0,15.2,z,43,1.3,3,M.stone);for(const x of [-20,20])cube(temple,x,15.2,0,3,1.3,58,M.stone);addRoof(temple,0,0,44,60,16.5,8);
+ for(const z of [-30.1,30.1]){const pediment=new THREE.Shape();pediment.moveTo(-21,16.5);pediment.lineTo(0,24);pediment.lineTo(21,16.5);pediment.closePath();const m=new THREE.Mesh(new THREE.ShapeGeometry(pediment),M.white);m.material=M.white.clone();m.material.side=THREE.DoubleSide;m.position.z=z;temple.add(m);roofParts.push(m);const badge=cylinder(temple,0,17.5,z+Math.sign(z)*.1,1.5,.2,M.bronze,12);badge.rotation.x=Math.PI/2;roofParts.push(badge);}
+ cube(temple,0,.5,42,6,2.8,4,M.white);cylinder(temple,0,3.3,42,2.4,.3,M.bronze,12);
+
+ // Theatre with real stepped, semicircular seating and an arcaded stage.
+ const theater=phase('theater',150,270);theater.position.copy(pt(MONUMENTS.theater.coords));
+ for(let i=0;i<13;i++){
+  const inner=17+i*2.8,outer=inner+2.8,y=.4+i*.95;
+  const seat=new THREE.Mesh(new THREE.RingGeometry(inner,outer,48,1,Math.PI,Math.PI),i%2?M.stone:M.white);seat.rotation.x=-Math.PI/2;seat.position.y=y;seat.receiveShadow=true;theater.add(seat);
+  const riser=new THREE.Mesh(new THREE.CylinderGeometry(outer,outer,.95,48,1,true,-Math.PI/2,Math.PI),M.stone);riser.position.y=y-.475;theater.add(riser);
+ }
+ const orchestra=new THREE.Mesh(new THREE.CircleGeometry(17,32,0,Math.PI),M.sand);orchestra.rotation.x=Math.PI/2;orchestra.material=M.sand.clone();orchestra.material.side=THREE.DoubleSide;orchestra.position.y=.3;theater.add(orchestra);
+ cube(theater,0,.3,-6,79,2.5,12,M.wood);
+ for(const z of [-16,-22])cube(theater,0,.2,z,84,3,1.2,M.stone);
+ for(let x=-35;x<=35;x+=10){const arch=new THREE.Mesh(archGeometry(8,10,1.2),M.stone);arch.position.set(x,3.2,-16);arch.castShadow=true;theater.add(arch);cylinder(theater,x-4.4,.3,-13,.6,12,M.white,10);}
+ cube(theater,0,13.2,-16,84,1.5,4,M.stone);addRoof(theater,0,-20,86,13,14.7,3);
+ for(const x of [-43,43]){cube(theater,x,.2,-7,9,11,20,M.stone);addRoof(theater,x,-7,11,22,11.2,4);}
+ for(const [x,z] of [[-8,-5],[5,-5],[11,-5]])person(theater,x,z,cloth,2.8);
+ for(let i=0;i<18;i++){const a=(i+.5)/18*Math.PI,r=24+(i%4)*6;person(theater,Math.cos(a)*r,Math.sin(a)*r, i%3?linen:cloth,.5+(r-17)/2.8*.95);}
+
  const dynamic=new Set([...roofParts,...bathWalls]);
  function batch(parent){
   const buckets=new Map();
@@ -119,5 +204,5 @@ export function createRomanArchitecture(pt,MONUMENTS){
 
 
  roofParts.forEach(r=>r.userData.baseY=r.position.y);
- return {root:scene,M,material,groups,phase,cube,cylinder,addRoof,roofParts,bathFloor,bathWalls,bath,forum,basilica,burgus,fort,traces,batchAll};
+ return {root:scene,M,material,groups,phase,cube,cylinder,addRoof,roofParts,bathFloor,bathWalls,bath,forum,basilica,burgus,temple,theater,town,fort,traces,batchAll};
 }
