@@ -30,3 +30,11 @@ Only the active page is exposed to interaction and assistive technology; long
 content scrolls inside that page. Horizontal swipes turn reading pages and
 never compete with map gestures. On touch devices, the map scrolls with the
 page until “Move map” is explicitly enabled.
+
+The visual design is a gilt green town atlas with an original SVG frontispiece,
+ornamented cover corners and warm paper folios. The frontispiece is a symbolic
+illustration, not a geographic plan or Roman reconstruction. The cover's SVG
+and the `engraved-atlas-design` style block are authored directly in
+`ladenburg.html`; fine architectural marks are added by `drawIllustration()`.
+Keep the cover's artwork, the homepage shelf illustration and mobile previews
+consistent when changing the design.
