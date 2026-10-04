@@ -1,10 +1,11 @@
 import * as THREE from 'three';
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 import {mergeGeometries} from 'three/addons/utils/BufferGeometryUtils.js';
-const CENTER=[8.60735,49.47225];
-const W=930,D=770;
+const CENTER=[8.6086,49.4741];
+const W=1120,D=1160;
 const flatPoint=p=>new THREE.Vector2((p[0]-CENTER[0])*72400,(CENTER[1]-p[1])*111195);
 const xyz=(p,y=0)=>{const q=flatPoint(p);return new THREE.Vector3(q.x,y,q.y)};
+const WALK_CENTER=xyz([8.60735,49.47225]);
 const materials={};
 const palette={wall:0xe3d7be,wallAlt:0xd6c8af,roof:0xac7658,roofAlt:0x8d7060,stone:0xc9c7ab,greenRoof:0x6f8067,road:0xf9f4e8,roadEdge:0xd9ceba,park:0xc2cea9,river:0x91b9b7,ink:0x2d5140,route:0xaf4327};
 function mat(color,roughness=1){return new THREE.MeshStandardMaterial({color,roughness,metalness:0})}
@@ -49,8 +50,8 @@ window.createLadenburg3D=function(container,data,stops,hooks){
  renderer.domElement.setAttribute('aria-label','Drehbare dreidimensionale Karte von Ladenburg. Ziehen zum Drehen; zwei Finger oder Tasten zum Zoomen.');renderer.domElement.setAttribute('role','img');renderer.domElement.tabIndex=0;container.prepend(renderer.domElement);
  const touchDevice=navigator.maxTouchPoints>0||matchMedia('(pointer:coarse)').matches;let interaction=!touchDevice;
  const scene=new THREE.Scene();scene.background=new THREE.Color(0xeee7d8);
- const camera=new THREE.OrthographicCamera(-550,550,430,-430,.1,4500);camera.position.set(380,900,920);camera.lookAt(0,0,0);
- const controls=new OrbitControls(camera,renderer.domElement);controls.target.set(0,0,0);controls.enableDamping=false;controls.minZoom=.75;controls.maxZoom=4;controls.minPolarAngle=.04;controls.maxPolarAngle=1.25;controls.enablePan=true;controls.screenSpacePanning=false;controls.enableRotate=true;controls.mouseButtons.LEFT=THREE.MOUSE.ROTATE;controls.touches.ONE=THREE.TOUCH.ROTATE;controls.touches.TWO=THREE.TOUCH.DOLLY_PAN;
+ const camera=new THREE.OrthographicCamera(-550,550,430,-430,.1,4500);camera.position.set(380,900,920).add(WALK_CENTER);camera.lookAt(WALK_CENTER);
+ const controls=new OrbitControls(camera,renderer.domElement);controls.target.copy(WALK_CENTER);controls.enableDamping=false;controls.minZoom=.75;controls.maxZoom=4;controls.minPolarAngle=.04;controls.maxPolarAngle=1.25;controls.enablePan=true;controls.screenSpacePanning=false;controls.enableRotate=true;controls.mouseButtons.LEFT=THREE.MOUSE.ROTATE;controls.touches.ONE=THREE.TOUCH.ROTATE;controls.touches.TWO=THREE.TOUCH.DOLLY_PAN;
  const hemi=new THREE.HemisphereLight(0xfffcf0,0x829079,2.1);scene.add(hemi);
  const sun=new THREE.DirectionalLight(0xfff5de,2.4);sun.position.set(-360,700,-300);sun.castShadow=true;sun.shadow.mapSize.set(touchDevice?1024:2048,touchDevice?1024:2048);sun.shadow.camera.left=-650;sun.shadow.camera.right=650;sun.shadow.camera.top=600;sun.shadow.camera.bottom=-600;sun.shadow.camera.near=30;sun.shadow.camera.far=1800;sun.shadow.bias=-.0002;sun.shadow.normalBias=.65;scene.add(sun);
  const base=new THREE.Mesh(new THREE.BoxGeometry(W,12,D),mat(0xe5dbc7));base.position.y=-6.5;base.receiveShadow=true;scene.add(base);
@@ -110,6 +111,17 @@ window.createLadenburg3D=function(container,data,stops,hooks){
  const position=new THREE.Mesh(new THREE.SphereGeometry(4,12,8),mat(0x203f35));position.visible=false;scene.add(position);
  let width=1,height=1,pending=false,reveal=0,active=true,manual=false,frame=0,mode='3d',selectedIndex=0;
  function projectPoint(v){const q=v.clone().project(camera);return {x:(q.x*.5+.5)*width,y:(-q.y*.5+.5)*height,visible:q.z>-1&&q.z<1&&q.x>-1.15&&q.x<1.15&&q.y>-1.15&&q.y<1.15}}
+
+ // A separate address marker; the eight-stop route keeps its own numbering.
+ const extraPlace=data.extraPlaces?.find(p=>p.id==='neugraben-20');let addressLabel=null,addressGroup=null;
+ if(extraPlace){
+  const point=xyz(extraPlace.coords,0);addressGroup=new THREE.Group();scene.add(addressGroup);
+  const ring=new THREE.Mesh(new THREE.RingGeometry(8,10,32),new THREE.MeshBasicMaterial({color:0x8c301f,side:THREE.DoubleSide}));ring.rotation.x=-Math.PI/2;ring.position.copy(point).add(new THREE.Vector3(0,.25,0));addressGroup.add(ring);
+  const pole=new THREE.Mesh(new THREE.CylinderGeometry(.6,.6,30,8),new THREE.MeshBasicMaterial({color:0x8c301f}));pole.position.copy(point).add(new THREE.Vector3(0,15,0));addressGroup.add(pole);
+  const dot=new THREE.Mesh(new THREE.SphereGeometry(3.5,12,8),new THREE.MeshBasicMaterial({color:0x8c301f}));dot.position.copy(point).add(new THREE.Vector3(0,31,0));addressGroup.add(dot);
+  const el=document.createElement('button');el.className='three-address';el.textContent=extraPlace.name;el.setAttribute('aria-label',extraPlace.name+' · zusätzlicher Ort auf der Karte');el.addEventListener('click',()=>hooks.focusAddress());labelLayer.appendChild(el);addressLabel={el,world:xyz(extraPlace.coords,36)};
+ }
+
  function annotate(){
   connector.setAttribute('width',width);connector.setAttribute('height',height);
   const placed=[];const sorted=[...stopLabels].sort((a,b)=>a.index===selectedIndex?-1:b.index===selectedIndex?1:a.index-b.index);
@@ -123,12 +135,13 @@ window.createLadenburg3D=function(container,data,stops,hooks){
   const evidencePlaced=[];
   traceLabels.forEach((l,i)=>{const q=projectPoint(l.world);let x=q.x+(i%2?-30:30),y=q.y-25;const labelWidth=width<550?44:(l.el.offsetWidth||125);for(let step=0;step<12;step++){if(!evidencePlaced.some(p=>Math.abs(p.x-x)<(p.width+labelWidth)/2+8&&Math.abs(p.y-y)<48))break;y-=48}x=THREE.MathUtils.clamp(x,labelWidth/2+8,width-labelWidth/2-8);y=THREE.MathUtils.clamp(y,24,height-35);l.el.hidden=reveal<.08||!q.visible;l.el.style.transform=`translate(${x}px,${y}px) translate(-50%,-50%)`;l.el.style.opacity=String(Math.min(1,reveal*2));l.line.setAttribute('x1',q.x);l.line.setAttribute('y1',q.y);l.line.setAttribute('x2',x);l.line.setAttribute('y2',y);l.line.style.display=reveal>=.08&&q.visible?'':'none';evidencePlaced.push({x,y,width:labelWidth})});
   otherLabels.forEach(l=>{const q=projectPoint(l.world);l.el.style.transform=`translate(${q.x}px,${q.y}px) translate(-50%,-50%)`;l.el.hidden=!q.visible||reveal>.35});
+  if(addressLabel){const q=projectPoint(addressLabel.world);addressLabel.el.style.transform=`translate(${q.x}px,${q.y-12}px) translate(-50%,-100%)`;addressLabel.el.hidden=!q.visible||reveal>.35;addressGroup.visible=reveal<=.35;}
   const direction=camera.position.clone().sub(controls.target);const angle=Math.atan2(direction.x,direction.z)*180/Math.PI;container.closest('.map-panel').querySelector('.map-north svg').style.transform=`rotate(${angle}deg)`;
  }
  function render(){pending=false;if(!active)return;renderer.render(scene,camera);annotate();frame++;container.dataset.frames=String(frame)}
  function request(){if(!pending&&active){pending=true;requestAnimationFrame(render)}}
  let firstFit=false;
- function resize(){const r=container.getBoundingClientRect();if(r.width<10||r.height<10)return;if(!firstFit){firstFit=true;if(r.width<550){controls.target.set(50,0,20);camera.position.set(270,1150,770);camera.zoom=1.5;controls.update()}}width=Math.max(1,r.width);height=Math.max(1,r.height);renderer.setSize(width,height,false);const aspect=width/height;const half=Math.max(400,550/aspect);camera.left=-half*aspect;camera.right=half*aspect;camera.top=half;camera.bottom=-half;camera.updateProjectionMatrix();request()}
+ function resize(){const r=container.getBoundingClientRect();if(r.width<10||r.height<10)return;if(!firstFit){firstFit=true;if(r.width<550){controls.target.set(50,0,20).add(WALK_CENTER);camera.position.set(270,1150,770).add(WALK_CENTER);camera.zoom=1.5;controls.update()}}width=Math.max(1,r.width);height=Math.max(1,r.height);renderer.setSize(width,height,false);const aspect=width/height;const half=Math.max(400,550/aspect);camera.left=-half*aspect;camera.right=half*aspect;camera.top=half;camera.bottom=-half;camera.updateProjectionMatrix();request()}
  controls.addEventListener('change',request);const observer=new ResizeObserver(resize);observer.observe(container);resize();
  renderer.domElement.addEventListener('webglcontextlost',e=>{e.preventDefault();hooks.fallback('3D-Grafik pausiert. Der Straßenplan ist verfügbar.');active=false});
  // In placement mode a click intersects the ground, independent of the camera tilt.
@@ -138,7 +151,7 @@ window.createLadenburg3D=function(container,data,stops,hooks){
  let dragPane=0;const api={
   setReveal(value){reveal=Math.max(0,Math.min(1,value));ancient.visible=reveal>.01;modern.traverse(o=>{if(o.isMesh){const list=Array.isArray(o.material)?o.material:[o.material];list.forEach(m=>{m.transparent=reveal>0;m.opacity=1-reveal*.94;m.depthWrite=reveal<.05})}});renderer.shadowMap.enabled=reveal<.1;container.classList.toggle('roman-visible',reveal>.45);container.dataset.reveal=String(reveal);request()},
   select(index){selectedIndex=index;request()},
-  setMode(value){mode=value;if(mode==='flat'){camera.position.set(0,1300,.01);controls.enableRotate=false}else{camera.position.set(380,900,920);controls.enableRotate=true}if(width<550&&mode!=='flat'){controls.target.set(50,0,20);camera.position.set(270,1150,770);camera.zoom=1.5}else{controls.target.set(0,0,0);camera.zoom=1}camera.updateProjectionMatrix();controls.update();request()},
+  setMode(value){mode=value;if(mode==='flat'){camera.position.set(0,1300,.01).add(WALK_CENTER);controls.enableRotate=false}else{camera.position.set(380,900,920).add(WALK_CENTER);controls.enableRotate=true}if(width<550&&mode!=='flat'){controls.target.set(50,0,20).add(WALK_CENTER);camera.position.set(270,1150,770).add(WALK_CENTER);camera.zoom=1.5}else{controls.target.copy(WALK_CENTER);camera.zoom=1}camera.updateProjectionMatrix();controls.update();request()},
   focus(coords){const target=xyz(coords,0),offset=camera.position.clone().sub(controls.target);controls.target.copy(target);camera.position.copy(target).add(offset);camera.zoom=2.6;camera.updateProjectionMatrix();controls.update();request()},
   zoom(f){camera.zoom=THREE.MathUtils.clamp(camera.zoom*f,.75,4);camera.updateProjectionMatrix();controls.update();request()},
   reset(){api.setMode(mode)},

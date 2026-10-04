@@ -39,3 +39,10 @@ and the `engraved-atlas-design` / `roman-atlas-design` style blocks are authored
 Cinzel is embedded with its OFL notice for offline Roman inscription typography.
 Keep the cover's artwork, the homepage shelf illustration and mobile previews
 consistent when changing the design.
+
+Neugraben 20 is an additional mapped address in `atlas-data.extraPlaces`,
+verified against OSM address node 13890854530 and building footprint 1207119183.
+The model extends northeast to include its neighborhood. Its default camera
+still targets the walking loop; the address shortcut focuses either the 3D
+model or the SVG street plan, and the Altstadt button restores the route view.
+The address does not add a numbered stop or change the measured walking loop.
