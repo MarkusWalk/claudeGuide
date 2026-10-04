@@ -31,10 +31,11 @@ content scrolls inside that page. Horizontal swipes turn reading pages and
 never compete with map gestures. On touch devices, the map scrolls with the
 page until “Move map” is explicitly enabled.
 
-The visual design is a gilt green town atlas with an original SVG frontispiece,
-ornamented cover corners and warm paper folios. The frontispiece is a symbolic
+The visual design is a Roman antiquarian atlas in travertine and Pompeian red,
+with an original SVG frontispiece, meander corners and warm paper folios. The frontispiece is a symbolic
 illustration, not a geographic plan or Roman reconstruction. The cover's SVG
-and the `engraved-atlas-design` style block are authored directly in
+and the `engraved-atlas-design` / `roman-atlas-design` style blocks are authored directly in
 `ladenburg.html`; fine architectural marks are added by `drawIllustration()`.
+Cinzel is embedded with its OFL notice for offline Roman inscription typography.
 Keep the cover's artwork, the homepage shelf illustration and mobile previews
 consistent when changing the design.
