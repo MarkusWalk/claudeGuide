@@ -4,7 +4,9 @@ The published guide is the self-contained `../../ladenburg.html`: geometry,
 fonts, SVG fallback map, Three.js and illustrations are all embedded. It needs
 no server or tile provider for reading and rendering the map.
 
-`atlas3d.js` is the editable source of the 3D map. To rebuild its inline bundle:
+`atlas3d.js` is the editable source of the 3D map. It imports `journey3d.js`,
+the separate time-travel model. Both share one embedded Three.js bundle.
+To rebuild it:
 
 ```sh
 cd tools/ladenburg
@@ -30,6 +32,26 @@ Only the active page is exposed to interaction and assistive technology; long
 content scrolls inside that page. Horizontal swipes turn reading pages and
 never compete with map gestures. On touch devices, the map scrolls with the
 page until “Move map” is explicitly enabled.
+
+The “Von Rom bis heute” view opens in a native full-screen dialog without
+changing the 14-page book. It creates its renderer on first use and pauses the
+atlas renderer while open. An introductory camera flight ends at a bird's-eye
+view; the timeline grows selected buildings through seven historical snapshots.
+Monument buttons focus the baths, forum, basilica and burgus. Roofs can be lifted
+off, and the bath floor can be raised to expose the modeled hypocaust, brick
+pilae and furnace. On mobile, “Modell drehen” explicitly enables camera gestures.
+Idle or closed scenes stop requesting frames; reduced motion skips the intro.
+
+The bathhouse is an original architectural type model, not a surveyed Ladenburg
+reconstruction. The forum and basilica use the documented size of the complex,
+with interpretive elevations; completion of the ancient basilica is disputed.
+Historical house clusters are symbolic and disappear before today's OSM blocks
+appear. Current river and surviving wall outlines provide orientation rather
+than proof of their complete ancient or medieval courses. Evidence notes and
+sources are available inside the view. The dialog, its `journey-design` style
+block and `journey-ui` script are authored in `ladenburg.html`, before the main
+script so that the offline download contains them. Verify the time-travel view,
+WebGL fallback and standalone download when changing this integration.
 
 The visual design is a Roman antiquarian atlas in travertine and Pompeian red,
 with an original SVG frontispiece, meander corners and warm paper folios. The frontispiece is a symbolic
