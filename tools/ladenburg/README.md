@@ -5,7 +5,8 @@ fonts, SVG fallback map, Three.js and illustrations are all embedded. It needs
 no server or tile provider for reading and rendering the map.
 
 `atlas3d.js` is the editable source of the 3D map. It imports `journey3d.js`,
-the separate time-travel model. Both share one embedded Three.js bundle.
+the separate time-travel model. Both use `roman3d.js` for the original Roman
+architecture and share one embedded Three.js bundle.
 To rebuild it:
 
 ```sh
@@ -18,9 +19,22 @@ The guide's other UI code and the JSON data live in its unminified final script
 and `atlas-data` / `stop-data` script elements. Verify both the 3D view and SVG
 fallback after editing. The model uses OSM footprints, tagged or estimated
 heights, and stylised landmark miniatures. Roof forms are illustrative; the
-Roman layer identifies evidence locations and a museum collection, not an
-archaeological reconstruction. Rendering is on demand, rather than a perpetual
-animation loop.
+Roman layer shows evidence locations alongside interpretive 3D forum, basilica,
+bathhouse and burgus models. It is not a surveyed reconstruction of the whole
+Roman town. Rendering is on demand, rather than a perpetual animation loop.
+
+“Römische Spuren” creates the architectural geometry lazily on first reveal.
+A/B/D identify the basilica, forum and burgus evidence areas; C remains a museum
+collection. E is explicitly a bathhouse type model at a schematic location,
+with a dashed base outline. The roof/floor controls use actual 3D geometry.
+Selecting a building focuses the camera and scrolls it fully into the phone
+viewport. “Übersicht” returns to all five markers, while “Heute” restores the
+modern city. The trace layer combines different Roman periods; the burgus is
+late antique. Today’s streets remain an orientation layer. The plan fallback
+keeps the markers, descriptions and sources. `#roman-spuren` opens this view
+directly; the selected building can also open directly in the time-travel view.
+The map sidebar, `roman-model-design` styles and map UI are authored in the
+single HTML file.
 
 The fallback works when WebGL is unavailable. External directions and source
 links need a connection; GPS and speech depend on the browser/device.
