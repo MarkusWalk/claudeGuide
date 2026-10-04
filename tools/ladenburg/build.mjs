@@ -1,0 +1,11 @@
+import {build} from 'esbuild';
+import {readFile,writeFile} from 'node:fs/promises';
+const htmlFile=new URL('../../ladenburg.html',import.meta.url);
+const entry=new URL('atlas3d.js',import.meta.url);
+const result=await build({entryPoints:[entry.pathname],bundle:true,minify:true,format:'iife',write:false});
+const source=await readFile(htmlFile,'utf8');
+const script=/<script id="three-library">[\s\S]*?<\/script>/;
+if(!script.test(source))throw new Error('The inline Three.js bundle was not found.');
+const bundle=result.outputFiles[0].text.replace(/<\/script/gi,'<\\/script');
+await writeFile(htmlFile,source.replace(script,()=>`<script id="three-library">${bundle}</script>`));
+console.log('Rebuilt the inline 3D map in ladenburg.html.');
